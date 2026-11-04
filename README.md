@@ -21,11 +21,11 @@ Built by Team 4 (Jandos, Temirlan) for the Zimran IT School capstone.
 
 | Landing | Personal plan | Paywall |
 | --- | --- | --- |
-| ![Landing page hero with the app preview](docs/screenshots/01-landing.png) | ![Personal plan: service, price, first buyers and four weeks](docs/screenshots/02-plan.png) | ![Paywall with three plans, billing timeline and unticked renewal consent](docs/screenshots/03-paywall.png) |
+| ![Landing page hero with the old work card and the new sunshine business card](docs/screenshots/01-landing.png) | ![Personal plan: your service and price on a business card, first buyers and the four weeks](docs/screenshots/02-plan.png) | ![Paywall with three plans, billing timeline and unticked renewal consent](docs/screenshots/03-paywall.png) |
 
 | Today, day 8 | Drafts from Hugin |
 | --- | --- |
-| ![Status window with title, level, XP and six stats, and today's quest](docs/screenshots/04-app-today.png) | ![Three outreach messages drafted by Hugin, each with a Copy button](docs/screenshots/05-hugin-drafts.png) |
+| ![Your card with service, price, title and level, then XP, six stats and today's quest](docs/screenshots/04-app-today.png) | ![Three outreach messages drafted by Hugin, each with a Copy button](docs/screenshots/05-hugin-drafts.png) |
 
 ## Tech stack
 
