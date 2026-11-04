@@ -228,7 +228,7 @@ const TEMPLATES: QuestTemplate[] = [
     title: "Ask for a review",
     text: "Send your client the review request when the work is delivered.",
     stats: ["reputation"],
-    hugin: "Ask while they're happy. That's usually the day you deliver.",
+    hugin: "Ask while they’re happy. That’s usually the day you deliver.",
   },
   {
     title: "Look back and set the next price",

@@ -1,7 +1,7 @@
 // A static picture of the real app for the landing page: your card, progress and today's quest. Built from the same components and tokens as /app, with sample data.
 
 import { HuginAvatar } from "@/components/coach/hugin";
-import { XpBar } from "@/components/coach/status-window";
+import { XpBar } from "@/components/xp-bar";
 import { Icon } from "@/components/icons";
 import { BusinessCard } from "@/components/business-card";
 import { Rail, Stop } from "@/components/route";

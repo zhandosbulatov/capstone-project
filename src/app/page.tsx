@@ -304,9 +304,9 @@ export default function Home() {
               <thead className="text-sm text-ink-muted">
                 <tr className="border-b border-line">
                   <th scope="col" className="px-5 py-3 font-semibold">Plan</th>
-                  <th scope="col" className="px-5 py-3 font-semibold">First period</th>
-                  <th scope="col" className="px-5 py-3 font-semibold">Then</th>
-                  <th scope="col" className="px-5 py-3 font-semibold">Per day, first period</th>
+                  <th scope="col" className="px-5 py-3 text-right font-semibold">First period</th>
+                  <th scope="col" className="px-5 py-3 text-right font-semibold">Then</th>
+                  <th scope="col" className="px-5 py-3 text-right font-semibold">Per day, first period</th>
                 </tr>
               </thead>
               <tbody>
@@ -322,14 +322,14 @@ export default function Home() {
                           </span>
                         ) : null}
                       </th>
-                      <td className="px-5 py-4">
+                      <td className="px-5 py-4 text-right tabular-nums">
                         <b>{formatUsd(plan.introUsd)}</b>{" "}
                         <s className="text-sm text-ink-muted">{formatUsd(plan.fullUsd)}</s>
                       </td>
-                      <td className="px-5 py-4">
+                      <td className="px-5 py-4 text-right tabular-nums">
                         {formatUsd(plan.fullUsd)} every {plan.weeks} weeks
                       </td>
-                      <td className="px-5 py-4">{formatUsd(introPerDay(plan))}</td>
+                      <td className="px-5 py-4 text-right tabular-nums">{formatUsd(introPerDay(plan))}</td>
                     </tr>
                   );
                 })}

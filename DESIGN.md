@@ -135,7 +135,15 @@ See `src/app/globals.css`: light values on `:root`, dark values under `prefers-c
 
 ## Slop audit
 
-- Pending: filled in after the build.
+- Date: 2026-11-04 | Score: 8/10 (was 7/10 for the route map) | Result: pass with two accepted exceptions.
+- Passed: no indigo or violet (accent sky sits at hue 222); no gradients, glass, glows or shadows; two radii only (6px and full); a single depth rule (borders); a distinct display and body pair (Young Serif, Figtree), neither on the banned list; one stated scale (1.25, 16px base) with every size a token (`text-label`, `text-h3`, `text-h2`, `text-h1`, `text-display`, `text-hero`); no uppercase kickers or eyebrow pills above headings; no emoji icons; one icon set; one motion moment (transform only, off under reduced motion); every button has hover, active, focus-visible, disabled and loading states; inputs and options have 3:1 borders.
+- Accepted exception 1: the warm off-white page reads as "cream background", a current tell. It was chosen deliberately, because the brief asked for the aliabdaal.com palette, and the brights stop it reading as the default.
+- Accepted exception 2: the pale sky circle behind the hero cards is a decorative shape. It frames the one object on the page and is flat (no blur or glow).
+- Bare-structure check: with colour and type stripped, the landing page still follows the category order (hero, sections, pricing table, FAQ, closing CTA). Three moves break the template: the hero's right column is a real object (two business cards), "Instead of" is a struck-through list rather than a card grid, and the four weeks are a timeline. The pricing table and FAQ stay conventional on purpose (paywall compliance).
+- Web interface audit: pricing figures are now right-aligned with `tabular-nums`; quest copy uses curly apostrophes. Kept on purpose: sentence-case buttons (this file's rule) and a browser bar colour that follows the device rather than the theme switcher.
+- Writing audit: removed "quick" from the quiz intro and metadata and an em dash from a quiz answer. Kept: the "Good at your job?" hook (the brief's ad offer), and "quick question" and "just" inside outreach templates written in the user's own voice.
+- React audit: `XpBar` moved out of the client-only status window so the landing page no longer ships the app's client code.
+- Screenshots: `docs/redesign/` holds before and after shots of the landing page and quiz at 375, 768 and 1280px. The before shots at 375px are clipped, because headless Chrome will not make a window narrower than about 500px; the after shots at 375px load the page in a 375px frame. No layout overflows at 375px (page width measured at exactly 375px in the browser).
 
 ## Changelog
 

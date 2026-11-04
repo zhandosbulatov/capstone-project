@@ -5,6 +5,7 @@
 
 import { ViewTransition } from "react";
 import { BusinessCard } from "@/components/business-card";
+import { XpBar } from "@/components/xp-bar";
 import { STAT_KEYS, STATS, TITLES } from "@/lib/game";
 import { useCoach } from "./app-context";
 
@@ -14,26 +15,6 @@ function Ticker({ value }: { value: number }) {
     <ViewTransition key={value} enter="bump" exit="none" default="none">
       <span className="inline-block tabular-nums">{value}</span>
     </ViewTransition>
-  );
-}
-
-/** XP towards the next level, on the route colour. Grows with a transform, not width. */
-export function XpBar({ into, needed, level }: { into: number; needed: number; level: number }) {
-  const pct = Math.min(100, Math.round((into / needed) * 100));
-  return (
-    <div
-      className="h-1.5 overflow-hidden rounded-full bg-brand-soft"
-      role="progressbar"
-      aria-label={`XP to level ${level + 1}`}
-      aria-valuemin={0}
-      aria-valuemax={needed}
-      aria-valuenow={into}
-    >
-      <div
-        className="h-full origin-left rounded-full bg-brand transition-transform duration-700 ease-out motion-reduce:transition-none"
-        style={{ transform: `scaleX(${pct / 100})` }}
-      />
-    </div>
   );
 }
 

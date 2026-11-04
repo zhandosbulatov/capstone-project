@@ -132,7 +132,7 @@ export const PAID_BEFORE: Record<
 > = {
   never: {
     icon: "🌱",
-    label: "Never — only at my job",
+    label: "Never, only at my job",
     teaser:
       "Most people start exactly here. Your plan begins with people who already trust your work, so the first sale feels like a favour, not a pitch.",
   },

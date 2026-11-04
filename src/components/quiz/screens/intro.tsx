@@ -63,7 +63,7 @@ export function LandingScreen() {
   const { state, actions } = useQuiz();
   return (
     <ScreenBody>
-      <p className="mt-2 text-sm font-semibold text-ink-muted">6 quick questions · 1 minute</p>
+      <p className="mt-2 text-sm font-semibold text-ink-muted">6 questions · 1 minute</p>
       <ScreenTitle>Build your 30-day plan to a first paying client</ScreenTitle>
       <ScreenSub>Start with what you already do well. What do people pay you for at work?</ScreenSub>
       <OptionList label="Your skill">
