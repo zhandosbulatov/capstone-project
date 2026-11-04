@@ -2,155 +2,143 @@
 
 ## Context (from discovery)
 
-- Artifact type: composite. A marketing landing page (`/`), an onboarding quiz and paywall (`/quiz`), and a mobile-first habit app (`/app`).
-- Positioning: practical and calm, for adults. A coach, not a course, and not a game.
-- Audience: employees aged 28 to 45 in the US and UK who are good at their job and live on one salary. Primary action: take the quiz, then complete one 20-minute quest a day.
-- Adjectives: calm, direct, measured, progressive, adult.
+- Artifact type: composite. Marketing landing page (`/`), onboarding quiz and paywall (`/quiz`), mobile-first habit app (`/app`). Designed region by region; the signature lives in the landing hero.
+- Positioning: warm and encouraging, for people who have never sold anything outside their job and feel nervous about it. Practical underneath: a coach, not a course, not a game.
+- Audience: employees aged 28 to 45 in the US and UK who are good at their job and live on one salary.
+- Primary action: take the 1-minute quiz (landing), then complete one daily quest (app).
+- Adjectives: warm, joyful, encouraging, grounded, quietly proud.
 - Visual word translations:
-  - calm: one strong colour line on white, everything else navy ink and grey.
-  - direct: signage typography, short labels, one primary button per view.
-  - measured: progress is drawn to scale (30 stops), never as a vague percentage.
-  - progressive: a line that fills as you travel it.
-  - adult: no emoji, no confetti, no game fonts, no pills used as decoration.
-- Aesthetic essence: transit line, plain signage.
-- Single-minded proposition: you can see exactly where you are on the way to a first paying client.
-- References: admire transit line diagrams (one line, ticks for stops, rings for interchanges, plain grotesk labels) and wayfinding signage (high contrast, few words). Avoid: the hero + card grid SaaS template, and game UI (neon, ranks, chests).
-- Mode: both (follows the system setting). Density: balanced in the app, airy on the landing page.
-- Constraints: Next.js 16, Tailwind 4 tokens in `src/app/globals.css`, mobile first at 375px, WCAG 2.2 AA. Game-style information, not a game look (see CLAUDE.md).
+  - warm: a warm off-white page, purple-black ink instead of pure black, peach as the main colour.
+  - joyful: three bright colours (peach, sunshine, sky) used at full strength, always with dark text on them.
+  - encouraging: the friendly rounded serif Young Serif for headings, pill-shaped buttons, sentence case everywhere.
+  - grounded: one real object at the centre (your business card), plain Figtree for everything you read.
+  - quietly proud: the card shows your new title; progress is shown, never shouted.
+- Aesthetic essence: your first yes.
+- Single-minded proposition: you already have something people will pay for, and here is the card that says so.
+- References: admire aliabdaal.com for its palette (warm off-white, purple-black ink, peach, sunshine and sky used boldly with dark text) and its friendly serif plus clean sans pairing. We take the colour values only: not its logo, photos, illustrations, fonts (Recoleta and Elza are commercial) or hand-drawn underline device. Avoid: corporate SaaS blue, game UI.
+- Mode: light and dark (System, Light or Dark switcher). Density: airy on the landing page, balanced in the app.
+- Constraints: Next.js 16, Tailwind 4 tokens in `src/app/globals.css`, mobile first at 375px, WCAG 2.2 AA, game-style information without a game look (CLAUDE.md).
 
 ## Aesthetic
 
-- Direction: the route map. The 30-day plan is a single transit line from Employee to Consultant.
-- Defining trait: progress is always shown as a position on a line. Days are stops (ticks), weekly bosses are interchange stations (rings), and titles are zones along the line.
-- Signature move: the route line itself, drawn at three scales.
-  - Strip: all 30 days with a "You" marker (status window, plan screen, landing hero).
-  - Rail: a vertical line on the Today tab, with today's quest attached to its stop and the week's boss as the next interchange.
-  - Map: the Journey tab, the four weeks as one vertical line with their interchanges.
+- Direction: "Your new card". The side service the quiz creates is shown as a small-business card.
+- Defining trait: one bright object (the sunshine card) on a calm warm page, with peach for the action and sky for the secondary action.
+- Signature move: the business card flip. In the landing hero an old white work card ("Designer, Northwind Ltd") sits behind a sunshine card that flips over once to show the new side service, its price and the title Side Starter. In the app the status window is your card: your service, price, title and level, printed on sunshine.
 
 ## Typography
 
-- Display: Familjen Grotesk | Google Fonts | OFL. Used for page titles, quest titles, title and level.
-- Body: Atkinson Hyperlegible Next | Google Fonts | OFL. Built for legibility, with signage roots.
-- No mono. Numbers use `tabular-nums`.
+- Display: Young Serif (400 only) | Google Fonts | OFL. Headings, card names, prices, big numbers.
+- Body: Figtree (400, 600, 700) | Google Fonts | OFL. Everything you read and tap.
+- No mono. Figures use `tabular-nums` where they line up.
 - Scale: ratio 1.25 (Major Third), base 16px.
 
 | step | size | line-height | use |
 |------|------|-------------|-----|
-| display | 49px (61px desktop) | 1.05 | landing hero |
-| h1 | 31px | 1.15 | landing sections, Journey title |
-| h2 | 25px | 1.2 | quiz screen titles, title in the status window |
-| h3 | 20px | 1.25 | quest and boss titles |
+| hero | 49px (desktop) / 39px (phone) | 1.08 | landing headline |
+| display | 39px | 1.1 | landing section titles (desktop) |
+| h1 | 31px | 1.15 | section titles (phone), Journey and Settings titles |
+| h2 | 25px | 1.2 | quiz screen titles, the card's title line |
+| h3 | 20px | 1.3 | quest, boss and card names |
 | body | 16px | 1.5 | text |
-| small | 13px | 1.45 | labels, meta, rewards |
+| label | 13px | 1.4 | labels, meta, chips (`type-label`) |
 
-- Weights: 400 and 600 for body, 600 and 700 for display. Tracking: normal; display at -0.01em from h1 up.
-- Labels: sentence case, 12 to 13px, semibold, muted. No uppercase kicker labels above headings.
+- Utilities: `type-display` (Young Serif, weight 400, tight leading) and `type-label` (13px, 600, ink-muted). Young Serif ships one weight, so `type-display` and `font-display` force weight 400 to stop the browser faking bold.
+- No uppercase labels except the one on the card's title chip.
 
 ## Color
 
-- Strategy: navy ink and grey carry the interface; one signal-orange line carries progress. Orange is used only for the route, XP and reward chips, so it always means "progress". This leaves the AI-default blue and indigo band behind and reads as signage, not SaaS.
-- Distribution: 60 white and grey / 30 navy ink / 10 orange line.
-- Palette (role -> OKLCH | hex approx):
-  - bg: oklch(0.985 0.003 250) | #f9fafc
-  - surface: oklch(1 0 0) | #ffffff
-  - ink (fg): oklch(0.25 0.045 255) | #1a2436
-  - muted: oklch(0.50 0.03 255) | #5c6577
-  - line (border): oklch(0.90 0.01 255) | #dfe2e8
-  - bar: oklch(0.82 0.015 255) | #c4c9d2
-  - accent (primary actions, focus, selected): oklch(0.30 0.06 245) | #1f3450
-  - accent-ink: oklch(1 0 0) | #ffffff
-  - accent-soft: oklch(0.95 0.015 245) | #eaf0f6
-  - route (the line, XP): oklch(0.66 0.18 45) | #e5632a
-  - route-soft (line still to travel): oklch(0.90 0.05 50) | #f8d9c6
-  - route-ink (text on route-soft): oklch(0.45 0.13 45) | #9a3d10
-  - good / good-soft: oklch(0.48 0.10 155) / oklch(0.95 0.03 155)
-  - warn / warn-soft: oklch(0.50 0.10 80) / oklch(0.95 0.04 85)
-  - bad: oklch(0.52 0.17 25)
-- Dark mode overrides: bg oklch(0.17 0.015 255), surface oklch(0.21 0.018 255), ink oklch(0.94 0.01 255), muted oklch(0.72 0.02 255), line oklch(0.31 0.02 255), accent oklch(0.82 0.07 245) on accent-ink oklch(0.20 0.03 255), route oklch(0.72 0.16 50), route-soft oklch(0.36 0.07 50).
+- Strategy: warm neutrals carry the page; three brights do the talking. Peach is the brand and the primary action, sunshine is the card, sky is the secondary action and links on bright blocks. Every bright carries dark `on-bright` text, never white (white on these brights fails contrast).
+- Distribution: about 65 warm neutral / 25 brights (card, buttons, chips) / 10 ink-coloured accents.
+- Palette, light (role -> OKLCH | hex):
+  - canvas: oklch(0.975 0.005 67.8) | #F9F6F3
+  - sand (banded sections): oklch(0.926 0.009 52.1) | #ECE5E1
+  - surface: oklch(1 0 0) | #FFFFFF
+  - ink: oklch(0.213 0.028 300.4) | #1B1624
+  - ink-muted: oklch(0.479 0.018 302.2) | #5F5B66
+  - line: oklch(0.899 0.010 58.2) | #E3DCD7
+  - line-strong (input borders): oklch(0.630 0.017 319.5) | #8E8690
+  - brand (peach): oklch(0.774 0.135 42.8) | #FD976D; brand-hover oklch(0.733 0.152 40.4) | #F7845A; brand-ink oklch(0.504 0.170 34.4) | #B0300F; brand-soft oklch(0.939 0.031 45.3) | #FEE5DA
+  - sun (the card): oklch(0.885 0.132 88.2) | #FDD46B; sun-soft oklch(0.962 0.046 90.9) | #FEF2D0
+  - accent (sky): oklch(0.797 0.113 222.2) | #5DCDF1; accent-hover oklch(0.763 0.123 224.5) | #45C2EC; accent-ink oklch(0.475 0.091 229.5) | #0A6585; accent-soft oklch(0.953 0.026 220.6) | #DDF4FC
+  - on-bright (text on peach, sun, sky in both modes): oklch(0.213 0.028 300.4) | #1B1624
+  - success: #34B378; success-ink oklch(0.470 0.098 157) | #1D6B44; success-soft #DCF1E4
+  - warning: #F5B53D; warning-ink oklch(0.482 0.103 65.5) | #85500A; warning-soft #FDF0D5
+  - error: #E5484D; error-ink oklch(0.503 0.171 24.2) | #B12A2F; error-soft #FCE3E3
+- Dark overrides: canvas #15111B, sand #1E1925, surface #221C2A, ink #F5F0F2, ink-muted #B6AFBC, line #362E3F, line-strong #7D7486, brand-hover #FFA987, brand-ink #FFAE8E, brand-soft #3A2420, sun-soft #3A311A, accent-hover #7AD6F4, accent-ink #8BDDF7, accent-soft #14303C, success-ink #7FD6A6, success-soft #17301F, warning-ink #F6C46A, warning-soft #33270F, error-ink #FF9A9C, error-soft #3A1C1E. The brights (brand, sun, accent) and on-bright stay the same: the card is a physical object and keeps its colour at night.
 
-## Spacing, radius, shadow
+### Contrast (WCAG 2.2 AA), computed from the hex values
+
+Light: ink on canvas 16.4, on surface 17.7, on sand 14.2. Ink-muted on canvas 6.1, on surface 6.6, on sand 5.3. Brand-ink on canvas 6.0, on surface 6.4, on brand-soft 5.3. Accent-ink on canvas 6.1, on accent-soft 5.7. On-bright on brand 8.3, on brand-hover 7.1, on sun 12.5, on accent 9.7, on accent-hover 8.6. Success-ink on success-soft 5.5. Warning-ink on warning-soft 5.9. Error-ink on error-soft 5.3, on surface 6.5. Line-strong (input borders) on surface 3.5, on canvas 3.3 (needs 3.0).
+
+Dark: ink on canvas 16.5, on surface 14.7. Ink-muted on canvas 8.7, on surface 7.8. Brand-ink on canvas 10.4, on brand-soft 8.0. Accent-ink on accent-soft 9.1. On-bright on brand 8.3, on brand-hover 9.5, on sun 12.5, on accent 9.7. Success-ink on success-soft 8.2. Warning-ink on warning-soft 9.1. Error-ink on error-soft 7.6. Line-strong on surface 3.7.
+
+Focus ring: a 2px `ink` outline with a 2px offset, so the ring always sits on the page, never on the control. Ring against the page: 16.4 light, 16.5 dark (needs 3.0). In dark mode the ring next to a peach button is 1.9 against the button itself; the offset keeps the ring off the button, and focus appearance compares the ring with the page pixels it replaces, so this passes.
+
+All pairs pass. White text is never placed on brand, sun or accent.
+
+## Spacing, radius, depth
 
 - Spacing base: 4px; scale 4, 8, 12, 16, 24, 32, 56, 80.
-- Radius: 6px for controls and cards (`rounded-md`), 8px for large surfaces and sheets (`rounded-lg`). `rounded-full` only for avatars, route stops and progress bars.
-- Shadow approach: defined edge. Cards have a 1px `line` border and no shadow. Sheets sit on a dark scrim.
+- Radius: two values. 6px (`rounded-md`) for cards, inputs, sheets and the business card. Full (`rounded-full`) for buttons, pills, chips, avatars and progress bars.
+- Depth: border only. Cards and inputs have a 1px border; nothing has a shadow. The brights need no border.
 
 ## Layout and composition
 
-- Grid: single column at 440px max in the app and quiz; the landing page uses a 2-column hero and full-width line sections inside 1024px.
-- Spacing rhythm: 8 to 12px inside a stop, 16px between stops, 56 to 80px between landing sections.
-- Signature layout move: content hangs off the line. On Today, the quest card and boss card are attached to stops on a vertical rail instead of floating as a stack of cards.
-- Responsive: mobile first; breakpoints `sm` 640px and `lg` 1024px.
+- Grid: single column at 440px max in the app and quiz; landing uses a 2-column hero (copy left, cards right) inside 1024px.
+- Rhythm: 8 to 12px inside a group, 16px between cards, 56 to 80px between landing sections; sand bands mark a change of topic.
+- Signature layout move: the hero's right column is a real object (two cards, overlapping, slightly rotated), not an illustration.
 
 ## Components and states
 
-- Buttons: primary is filled `accent` (navy); secondary is a 1.5px outlined surface; tertiary is muted text. One primary per view. States: hover darkens the border or lifts opacity to 0.92, active moves 1px down (transform), focus shows a 2px accent outline with 2px offset, disabled is 40% opacity.
-- Quiz options: text-only rows with a 1.5px border; selected uses `accent-soft` with an `accent` border. No emoji icons.
-- Pills: only for status that changes (Done today, Recovery, Beaten, Most popular). 12px, sentence case, 4px radius.
-- Reward chips: `route-soft` background, `route-ink` text.
-- Inputs: visible labels above, 1.5px `line` border, `accent` border on focus.
-- Overlays: bottom sheets with focus trap and focus return (existing).
-- Empty and loading: one short sentence in muted text that says what will appear.
+- Button: explicit `variant` (primary peach, secondary sky, outline, ghost, dark) and `status` ("idle" or "loading"). Pill-shaped. Hover darkens the bright (brand-hover, accent-hover) or the border; active moves 1px down; focus-visible shows the ink ring; disabled is 45% opacity with a not-allowed cursor; loading shows a spinner, keeps the label, sets `aria-busy` and blocks clicks.
+- Inputs: visible labels, 1.5px `line-strong` border, ink border on focus plus the ring, error text in `error-ink`.
+- Pills: status only (Done, Beaten, Recovery, Most popular); full radius, 12 to 13px, soft background with its -ink text.
+- Reward chips: `brand-soft` with `brand-ink`.
+- Navigation: bottom tab bar with a 3px peach indicator on the active tab.
+- Sheets: bottom sheets, focus trapped and returned, scrim `ink` at 50%.
+- Empty and loading: one sentence in `ink-muted`.
 
 ## Motion
 
-- Durations: 150ms exit, 210ms enter, 260 to 300ms for moves and sheets.
-- Easing: ease-out for enter, ease-in for exit.
-- Only transform and opacity animate. The XP bar grows with `scaleX`, not `width`.
-- Reduced motion: view transitions drop to 0s; bar transitions are turned off.
+- The one meaningful moment: the landing hero card flips once on load (rotateY, 800ms, ease-out, starts at 500ms). Transform only.
+- Everything else is functional: screen slides and cross-fades through view transitions (150 to 300ms), a gentle lift when a number grows, XP bar growth with `scaleX`.
+- Reduced motion: the card is shown already flipped, view transitions drop to 0s, bars stop animating.
 
 ## Iconography
 
-- Set: Tabler outline paths, inlined in `src/components/icons.tsx` | grid 24px | stroke 2px | round caps and joins. Only flame (streak), shield (Streak Shield) and check.
+- Tabler outline paths inlined in `src/components/icons.tsx`: 24px grid, 2px stroke, round caps and joins. Flame (streak), shield (Streak Shield), check, arrows, sun, moon, desktop.
 
 ## Imagery and illustration
 
-- Mode: the product itself. The landing hero shows the real route strip and a real Today screen built from the same components and tokens.
-- Hugin stays a small raven mark in a circle, never a full character.
-- Avoid: stock photos, gradient blobs, confetti, emoji.
+- The product is the picture: the business card, built in HTML from the same data the quiz produces. Hugin is a small raven mark on a sunshine circle, never a character.
+- Avoid: stock photos, blobs, confetti, emoji, hand-drawn flourishes copied from the reference.
 
 ## Dark mode
 
-- Base bg near-black navy oklch(0.17), surfaces step up in lightness (0.21), borders are lighter than surfaces. The orange line gets lighter and slightly less saturated; navy accent becomes a pale blue so filled buttons stay legible.
+- Near-black purple canvas, surfaces lighter by step, borders lighter than surfaces. Brights keep their value and their dark text. Soft fills become dark tints of their hue; -ink colours become light tints.
 
 ## Accessibility
 
-- Contrast: AA in both modes (muted on bg about 5.5:1; route-ink on route-soft about 5:1; accent-ink on accent above 10:1).
-- Focus visible on every control; sheets trap and return focus.
-- Targets 44px for buttons and tabs.
-- Route position is always also given in text ("Day 8 of 30", "You"), never by colour or position alone.
+- AA contrast verified for every pair above, both modes.
+- Focus visible on every control (ink ring, 2px offset). Sheets trap and return focus.
+- Targets: buttons 48px tall, tabs 52px, chips are not interactive.
+- Colour is never the only signal: states carry words (Done, Beaten, Recovery) and progress carries numbers.
+- Reduced motion respected.
 
 ## Tokens (source of truth)
 
-```css
-:root {
-  --bg: oklch(0.985 0.003 250);
-  --surface: oklch(1 0 0);
-  --ink: oklch(0.25 0.045 255);
-  --muted: oklch(0.50 0.03 255);
-  --line: oklch(0.90 0.01 255);
-  --bar: oklch(0.82 0.015 255);
-  --accent: oklch(0.30 0.06 245);
-  --accent-ink: oklch(1 0 0);
-  --accent-soft: oklch(0.95 0.015 245);
-  --route: oklch(0.66 0.18 45);
-  --route-soft: oklch(0.90 0.05 50);
-  --route-ink: oklch(0.45 0.13 45);
-}
-```
-
-- Adapter: Tailwind v4 `@theme inline` in `src/app/globals.css`, which maps each variable to a `--color-*` utility.
+See `src/app/globals.css`: light values on `:root`, dark values under `prefers-color-scheme: dark` (unless `data-theme="light"`) and under `data-theme="dark"`. Tailwind 4 `@theme inline` maps each to a utility: `canvas`, `sand`, `surface`, `ink`, `ink-muted`, `line`, `line-strong`, `brand`, `brand-hover`, `brand-ink`, `brand-soft`, `sun`, `sun-soft`, `accent`, `accent-hover`, `accent-ink`, `accent-soft`, `on-bright`, `success`, `success-ink`, `success-soft`, `warning`, `warning-ink`, `warning-soft`, `error`, `error-ink`, `error-soft`.
 
 ## Cards and surfaces
 
-- Cards: 1px `line` border, 6px radius, 16px padding, no shadow. No cards inside cards: stats inside the status window are rows with hairlines, not tiles.
+- Cards: `surface`, 1px `line` border, 6px radius, 16px padding, no shadow. No cards inside cards: the status window's stats are rows with dividers.
 
 ## Slop audit
 
-- Date: 2026-11-04 | Result: fixed 9 tells from the first build.
-- Removed: cream background with a big serif hero, pill kicker above the hero headline, default SaaS blue, 16 to 24px radii everywhere, nested stat tiles, emoji used as icons (streak, shield, quiz options, confetti), repeated card grids on the landing page, width animation on the XP bar.
-- Still to watch: the landing pricing table and FAQ are conventional on purpose (compliance first).
+- Pending: filled in after the build.
 
 ## Changelog
 
-- 2026-11-04: Theme switcher (System, Light, Dark) in Settings and the landing footer. Dark tokens apply under the system media query unless `data-theme="light"`, and always under `data-theme="dark"`; a head script applies the saved choice before first paint (`src/lib/theme.ts`).
-- 2026-11-04: First DESIGN.md. Committed to the route-map direction after comparing it with the ledger and index-card directions on the same Today screen.
+- 2026-11-04: Replaced the route-map design (navy ink, signal-orange line, Familjen Grotesk and Atkinson Hyperlegible Next) with "Your new card": warm off-white, purple-black ink, peach, sunshine and sky, Young Serif and Figtree, two radii (6px and full), border-only depth, and the business card as the signature. Token names changed to roles (canvas, ink-muted, brand, accent, success, warning, error with -ink and -soft).
+- 2026-11-04: Theme switcher (System, Light, Dark).
+- 2026-11-04: First DESIGN.md (route map).

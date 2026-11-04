@@ -14,12 +14,12 @@ export function QuizBar() {
         type="button"
         onClick={actions.back}
         aria-label="Back"
-        className={`grid size-9 cursor-pointer place-items-center rounded-md text-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-accent ${meta.canGoBack ? "" : "invisible"}`}
+        className={`grid size-9 cursor-pointer place-items-center rounded-md text-ink-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-ink ${meta.canGoBack ? "" : "invisible"}`}
       >
         <Icon name="arrowLeft" size={20} />
       </button>
       <div
-        className={`h-1.5 flex-1 overflow-hidden rounded-full bg-route-soft ${meta.isQuizScreen ? "" : "invisible"}`}
+        className={`h-1.5 flex-1 overflow-hidden rounded-full bg-brand-soft ${meta.isQuizScreen ? "" : "invisible"}`}
         role="progressbar"
         aria-label="Quiz progress"
         aria-valuemin={0}
@@ -27,11 +27,11 @@ export function QuizBar() {
         aria-valuenow={meta.progress}
       >
         <div
-          className="h-full origin-left rounded-full bg-route transition-transform duration-300 ease-out motion-reduce:transition-none"
+          className="h-full origin-left rounded-full bg-brand transition-transform duration-300 ease-out motion-reduce:transition-none"
           style={{ transform: `scaleX(${meta.progress / 100})` }}
         />
       </div>
-      <span className="font-display text-sm whitespace-nowrap text-muted">AI Business Coach</span>
+      <span className="font-display text-sm whitespace-nowrap text-ink-muted">AI Business Coach</span>
     </div>
   );
 }
@@ -51,7 +51,7 @@ export function ScreenTitle({ children }: { children: ReactNode }) {
 }
 
 export function ScreenSub({ children }: { children: ReactNode }) {
-  return <p className="mb-3 text-sm text-muted">{children}</p>;
+  return <p className="mb-3 text-sm text-ink-muted">{children}</p>;
 }
 
 export function OptionList({ label, children }: { label: string; children: ReactNode }) {
@@ -78,7 +78,7 @@ export function Option({
       type="button"
       aria-pressed={selected}
       onClick={onSelect}
-      className={`flex w-full cursor-pointer items-center gap-3 rounded-md border-[1.5px] px-4 py-3.5 text-left transition-colors hover:border-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${selected ? "border-accent bg-accent-soft" : "border-line bg-surface"}`}
+      className={`flex w-full cursor-pointer items-center gap-3 rounded-md border-[1.5px] px-4 py-3.5 text-left transition-colors hover:border-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink ${selected ? "border-ink bg-sun-soft" : "border-line bg-surface"}`}
     >
 
       <span>{children}</span>
@@ -93,5 +93,5 @@ export function Cta({ children }: { children: ReactNode }) {
 
 /** Small print under an action. */
 export function Note({ children }: { children: ReactNode }) {
-  return <p className="mt-2 text-xs text-muted">{children}</p>;
+  return <p className="mt-2 text-xs text-ink-muted">{children}</p>;
 }

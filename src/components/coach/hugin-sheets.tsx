@@ -36,7 +36,7 @@ function CopyButton({ text }: { text: string }) {
         }
       }}
       aria-live="polite"
-      className="min-h-10 min-w-16 cursor-pointer rounded-lg border border-line px-3 text-sm font-semibold hover:border-accent focus-visible:outline-2 focus-visible:outline-accent"
+      className="min-h-10 min-w-16 cursor-pointer rounded-lg border border-line px-3 text-sm font-semibold hover:border-ink focus-visible:outline-2 focus-visible:outline-ink"
     >
       {copied ? "Copied" : "Copy"}
     </button>
@@ -66,7 +66,7 @@ export function DraftSheet({ kind }: { kind: DraftKind }) {
   return (
     <div>
       <h2 className="text-xl font-bold">{DRAFT_TITLES[kind]}</h2>
-      <p className="mt-1 text-sm text-muted">
+      <p className="mt-1 text-sm text-ink-muted">
         Edit the bits in brackets. Then send them from your own phone or email.
       </p>
 
@@ -77,7 +77,7 @@ export function DraftSheet({ kind }: { kind: DraftKind }) {
           <HuginLine>{state.message}</HuginLine>
         ) : (
           state.drafts.map((draft, i) => (
-            <div key={i} className="rounded-md border border-line bg-bg px-3.5 py-3">
+            <div key={i} className="rounded-md border border-line bg-canvas px-3.5 py-3">
               <p className="text-[15px] whitespace-pre-line">{draft}</p>
               <div className="mt-2 flex justify-end">
                 <CopyButton text={draft} />
@@ -127,7 +127,7 @@ export function ChatSheet() {
         <HuginAvatar size={36} />
         <div>
           <h2 className="text-xl leading-tight font-bold">Ask Hugin</h2>
-          <p className="text-sm text-muted">About your offer, a message, a client, your price.</p>
+          <p className="text-sm text-ink-muted">About your offer, a message, a client, your price.</p>
         </div>
       </div>
 
@@ -139,14 +139,14 @@ export function ChatSheet() {
             m.role === "user" ? (
               <p
                 key={i}
-                className="max-w-[85%] self-end rounded-md rounded-br-md bg-accent px-3.5 py-2.5 text-[15px] whitespace-pre-line text-accent-ink"
+                className="max-w-[85%] self-end rounded-md rounded-br-md bg-brand px-3.5 py-2.5 text-[15px] whitespace-pre-line text-on-bright"
               >
                 {m.text}
               </p>
             ) : (
               <div key={i} className="flex max-w-[92%] items-start gap-2">
                 <HuginAvatar size={24} />
-                <p className="rounded-md rounded-bl-md bg-bg px-3.5 py-2.5 text-[15px] whitespace-pre-line">
+                <p className="rounded-md rounded-bl-md bg-canvas px-3.5 py-2.5 text-[15px] whitespace-pre-line">
                   {m.text || "…"}
                 </p>
               </div>
@@ -173,17 +173,17 @@ export function ChatSheet() {
           placeholder="Type a question"
           autoComplete="off"
           maxLength={2000}
-          className="min-w-0 flex-1 rounded-md border-[1.5px] border-line bg-surface px-3.5 py-3 text-[15px] focus:border-accent focus:outline-none"
+          className="min-w-0 flex-1 rounded-md border-[1.5px] border-line bg-surface px-3.5 py-3 text-[15px] focus:border-ink focus:outline-none"
         />
         <button
           type="submit"
           disabled={!text.trim() || state.chatBusy}
-          className="cursor-pointer rounded-md bg-accent px-4 font-bold text-accent-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-40"
+          className="cursor-pointer rounded-md bg-brand px-4 font-bold text-on-bright focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink disabled:cursor-not-allowed disabled:opacity-40"
         >
           Send
         </button>
       </form>
-      <p className="mt-2 text-xs text-muted">
+      <p className="mt-2 text-xs text-ink-muted">
         Hugin is an AI. He can be wrong, and he doesn&apos;t give legal, tax or medical advice.
       </p>
       <div className="mt-3">

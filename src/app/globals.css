@@ -1,25 +1,36 @@
 @import "tailwindcss";
 
-/* Design tokens: the route map. Navy ink and grey carry the interface; one signal-orange line
-   (route) carries progress and is used for nothing else. Source of truth: DESIGN.md. */
+/* Design tokens: "Your new card". Warm off-white, purple-black ink, and three brights
+   (peach brand, sunshine card, sky accent) that always carry dark on-bright text.
+   Source of truth: DESIGN.md (hex here; OKLCH and contrast results are listed there). */
 :root {
-  --bg: oklch(0.985 0.003 250);
-  --surface: oklch(1 0 0);
-  --ink: oklch(0.25 0.045 255);
-  --muted: oklch(0.5 0.03 255);
-  --line: oklch(0.9 0.01 255);
-  --bar: oklch(0.82 0.015 255);
-  --accent: oklch(0.3 0.06 245);
-  --accent-ink: oklch(1 0 0);
-  --accent-soft: oklch(0.95 0.015 245);
-  --route: oklch(0.66 0.18 45);
-  --route-soft: oklch(0.9 0.05 50);
-  --route-ink: oklch(0.45 0.13 45);
-  --good: oklch(0.48 0.1 155);
-  --good-soft: oklch(0.95 0.03 155);
-  --bad: oklch(0.52 0.17 25);
-  --warn: oklch(0.5 0.1 80);
-  --warn-soft: oklch(0.95 0.04 85);
+  --canvas: #F9F6F3;
+  --sand: #ECE5E1;
+  --surface: #FFFFFF;
+  --ink: #1B1624;
+  --ink-muted: #5F5B66;
+  --line: #E3DCD7;
+  --line-strong: #8E8690;
+  --brand: #FD976D;
+  --brand-hover: #F7845A;
+  --brand-ink: #B0300F;
+  --brand-soft: #FEE5DA;
+  --sun: #FDD46B;
+  --sun-soft: #FEF2D0;
+  --accent: #5DCDF1;
+  --accent-hover: #45C2EC;
+  --accent-ink: #0A6585;
+  --accent-soft: #DDF4FC;
+  --on-bright: #1B1624;
+  --success: #34B378;
+  --success-ink: #1D6B44;
+  --success-soft: #DCF1E4;
+  --warning: #F5B53D;
+  --warning-ink: #85500A;
+  --warning-soft: #FDF0D5;
+  --error: #E5484D;
+  --error-ink: #B12A2F;
+  --error-soft: #FCE3E3;
   color-scheme: light;
 }
 
@@ -27,78 +38,106 @@
    (src/lib/theme.ts). The block is repeated for an explicit "dark" choice; keep both in sync. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: oklch(0.17 0.015 255);
-    --surface: oklch(0.21 0.018 255);
-    --ink: oklch(0.94 0.01 255);
-    --muted: oklch(0.72 0.02 255);
-    --line: oklch(0.31 0.02 255);
-    --bar: oklch(0.42 0.02 255);
-    --accent: oklch(0.82 0.07 245);
-    --accent-ink: oklch(0.2 0.03 255);
-    --accent-soft: oklch(0.28 0.04 245);
-    --route: oklch(0.72 0.16 50);
-    --route-soft: oklch(0.36 0.07 50);
-    --route-ink: oklch(0.86 0.1 55);
-    --good: oklch(0.76 0.12 155);
-    --good-soft: oklch(0.27 0.04 155);
-    --bad: oklch(0.72 0.14 25);
-    --warn: oklch(0.8 0.12 80);
-    --warn-soft: oklch(0.29 0.04 80);
+    --canvas: #15111B;
+    --sand: #1E1925;
+    --surface: #221C2A;
+    --ink: #F5F0F2;
+    --ink-muted: #B6AFBC;
+    --line: #362E3F;
+    --line-strong: #7D7486;
+    --brand-hover: #FFA987;
+    --brand-ink: #FFAE8E;
+    --brand-soft: #3A2420;
+    --sun-soft: #3A311A;
+    --accent-hover: #7AD6F4;
+    --accent-ink: #8BDDF7;
+    --accent-soft: #14303C;
+    --success-ink: #7FD6A6;
+    --success-soft: #17301F;
+    --warning-ink: #F6C46A;
+    --warning-soft: #33270F;
+    --error-ink: #FF9A9C;
+    --error-soft: #3A1C1E;
     color-scheme: dark;
   }
 }
 
 :root[data-theme="dark"] {
-  --bg: oklch(0.17 0.015 255);
-  --surface: oklch(0.21 0.018 255);
-  --ink: oklch(0.94 0.01 255);
-  --muted: oklch(0.72 0.02 255);
-  --line: oklch(0.31 0.02 255);
-  --bar: oklch(0.42 0.02 255);
-  --accent: oklch(0.82 0.07 245);
-  --accent-ink: oklch(0.2 0.03 255);
-  --accent-soft: oklch(0.28 0.04 245);
-  --route: oklch(0.72 0.16 50);
-  --route-soft: oklch(0.36 0.07 50);
-  --route-ink: oklch(0.86 0.1 55);
-  --good: oklch(0.76 0.12 155);
-  --good-soft: oklch(0.27 0.04 155);
-  --bad: oklch(0.72 0.14 25);
-  --warn: oklch(0.8 0.12 80);
-  --warn-soft: oklch(0.29 0.04 80);
+  --canvas: #15111B;
+  --sand: #1E1925;
+  --surface: #221C2A;
+  --ink: #F5F0F2;
+  --ink-muted: #B6AFBC;
+  --line: #362E3F;
+  --line-strong: #7D7486;
+  --brand-hover: #FFA987;
+  --brand-ink: #FFAE8E;
+  --brand-soft: #3A2420;
+  --sun-soft: #3A311A;
+  --accent-hover: #7AD6F4;
+  --accent-ink: #8BDDF7;
+  --accent-soft: #14303C;
+  --success-ink: #7FD6A6;
+  --success-soft: #17301F;
+  --warning-ink: #F6C46A;
+  --warning-soft: #33270F;
+  --error-ink: #FF9A9C;
+  --error-soft: #3A1C1E;
   color-scheme: dark;
 }
 
 @theme inline {
-  --color-bg: var(--bg);
+  --color-canvas: var(--canvas);
+  --color-sand: var(--sand);
   --color-surface: var(--surface);
   --color-ink: var(--ink);
-  --color-muted: var(--muted);
+  --color-ink-muted: var(--ink-muted);
   --color-line: var(--line);
-  --color-bar: var(--bar);
+  --color-line-strong: var(--line-strong);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-soft: var(--brand-soft);
+  --color-sun: var(--sun);
+  --color-sun-soft: var(--sun-soft);
   --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
   --color-accent-ink: var(--accent-ink);
   --color-accent-soft: var(--accent-soft);
-  --color-route: var(--route);
-  --color-route-soft: var(--route-soft);
-  --color-route-ink: var(--route-ink);
-  --color-good: var(--good);
-  --color-good-soft: var(--good-soft);
-  --color-bad: var(--bad);
-  --color-warn: var(--warn);
-  --color-warn-soft: var(--warn-soft);
-  --font-sans: var(--font-atkinson);
-  --font-display: var(--font-familjen);
+  --color-on-bright: var(--on-bright);
+  --color-success: var(--success);
+  --color-success-ink: var(--success-ink);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-ink: var(--warning-ink);
+  --color-warning-soft: var(--warning-soft);
+  --color-error: var(--error);
+  --color-error-ink: var(--error-ink);
+  --color-error-soft: var(--error-soft);
+  --font-sans: var(--font-figtree);
+  --font-display: var(--font-young-serif);
 }
 
-/* Display type is the signage grotesk at its two heavy weights. */
+/* Young Serif ships one weight: force 400 so the browser never fakes bold. */
 .font-display {
-  font-weight: 700;
-  letter-spacing: -0.01em;
+  font-weight: 400;
+}
+
+@utility type-display {
+  font-family: var(--font-young-serif);
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+@utility type-label {
+  font-size: 13px;
+  line-height: 1.4;
+  font-weight: 600;
+  color: var(--ink-muted);
 }
 
 body {
-  background: var(--bg);
+  background: var(--canvas);
   color: var(--ink);
 }
 

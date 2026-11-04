@@ -47,7 +47,7 @@ export function Journey() {
                   {boss.name}
                   {beaten ? <span className="sr-only"> (beaten)</span> : null}
                 </p>
-                <p className="text-sm text-muted">
+                <p className="text-sm text-ink-muted">
                   {beaten
                     ? `Beaten. Unlocked: ${TOOLS[boss.unlocks].label.toLowerCase()}.`
                     : `Proof: ${lowerFirst(boss.proof)}.`}
@@ -62,14 +62,14 @@ export function Journey() {
         <Label>Titles</Label>
         <ol className="mt-2 flex flex-col gap-2">
           {TITLE_ORDER.map((key, i) => (
-            <li key={key} className={i <= titleIndex ? "" : "text-muted"}>
+            <li key={key} className={i <= titleIndex ? "" : "text-ink-muted"}>
               <span className="font-semibold">{TITLES[key].label}</span>
               {key === meta.title ? (
                 <span className="ml-2">
                   <Pill tone="good">Now</Pill>
                 </span>
               ) : null}
-              <span className="block text-sm text-muted">{TITLES[key].earnedBy}</span>
+              <span className="block text-sm text-ink-muted">{TITLES[key].earnedBy}</span>
             </li>
           ))}
         </ol>
@@ -91,16 +91,16 @@ export function Journey() {
                 <button
                   type="button"
                   onClick={() => actions.openSheet({ kind: "tool", tool })}
-                  className="flex w-full cursor-pointer items-center justify-between rounded-md bg-bg px-3.5 py-3 text-left font-semibold hover:text-accent focus-visible:outline-2 focus-visible:outline-accent"
+                  className="flex w-full cursor-pointer items-center justify-between rounded-md bg-canvas px-3.5 py-3 text-left font-semibold hover:text-brand-ink focus-visible:outline-2 focus-visible:outline-ink"
                 >
                   {TOOL_LABELS[tool]}
-                  <Icon name="arrowRight" size={18} className="text-muted" />
+                  <Icon name="arrowRight" size={18} className="text-ink-muted" />
                 </button>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="mt-2 text-sm text-muted">
+          <p className="mt-2 text-sm text-ink-muted">
             Beat the week 1 boss to unlock your call script.
           </p>
         )}
@@ -113,16 +113,16 @@ export function Journey() {
             {game.results.map((r, i) => (
               <li key={i} className="flex justify-between gap-3 text-sm">
                 <span>{RESULTS[r.type].label}</span>
-                <span className="text-muted">
+                <span className="text-ink-muted">
                   Day {r.day} · {r.proof === "verified" ? "verified" : "self-reported"}
                 </span>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="mt-2 text-sm text-muted">Nothing logged yet. Your first reply goes here.</p>
+          <p className="mt-2 text-sm text-ink-muted">Nothing logged yet. Your first reply goes here.</p>
         )}
-        <p className="mt-3 text-xs text-muted">
+        <p className="mt-3 text-xs text-ink-muted">
           Best streak: {game.bestStreak} {game.bestStreak === 1 ? "day" : "days"}
         </p>
       </Card>
@@ -136,7 +136,7 @@ export function ToolSheet({ tool }: { tool: AnyToolKey }) {
   return (
     <div>
       <h2 className="text-xl font-bold">{doc.title}</h2>
-      <p className="mt-1 text-sm text-muted">{doc.intro}</p>
+      <p className="mt-1 text-sm text-ink-muted">{doc.intro}</p>
       <div className="mt-4 flex flex-col gap-3">
         {doc.sections.map((section) => (
           <section key={section.heading}>

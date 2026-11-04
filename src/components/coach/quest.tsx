@@ -95,7 +95,7 @@ function Day1Quest() {
       <h2 className="font-display text-xl leading-snug">{meta.quest.title}</h2>
       <Rewards parts={rewardParts(XP.dailyQuest, meta.quest.stats, false)} />
 
-      <label htmlFor="offer" className="mt-3 block text-sm text-muted">
+      <label htmlFor="offer" className="mt-3 block text-sm text-ink-muted">
         Step 1. Your coach drafted your offer. Edit it until you would say it out loud.
       </label>
       <textarea
@@ -103,11 +103,11 @@ function Day1Quest() {
         value={offer}
         onChange={(e) => setOffer(e.target.value)}
         rows={4}
-        className="mt-1.5 w-full resize-y rounded-md border-[1.5px] border-line bg-surface px-3.5 py-3 text-[15px] focus:border-accent focus:outline-none"
+        className="mt-1.5 w-full resize-y rounded-md border-[1.5px] border-line bg-surface px-3.5 py-3 text-[15px] focus:border-ink focus:outline-none"
       />
 
       <fieldset className="mt-3">
-        <legend className="text-sm text-muted">
+        <legend className="text-sm text-ink-muted">
           Step 2. Five people who have seen your work: colleagues, ex-clients, friends who run
           something.
         </legend>
@@ -122,7 +122,7 @@ function Day1Quest() {
               onChange={(e) =>
                 setNames((prev) => prev.map((n, j) => (j === i ? e.target.value : n)))
               }
-              className="w-full rounded-md border-[1.5px] border-line bg-surface px-3 py-2.5 text-[15px] focus:border-accent focus:outline-none"
+              className="w-full rounded-md border-[1.5px] border-line bg-surface px-3 py-2.5 text-[15px] focus:border-ink focus:outline-none"
             />
           ))}
         </div>
@@ -133,7 +133,7 @@ function Day1Quest() {
           {filled >= NAME_COUNT ? "Complete quest" : `Complete quest · ${filled}/5 names`}
         </Button>
         {!ready ? (
-          <p className="mt-1.5 text-center text-xs text-muted">
+          <p className="mt-1.5 text-center text-xs text-ink-muted">
             {filled < NAME_COUNT
               ? "Add five names to finish."
               : "Write your offer in a full sentence to finish."}
@@ -153,24 +153,24 @@ function Day1Done() {
       <div className="py-2 text-center">
         <span
           aria-hidden
-          className="mx-auto grid size-10 place-items-center rounded-full bg-route text-surface"
+          className="mx-auto grid size-10 place-items-center rounded-full bg-brand text-surface"
         >
           <Icon name="check" size={22} strokeWidth={2.5} />
         </span>
         <h2 className="mt-2 font-display text-xl">Quest 1 done</h2>
-        <p className="mt-1 text-muted">
+        <p className="mt-1 text-ink-muted">
           Your offer is written and 5 people are on your list. That is the step most side
           projects never take.
         </p>
       </div>
-      <div className="mt-2 rounded-md bg-bg px-3.5 py-3">
+      <div className="mt-2 rounded-md bg-canvas px-3.5 py-3">
         <p className="text-sm font-bold">Tomorrow · {meta.quest.minutes} min</p>
-        <p className="mt-1 text-sm text-muted">
+        <p className="mt-1 text-sm text-ink-muted">
           Send your first 3 messages. Your coach has already drafted them for the people on your
           list{kit ? ", using your First Client Kit" : ""}.
         </p>
       </div>
-      <p className="mt-3 text-xs text-muted">
+      <p className="mt-3 text-xs text-ink-muted">
         Saved: your offer and your list. They are yours, and they grow every day.
       </p>
     </Card>
@@ -228,10 +228,10 @@ function QuestDone() {
     <Card className="my-0">
       <Pill tone="good">Done today</Pill>
       <h2 className="mt-2 font-display text-xl leading-snug">{meta.quest.title}</h2>
-      <p className="mt-1.5 text-muted">
+      <p className="mt-1.5 text-ink-muted">
         Day {state.saved.game.day} is done. Your next quest opens tomorrow.
       </p>
-      <p className="mt-3 text-sm text-muted">
+      <p className="mt-3 text-sm text-ink-muted">
         Log any reply, call or payment on the boss card below.
       </p>
     </Card>

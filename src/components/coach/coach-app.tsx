@@ -55,7 +55,7 @@ export function CoachApp() {
   if (saved === undefined || !isActive(saved)) {
     return (
       <main className="mx-auto flex w-full max-w-[440px] flex-1 items-center justify-center px-4">
-        <p className="text-muted">{saved === undefined ? "Loading your plan…" : "Taking you to the quiz…"}</p>
+        <p className="text-ink-muted">{saved === undefined ? "Loading your plan…" : "Taking you to the quiz…"}</p>
       </main>
     );
   }
@@ -81,16 +81,16 @@ function Shell() {
     <div className="mx-auto flex w-full max-w-[440px] flex-1 flex-col pb-20">
       <header className="flex items-center justify-between px-4 pt-4 pb-2">
         <p className="font-display text-lg">
-          Day {game.day} <span className="font-semibold text-muted">of 30</span>
+          Day {game.day} <span className="font-semibold text-ink-muted">of 30</span>
         </p>
         <div className="flex items-center gap-3 text-sm font-semibold tabular-nums">
           <span title="Streak" className="flex items-center gap-1">
-            <Icon name="flame" size={17} className="text-route" />
+            <Icon name="flame" size={17} className="text-brand" />
             {game.streak}
             <span className="sr-only"> day streak</span>
           </span>
           <span title="Streak Shields" className="flex items-center gap-1">
-            <Icon name="shield" size={17} className="text-muted" />
+            <Icon name="shield" size={17} className="text-ink-muted" />
             {game.shields}
             <span className="sr-only"> Streak Shields</span>
           </span>
@@ -98,7 +98,7 @@ function Shell() {
             type="button"
             onClick={() => actions.openSheet({ kind: "chat" })}
             aria-label="Ask Hugin"
-            className="-m-1 cursor-pointer rounded-full p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            className="-m-1 cursor-pointer rounded-full p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
           >
             <HuginAvatar size={34} />
           </button>
@@ -144,7 +144,7 @@ function TabBar() {
               type="button"
               onClick={() => actions.setTab(tab.key)}
               aria-current={state.tab === tab.key ? "page" : undefined}
-              className={`w-full cursor-pointer border-t-[3px] py-3.5 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-accent ${state.tab === tab.key ? "border-route text-ink" : "border-transparent text-muted hover:text-ink"}`}
+              className={`w-full cursor-pointer border-t-[3px] py-3.5 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-ink ${state.tab === tab.key ? "border-brand text-ink" : "border-transparent text-ink-muted hover:text-ink"}`}
             >
               {tab.label}
             </button>
@@ -203,7 +203,7 @@ function Sheet() {
   return (
     <ViewTransition enter="sheet-in" exit="sheet-out" default="none">
       <div className="fixed inset-0 z-40 flex items-end justify-center">
-        <div aria-hidden onClick={closeSheet} className="absolute inset-0 bg-black/40" />
+        <div aria-hidden onClick={closeSheet} className="absolute inset-0 bg-ink/50" />
         <div
           ref={dialogRef}
           role="dialog"

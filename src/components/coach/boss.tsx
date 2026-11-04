@@ -40,7 +40,7 @@ export function BossCard() {
         </div>
       ) : null}
       <h2 className="font-display text-lg leading-snug">{boss.name}</h2>
-      <p className="mt-1 text-sm text-muted">Proof: {lowerFirst(boss.proof)}.</p>
+      <p className="mt-1 text-sm text-ink-muted">Proof: {lowerFirst(boss.proof)}.</p>
       <Rewards
         parts={[`+${XP.boss} XP`, `${STATS[boss.stat].label} +${STAT_POINTS.boss}`]}
         note={`${title ? `Title ${TITLES[title].label}. ` : ""}Unlocks ${TOOLS[boss.unlocks].label.toLowerCase()}.`}
@@ -84,7 +84,7 @@ export function LogResultSheet({ initial }: { initial?: ResultType }) {
   return (
     <div>
       <h2 className="text-xl font-bold">Log a result</h2>
-      <p className="mt-1 text-sm text-muted">
+      <p className="mt-1 text-sm text-ink-muted">
         Real results earn the most: {XP.resultVerified} XP with a screenshot, {XP.resultSelfReported}{" "}
         XP without.
       </p>
@@ -99,7 +99,7 @@ export function LogResultSheet({ initial }: { initial?: ResultType }) {
           setResult(e.target.value as ResultType);
           setStep({ kind: "choose" });
         }}
-        className="mt-1.5 w-full rounded-md border-[1.5px] border-line bg-surface px-3 py-3 text-[15px] focus:border-accent focus:outline-none"
+        className="mt-1.5 w-full rounded-md border-[1.5px] border-line bg-surface px-3 py-3 text-[15px] focus:border-ink focus:outline-none"
       >
         {RESULT_TYPES.map((type) => (
           <option key={type} value={type}>
@@ -108,7 +108,7 @@ export function LogResultSheet({ initial }: { initial?: ResultType }) {
         ))}
       </select>
 
-      <div className="mt-4 rounded-md bg-warn-soft px-3.5 py-3 text-[13px] text-warn">
+      <div className="mt-4 rounded-md bg-warning-soft px-3.5 py-3 text-[13px] text-warning-ink">
         Crop or blur other people&apos;s names before you upload. We check the screenshot and keep
         only the verdict, never the image.
       </div>
@@ -119,7 +119,7 @@ export function LogResultSheet({ initial }: { initial?: ResultType }) {
 
       <div className="mt-4 flex flex-col gap-2">
         <label
-          className={`block w-full cursor-pointer rounded-md bg-accent px-[18px] py-[14px] text-center font-semibold text-accent-ink focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent ${step.kind === "checking" ? "pointer-events-none opacity-40" : ""}`}
+          className={`block w-full cursor-pointer rounded-md bg-brand px-[18px] py-[14px] text-center font-semibold text-on-bright focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ink ${step.kind === "checking" ? "pointer-events-none opacity-40" : ""}`}
         >
           {step.kind === "checking"
             ? "Hugin is checking…"

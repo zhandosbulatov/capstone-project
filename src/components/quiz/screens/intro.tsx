@@ -10,24 +10,24 @@ export function AdScreen() {
   const { actions } = useQuiz();
   return (
     <ScreenBody>
-      <p className="mt-1 text-sm text-muted">Instagram feed · sponsored</p>
+      <p className="mt-1 text-sm text-ink-muted">Instagram feed · sponsored</p>
       <article className="mt-1 overflow-hidden rounded-md border border-line bg-surface">
         <header className="flex items-center gap-2.5 px-3 py-2.5">
           <div
             aria-hidden
-            className="grid size-8 place-items-center rounded-full bg-accent text-[13px] font-bold text-accent-ink"
+            className="grid size-8 place-items-center rounded-full bg-brand text-[13px] font-bold text-on-bright"
           >
             AI
           </div>
           <div>
             <p className="text-[13.5px] font-bold">AI Business Coach</p>
-            <p className="text-[11.5px] text-muted">Sponsored</p>
+            <p className="text-[11.5px] text-ink-muted">Sponsored</p>
           </div>
         </header>
         <div className="flex aspect-square flex-col justify-center gap-2.5 border-y border-line bg-surface p-6">
-          <p className="font-display text-lg text-muted">Good at your job?</p>
+          <p className="font-display text-lg text-ink-muted">Good at your job?</p>
           <p className="font-display text-[28px] leading-tight">Someone will pay you for it.</p>
-          <p className="text-muted">
+          <p className="text-ink-muted">
             Your first paying client in 30 days — 20 minutes a day, without quitting your job.
           </p>
           <RouteStrip day={1} you="Day 1" end="First client" className="mt-4" />
@@ -36,12 +36,12 @@ export function AdScreen() {
           <p className="text-sm">
             <b>Find your first client</b>
             <br />
-            <span className="text-[11.5px] text-muted">Take the 1-minute quiz</span>
+            <span className="text-[11.5px] text-ink-muted">Take the 1-minute quiz</span>
           </p>
           <button
             type="button"
             onClick={actions.next}
-            className="cursor-pointer rounded-lg bg-line px-3 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-accent"
+            className="cursor-pointer rounded-lg bg-line px-3 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-ink"
           >
             Learn more
           </button>
@@ -57,7 +57,7 @@ export function LandingScreen() {
   const { state, actions } = useQuiz();
   return (
     <ScreenBody>
-      <p className="mt-2 text-sm font-semibold text-muted">6 quick questions · 1 minute</p>
+      <p className="mt-2 text-sm font-semibold text-ink-muted">6 quick questions · 1 minute</p>
       <ScreenTitle>Build your 30-day plan to a first paying client</ScreenTitle>
       <ScreenSub>Start with what you already do well. What do people pay you for at work?</ScreenSub>
       <OptionList label="Your skill">

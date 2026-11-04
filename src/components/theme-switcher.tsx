@@ -20,11 +20,11 @@ export function ThemeSwitcher({ className = "" }: { className?: string }) {
   return (
     <fieldset className={className}>
       <legend className="sr-only">Theme</legend>
-      <div className="inline-flex gap-1 rounded-md border border-line bg-bg p-1">
+      <div className="inline-flex gap-1 rounded-md border border-line bg-canvas p-1">
         {THEMES.map((value) => (
           <label
             key={value}
-            className="flex cursor-pointer items-center gap-1.5 rounded px-3 py-1.5 text-sm font-semibold text-muted transition-colors duration-150 hover:text-ink has-checked:bg-surface has-checked:text-ink has-checked:ring-1 has-checked:ring-bar has-focus-visible:outline-2 has-focus-visible:outline-offset-1 has-focus-visible:outline-accent"
+            className="flex cursor-pointer items-center gap-1.5 rounded px-3 py-1.5 text-sm font-semibold text-ink-muted transition-colors duration-150 hover:text-ink has-checked:bg-surface has-checked:text-ink has-checked:ring-1 has-checked:ring-line-strong has-focus-visible:outline-2 has-focus-visible:outline-offset-1 has-focus-visible:outline-ink"
           >
             <input
               type="radio"

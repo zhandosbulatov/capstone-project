@@ -39,8 +39,8 @@ export function RouteStrip({
       role="img"
       aria-label={`Day ${d} of ${DAYS}, on the way from ${start} to ${end}`}
     >
-      <line x1={PAD} y1={Y} x2={W - PAD} y2={Y} className="stroke-route-soft" strokeWidth={5} />
-      <line x1={PAD} y1={Y} x2={xd} y2={Y} className="stroke-route" strokeWidth={5} />
+      <line x1={PAD} y1={Y} x2={W - PAD} y2={Y} className="stroke-brand-soft" strokeWidth={5} />
+      <line x1={PAD} y1={Y} x2={xd} y2={Y} className="stroke-brand" strokeWidth={5} />
       {Array.from({ length: DAYS }, (_, i) => i + 1)
         .filter((n) => !INTERCHANGES.includes(n) && n !== d && n !== 1 && n !== DAYS)
         .map((n) => (
@@ -51,11 +51,11 @@ export function RouteStrip({
             y1={Y + 3}
             y2={Y + 8}
             strokeWidth={1}
-            className={n < d ? "stroke-ink" : "stroke-bar"}
+            className={n < d ? "stroke-ink" : "stroke-line-strong"}
           />
         ))}
-      <circle cx={PAD} cy={Y} r={4} className="fill-route" />
-      <circle cx={W - PAD} cy={Y} r={4} className="fill-route-soft" />
+      <circle cx={PAD} cy={Y} r={4} className="fill-brand" />
+      <circle cx={W - PAD} cy={Y} r={4} className="fill-brand-soft" />
       {INTERCHANGES.filter((n) => n !== d).map((n) => (
         <circle
           key={n}
@@ -70,7 +70,7 @@ export function RouteStrip({
       <circle cx={xd} cy={Y} r={3} className="fill-surface" />
       <g className="text-[11px]">
         {nearStart ? null : (
-          <text x={PAD - 6} y={42} className="fill-muted">
+          <text x={PAD - 6} y={42} className="fill-ink-muted">
             {start}
           </text>
         )}
@@ -83,7 +83,7 @@ export function RouteStrip({
           {you}
         </text>
         {nearEnd ? null : (
-          <text x={W - PAD + 6} y={42} textAnchor="end" className="fill-muted">
+          <text x={W - PAD + 6} y={42} textAnchor="end" className="fill-ink-muted">
             {end}
           </text>
         )}
@@ -125,13 +125,13 @@ export function Stop({
       {segment === "none" ? null : (
         <span
           aria-hidden
-          className={`absolute top-[11px] -bottom-[11px] left-[13px] w-[5px] ${segment === "travelled" ? "bg-route" : "bg-route-soft"}`}
+          className={`absolute top-[11px] -bottom-[11px] left-[13px] w-[5px] ${segment === "travelled" ? "bg-brand" : "bg-brand-soft"}`}
         />
       )}
       <span aria-hidden className={`absolute z-10 rounded-full ${MARKERS[kind]}`}>
         {kind === "bossDone" ? <Icon name="check" size={12} strokeWidth={3} /> : null}
       </span>
-      <p className="text-[13px] leading-[18px] font-semibold text-muted">{label}</p>
+      <p className="text-[13px] leading-[18px] font-semibold text-ink-muted">{label}</p>
       {children}
     </li>
   );

@@ -22,7 +22,7 @@ export function XpBar({ into, needed, level }: { into: number; needed: number; l
   const pct = Math.min(100, Math.round((into / needed) * 100));
   return (
     <div
-      className="h-1.5 overflow-hidden rounded-full bg-route-soft"
+      className="h-1.5 overflow-hidden rounded-full bg-brand-soft"
       role="progressbar"
       aria-label={`XP to level ${level + 1}`}
       aria-valuemin={0}
@@ -30,7 +30,7 @@ export function XpBar({ into, needed, level }: { into: number; needed: number; l
       aria-valuenow={into}
     >
       <div
-        className="h-full origin-left rounded-full bg-route transition-transform duration-700 ease-out motion-reduce:transition-none"
+        className="h-full origin-left rounded-full bg-brand transition-transform duration-700 ease-out motion-reduce:transition-none"
         style={{ transform: `scaleX(${pct / 100})` }}
       />
     </div>
@@ -51,12 +51,12 @@ export function StatusWindow() {
           <ViewTransition key={meta.title} enter="bump" exit="none" default="none">
             <span className="inline-block">{TITLES[meta.title].label}</span>
           </ViewTransition>
-          <span className="text-muted"> · </span>
+          <span className="text-ink-muted"> · </span>
           <span className="whitespace-nowrap">
             Level <Ticker value={level} />
           </span>
         </h2>
-        <p className="text-[13px] whitespace-nowrap text-muted tabular-nums">
+        <p className="text-[13px] whitespace-nowrap text-ink-muted tabular-nums">
           {into} / {needed} XP
         </p>
       </div>
@@ -71,7 +71,7 @@ export function StatusWindow() {
             title={STATS[stat].meaning}
             className={`py-2 ${i < 3 ? "border-b border-line" : ""}`}
           >
-            <dt className="truncate text-[13px] text-muted">{STATS[stat].label}</dt>
+            <dt className="truncate text-[13px] text-ink-muted">{STATS[stat].label}</dt>
             <dd className="font-display text-lg leading-tight">
               <Ticker value={game.stats[stat]} />
             </dd>

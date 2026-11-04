@@ -22,7 +22,7 @@ function Cta({ children = "Take the 1-minute quiz" }: { children?: ReactNode }) 
   return (
     <Link
       href={QUIZ}
-      className="inline-flex h-13 items-center justify-center rounded-md bg-accent px-7 text-base font-semibold text-accent-ink transition-[opacity,transform] duration-150 hover:opacity-92 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:translate-y-px"
+      className="inline-flex h-13 items-center justify-center rounded-md bg-brand px-7 text-base font-semibold text-on-bright transition-[opacity,transform] duration-150 hover:opacity-92 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink active:translate-y-px"
     >
       {children}
     </Link>
@@ -45,7 +45,7 @@ function Section({
       <h2 id={id} className="font-display text-[31px] leading-[1.15] sm:text-[39px]">
         {title}
       </h2>
-      {intro ? <p className="mt-3 max-w-2xl text-lg text-muted">{intro}</p> : null}
+      {intro ? <p className="mt-3 max-w-2xl text-lg text-ink-muted">{intro}</p> : null}
       <div className="mt-8">{children}</div>
     </section>
   );
@@ -113,14 +113,14 @@ export default function Home() {
       <header className="flex items-center justify-between py-5">
         <Link
           href="/"
-          className="flex items-center gap-2 rounded-lg font-bold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+          className="flex items-center gap-2 rounded-lg font-bold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
         >
           <HuginAvatar size={30} />
           AI Business Coach
         </Link>
         <Link
           href={QUIZ}
-          className="rounded-md border-[1.5px] border-bar px-4 py-2 text-sm font-semibold hover:border-ink focus-visible:outline-2 focus-visible:outline-accent"
+          className="rounded-md border-[1.5px] border-line-strong px-4 py-2 text-sm font-semibold hover:border-ink focus-visible:outline-2 focus-visible:outline-ink"
         >
           Take the quiz
         </Link>
@@ -130,16 +130,16 @@ export default function Home() {
         <section className="grid items-center gap-12 pt-8 pb-16 sm:pt-14 lg:grid-cols-[1.1fr_1fr]">
           <div>
             <h1 className="font-display text-[44px] leading-[1.05] sm:text-[61px]">
-              <span className="block text-muted">Good at your job?</span>
+              <span className="block text-ink-muted">Good at your job?</span>
               Someone will pay you for it.
             </h1>
-            <p className="mt-5 max-w-xl text-xl text-muted">
+            <p className="mt-5 max-w-xl text-xl text-ink-muted">
               Get your first paying client in 30 days. 20 minutes a day, without quitting your
               job.
             </p>
             <div className="mt-8 flex flex-col items-start gap-3">
               <Cta />
-              <p className="text-sm text-muted">
+              <p className="text-sm text-ink-muted">
                 6 questions. You see your service, starting price and 30-day plan before you pay.
               </p>
             </div>
@@ -155,8 +155,8 @@ export default function Home() {
           <ul className="grid gap-x-8 gap-y-6 sm:grid-cols-3">
             {INSTEAD.map((item) => (
               <li key={item.title} className="border-t-[1.5px] border-ink pt-3">
-                <p className="text-[13px] font-semibold text-muted">Instead of</p>
-                <p className="mt-0.5 font-display text-xl text-muted line-through decoration-route decoration-2">
+                <p className="text-[13px] font-semibold text-ink-muted">Instead of</p>
+                <p className="mt-0.5 font-display text-xl text-ink-muted line-through decoration-brand decoration-2">
                   {item.title}
                 </p>
                 <p className="mt-1.5">{item.body}</p>
@@ -182,14 +182,14 @@ export default function Home() {
                   label={`Week ${boss.week} · day ${boss.week * 7}`}
                 >
                   <p className="font-display text-lg">{boss.name}</p>
-                  <p className="mt-1 text-muted">{WEEKS[key]}</p>
-                  <p className="mt-1.5 text-sm text-muted">Proof: {lowerFirst(boss.proof)}</p>
+                  <p className="mt-1 text-ink-muted">{WEEKS[key]}</p>
+                  <p className="mt-1.5 text-sm text-ink-muted">Proof: {lowerFirst(boss.proof)}</p>
                 </Stop>
               );
             })}
           </Rail>
           <ol className="relative mt-10 hidden grid-cols-4 gap-6 sm:grid">
-            <span aria-hidden className="absolute top-[8.5px] right-0 left-0 h-[5px] bg-route-soft" />
+            <span aria-hidden className="absolute top-[8.5px] right-0 left-0 h-[5px] bg-brand-soft" />
             {BOSS_KEYS.map((key) => {
               const boss = BOSSES[key];
               return (
@@ -198,12 +198,12 @@ export default function Home() {
                     aria-hidden
                     className="absolute top-0 left-0 size-[22px] rounded-full border-4 border-ink bg-surface"
                   />
-                  <p className="text-[13px] font-semibold text-muted">
+                  <p className="text-[13px] font-semibold text-ink-muted">
                     Week {boss.week} · day {boss.week * 7}
                   </p>
                   <p className="mt-0.5 font-display text-lg">{boss.name}</p>
-                  <p className="mt-1.5 text-muted">{WEEKS[key]}</p>
-                  <p className="mt-2 text-sm text-muted">Proof: {lowerFirst(boss.proof)}</p>
+                  <p className="mt-1.5 text-ink-muted">{WEEKS[key]}</p>
+                  <p className="mt-2 text-sm text-ink-muted">Proof: {lowerFirst(boss.proof)}</p>
                 </li>
               );
             })}
@@ -225,7 +225,7 @@ export default function Home() {
               </li>
             ))}
           </ul>
-          <p className="mt-4 text-sm text-muted">
+          <p className="mt-4 text-sm text-ink-muted">
             Calm, dry, short. Hugin never shouts and never promises you money.
           </p>
         </Section>
@@ -257,7 +257,7 @@ export default function Home() {
                 {STAT_KEYS.map((stat) => (
                   <div key={stat} className="border-b border-line py-3">
                     <dt className="font-semibold">{STATS[stat].label}</dt>
-                    <dd className="text-sm text-muted">{STATS[stat].meaning}</dd>
+                    <dd className="text-sm text-ink-muted">{STATS[stat].meaning}</dd>
                   </div>
                 ))}
               </dl>
@@ -277,21 +277,21 @@ export default function Home() {
               return (
                 <li
                   key={key}
-                  className={`rounded-md border p-4 ${plan.tag ? "border-accent bg-accent-soft" : "border-line bg-surface"}`}
+                  className={`rounded-md border p-4 ${plan.tag ? "border-ink bg-sun-soft" : "border-line bg-surface"}`}
                 >
                   <p className="flex items-center justify-between gap-2 font-bold">
                     {plan.name}
                     {plan.tag ? (
-                      <span className="rounded bg-accent px-2 py-0.5 text-xs font-semibold text-accent-ink">
+                      <span className="rounded bg-brand px-2 py-0.5 text-xs font-semibold text-on-bright">
                         {plan.tag}
                       </span>
                     ) : null}
                   </p>
                   <p className="mt-1">
                     <b>{formatUsd(plan.introUsd)}</b> for the first {plan.weeks} weeks{" "}
-                    <span className="text-sm text-muted">({formatUsd(introPerDay(plan))} a day)</span>
+                    <span className="text-sm text-ink-muted">({formatUsd(introPerDay(plan))} a day)</span>
                   </p>
-                  <p className="text-sm text-muted">
+                  <p className="text-sm text-ink-muted">
                     Then {formatUsd(plan.fullUsd)} every {plan.weeks} weeks
                   </p>
                 </li>
@@ -301,7 +301,7 @@ export default function Home() {
           <div className="hidden overflow-x-auto rounded-md border border-line bg-surface sm:block">
             <table className="w-full min-w-[520px] text-left">
               <caption className="sr-only">Plans and prices</caption>
-              <thead className="text-sm text-muted">
+              <thead className="text-sm text-ink-muted">
                 <tr className="border-b border-line">
                   <th scope="col" className="px-5 py-3 font-semibold">Plan</th>
                   <th scope="col" className="px-5 py-3 font-semibold">First period</th>
@@ -313,18 +313,18 @@ export default function Home() {
                 {PLAN_KEYS.map((key) => {
                   const plan = PLANS[key];
                   return (
-                    <tr key={key} className={`border-b border-line last:border-b-0 ${plan.tag ? "bg-accent-soft" : ""}`}>
+                    <tr key={key} className={`border-b border-line last:border-b-0 ${plan.tag ? "bg-sun-soft" : ""}`}>
                       <th scope="row" className="px-5 py-4 font-bold">
                         {plan.name}
                         {plan.tag ? (
-                          <span className="ml-2 rounded bg-accent px-2 py-0.5 text-xs font-semibold text-accent-ink">
+                          <span className="ml-2 rounded bg-brand px-2 py-0.5 text-xs font-semibold text-on-bright">
                             {plan.tag}
                           </span>
                         ) : null}
                       </th>
                       <td className="px-5 py-4">
                         <b>{formatUsd(plan.introUsd)}</b>{" "}
-                        <s className="text-sm text-muted">{formatUsd(plan.fullUsd)}</s>
+                        <s className="text-sm text-ink-muted">{formatUsd(plan.fullUsd)}</s>
                       </td>
                       <td className="px-5 py-4">
                         {formatUsd(plan.fullUsd)} every {plan.weeks} weeks
@@ -336,7 +336,7 @@ export default function Home() {
               </tbody>
             </table>
           </div>
-          <ul className="mt-5 flex flex-col gap-1.5 text-muted">
+          <ul className="mt-5 flex flex-col gap-1.5 text-ink-muted">
             <li>We email you 3 days before any renewal.</li>
             <li>Cancel in Settings in two taps.</li>
             <li>14-day money-back guarantee if you finish the week 1 quests.</li>
@@ -351,13 +351,13 @@ export default function Home() {
           <div className="flex flex-col divide-y divide-line rounded-md border border-line bg-surface">
             {FAQ.map((item) => (
               <details key={item.q} className="group px-5 py-4">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold focus-visible:outline-2 focus-visible:outline-accent">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold focus-visible:outline-2 focus-visible:outline-ink">
                   {item.q}
-                  <span aria-hidden className="text-muted transition-transform group-open:rotate-45">
+                  <span aria-hidden className="text-ink-muted transition-transform group-open:rotate-45">
                     +
                   </span>
                 </summary>
-                <p className="mt-2 text-muted">{item.a}</p>
+                <p className="mt-2 text-ink-muted">{item.a}</p>
               </details>
             ))}
           </div>
@@ -371,7 +371,7 @@ export default function Home() {
             <h2 id="start" className="font-display text-[31px] leading-[1.15] sm:text-[39px]">
               Your plan takes one minute
             </h2>
-            <p className="mt-3 max-w-lg text-lg text-muted">
+            <p className="mt-3 max-w-lg text-lg text-ink-muted">
               Answer 6 questions. See your service, your starting price and your first buyers.
             </p>
             <div className="mt-7">
@@ -382,7 +382,7 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="flex flex-wrap items-center justify-between gap-6 border-t border-line py-8 text-sm text-muted">
+      <footer className="flex flex-wrap items-center justify-between gap-6 border-t border-line py-8 text-sm text-ink-muted">
         <div>
           <p>AI Business Coach · Zimran IT School capstone, Team 4.</p>
           <p className="mt-1">Demo: no payments are taken and no card details are collected.</p>

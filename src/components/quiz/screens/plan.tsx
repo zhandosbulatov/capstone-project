@@ -20,7 +20,7 @@ export function TeaserScreen() {
       <p className="mb-3">
         Small businesses already buy it from freelancers every day: <b>{skill.deliverable}</b>.
       </p>
-      <p className="text-muted">{PAID_BEFORE[meta.answers.paid].teaser}</p>
+      <p className="text-ink-muted">{PAID_BEFORE[meta.answers.paid].teaser}</p>
       <Cta>
         <Button onClick={actions.next}>Continue</Button>
       </Cta>
@@ -58,7 +58,7 @@ export function LoaderScreen() {
       <ScreenTitle>Building your plan…</ScreenTitle>
       <ScreenSub>{blockerFix(meta.answers)}</ScreenSub>
       <div
-        className="my-3 h-1.5 overflow-hidden rounded-full bg-route-soft"
+        className="my-3 h-1.5 overflow-hidden rounded-full bg-brand-soft"
         role="progressbar"
         aria-label="Building your plan"
         aria-valuemin={0}
@@ -66,7 +66,7 @@ export function LoaderScreen() {
         aria-valuenow={pct}
       >
         <div
-          className="h-full origin-left bg-route transition-transform duration-75 ease-linear motion-reduce:transition-none"
+          className="h-full origin-left bg-brand transition-transform duration-75 ease-linear motion-reduce:transition-none"
           style={{ transform: `scaleX(${pct / 100})` }}
         />
       </div>
@@ -76,7 +76,7 @@ export function LoaderScreen() {
           return (
             <li
               key={step}
-              className={`flex items-center gap-2.5 py-2.5 transition-colors duration-300 ${done ? "text-ink" : "text-muted"}`}
+              className={`flex items-center gap-2.5 py-2.5 transition-colors duration-300 ${done ? "text-ink" : "text-ink-muted"}`}
             >
               <span
                 aria-hidden
@@ -106,7 +106,7 @@ export function PlanScreen() {
   const { plan } = meta;
   return (
     <ScreenBody>
-      <p className="mt-2 text-sm font-semibold text-good">Your plan is ready</p>
+      <p className="mt-2 text-sm font-semibold text-success-ink">Your plan is ready</p>
       <ScreenTitle>{planHeadline(plan)}</ScreenTitle>
       <Card>
         <dl className="flex flex-col gap-3">
@@ -133,7 +133,7 @@ export function PlanScreen() {
         </dl>
       </Card>
       <section aria-labelledby="route" className="mt-2">
-        <h2 id="route" className="text-[13px] font-semibold text-muted">
+        <h2 id="route" className="text-[13px] font-semibold text-ink-muted">
           Your route · 30 days · {plan.minutes} min a day
         </h2>
         <RouteStrip day={1} you="Today" end="First client" className="mt-2" />
@@ -146,7 +146,7 @@ export function PlanScreen() {
               label={`Week ${week.week} · day ${week.week * 7}`}
             >
               <p className="font-display text-[17px] leading-snug">{week.title}</p>
-              <p className="text-sm text-muted">{week.text}</p>
+              <p className="text-sm text-ink-muted">{week.text}</p>
             </Stop>
           ))}
         </Rail>
@@ -183,7 +183,7 @@ export function EmailScreen() {
         onKeyDown={(e) => {
           if (e.key === "Enter" && valid) actions.next();
         }}
-        className="w-full rounded-md border-[1.5px] border-line bg-surface px-3.5 py-[13px] text-[15px] focus:border-accent focus:outline-none"
+        className="w-full rounded-md border-[1.5px] border-line bg-surface px-3.5 py-[13px] text-[15px] focus:border-ink focus:outline-none"
       />
       <Note>Demo: your email stays in this browser and is never sent anywhere.</Note>
       <Cta>
@@ -191,7 +191,7 @@ export function EmailScreen() {
           Continue
         </Button>
         {valid ? null : (
-          <p id="email-hint" className="text-center text-xs text-muted">
+          <p id="email-hint" className="text-center text-xs text-ink-muted">
             Enter an email like name@example.com to continue.
           </p>
         )}

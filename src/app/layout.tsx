@@ -1,19 +1,19 @@
 import type { Metadata, Viewport } from "next";
-import { Atkinson_Hyperlegible_Next, Familjen_Grotesk } from "next/font/google";
+import { Figtree, Young_Serif } from "next/font/google";
 import { ThemeSync } from "@/components/theme-switcher";
 import { THEME_SCRIPT } from "@/lib/theme";
 import "./globals.css";
 
-// Body: built for legibility, with signage roots. Display: a plain grotesk for titles.
-const atkinson = Atkinson_Hyperlegible_Next({
-  variable: "--font-atkinson",
+// Body: Figtree. Display: Young Serif (one weight). See DESIGN.md.
+const figtree = Figtree({
+  variable: "--font-figtree",
   subsets: ["latin"],
 });
 
-const familjen = Familjen_Grotesk({
-  variable: "--font-familjen",
+const youngSerif = Young_Serif({
+  variable: "--font-young-serif",
   subsets: ["latin"],
-  weight: ["600", "700"],
+  weight: "400",
 });
 
 // Vercel sets the production domain; locally the dev server is the base for absolute OG URLs.
@@ -39,8 +39,8 @@ export const metadata: Metadata = {
 // Browser bar colour matches the page background in each theme.
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f9fafc" },
-    { media: "(prefers-color-scheme: dark)", color: "#121722" },
+    { media: "(prefers-color-scheme: light)", color: "#F9F6F3" },
+    { media: "(prefers-color-scheme: dark)", color: "#15111B" },
   ],
 };
 
@@ -49,7 +49,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     // suppressHydrationWarning: the head script may add data-theme before React hydrates.
     <html
       lang="en"
-      className={`${atkinson.variable} ${familjen.variable} h-full antialiased`}
+      className={`${figtree.variable} ${youngSerif.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>
@@ -59,7 +59,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <ThemeSync />
         <a
           href="#main"
-          className="sr-only rounded-lg bg-ink px-4 py-2 font-semibold text-bg focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50"
+          className="sr-only rounded-lg bg-ink px-4 py-2 font-semibold text-canvas focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50"
         >
           Skip to content
         </a>

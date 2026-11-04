@@ -45,7 +45,7 @@ function OfferTimer({ endsAt }: { endsAt: number | null }) {
   // Clamp: the first tick can land a few ms before the end time is set.
   const left = endsAt && now ? Math.min(OFFER_MS, endsAt - now) : OFFER_MS;
   return (
-    <div className="flex items-center justify-between gap-2.5 rounded-md bg-warn-soft px-3.5 py-2.5 text-[13.5px] font-semibold text-warn">
+    <div className="flex items-center justify-between gap-2.5 rounded-md bg-warning-soft px-3.5 py-2.5 text-[13.5px] font-semibold text-warning-ink">
       <span>{left > 0 ? "50% off your first period is reserved for" : "Your 50% off is still applied"}</span>
       <b className="text-base tabular-nums" aria-live="off">
         {formatCountdown(left)}
@@ -76,17 +76,17 @@ export function PaywallScreen() {
         <div className="rounded-md border border-line bg-surface px-3 py-2.5">
           <Label>Now</Label>
           <b>Salary only</b>
-          <p className="text-[11.5px] text-muted">{skill.label} only at work</p>
+          <p className="text-[11.5px] text-ink-muted">{skill.label} only at work</p>
         </div>
-        <div className="rounded-md border border-good bg-good-soft px-3 py-2.5">
+        <div className="rounded-md border border-success bg-success-soft px-3 py-2.5">
           <Label>By {meta.plan.clientByLabel}</Label>
           <b>First client</b>
-          <p className="text-[11.5px] text-muted">
+          <p className="text-[11.5px] text-ink-muted">
             {skill.service} at {formatUsd(meta.plan.price)}
           </p>
         </div>
       </div>
-      <p className="text-[12px] text-muted">
+      <p className="text-[12px] text-ink-muted">
         Your 6-month goal: {GOALS[meta.answers.goal].label.toLowerCase()}.
       </p>
 
@@ -100,7 +100,7 @@ export function PaywallScreen() {
           return (
             <label
               key={key}
-              className={`relative my-2 grid w-full cursor-pointer grid-cols-[22px_1fr_auto] items-center gap-2.5 rounded-md border-[1.5px] p-3.5 text-left has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent ${checked ? "border-accent bg-accent-soft" : "border-line bg-surface"}`}
+              className={`relative my-2 grid w-full cursor-pointer grid-cols-[22px_1fr_auto] items-center gap-2.5 rounded-md border-[1.5px] p-3.5 text-left has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-ink ${checked ? "border-ink bg-sun-soft" : "border-line bg-surface"}`}
             >
               <input
                 type="radio"
@@ -111,18 +111,18 @@ export function PaywallScreen() {
                 className="sr-only"
               />
               {plan.tag ? (
-                <span className="absolute -top-2.5 right-3 rounded bg-accent px-2 py-0.5 text-xs font-semibold text-accent-ink">
+                <span className="absolute -top-2.5 right-3 rounded bg-brand px-2 py-0.5 text-xs font-semibold text-on-bright">
                   {plan.tag}
                 </span>
               ) : null}
               <span
                 aria-hidden
-                className={`size-5 rounded-full ${checked ? "border-[6px] border-accent" : "border-2 border-bar"}`}
+                className={`size-5 rounded-full ${checked ? "border-[6px] border-ink" : "border-2 border-line-strong"}`}
               />
               <span>
                 <span className="font-bold">{plan.name}</span>
                 <br />
-                <s className="text-[12.5px] text-muted">
+                <s className="text-[12.5px] text-ink-muted">
                   <span className="sr-only">Full price </span>
                   {formatUsd(plan.fullUsd)}
                 </s>{" "}
@@ -133,7 +133,7 @@ export function PaywallScreen() {
               </span>
               <span className="text-right">
                 <b className="block text-[17px]">{formatUsd(introPerDay(plan))}</b>
-                <span className="text-[11.5px] text-muted">per day</span>
+                <span className="text-[11.5px] text-ink-muted">per day</span>
               </span>
             </label>
           );
@@ -155,7 +155,7 @@ export function PaywallScreen() {
               key={when}
               className="grid grid-cols-[64px_1fr] gap-2.5 border-b border-dashed border-line py-1.5 text-[13.5px] last:border-b-0"
             >
-              <b className="text-[13px] font-semibold text-muted">{when}</b>
+              <b className="text-[13px] font-semibold text-ink-muted">{when}</b>
               <span>{what}</span>
             </li>
           ))}
@@ -167,7 +167,7 @@ export function PaywallScreen() {
           type="checkbox"
           checked={state.consent}
           onChange={(e) => actions.setConsent(e.target.checked)}
-          className="mt-px size-5 flex-none accent-accent"
+          className="mt-px size-5 flex-none accent-brand"
         />
         <span>
           I agree that my plan renews automatically at{" "}
@@ -178,7 +178,7 @@ export function PaywallScreen() {
         </span>
       </label>
 
-      <p className="my-2.5 border-l-[3px] border-line pl-3 text-[13.5px] text-muted">
+      <p className="my-2.5 border-l-[3px] border-line pl-3 text-[13.5px] text-ink-muted">
         Reviews from verified users will appear here.
       </p>
       <Note>14-day money-back guarantee if you finish the week 1 quests.</Note>
@@ -187,7 +187,7 @@ export function PaywallScreen() {
         <Button onClick={actions.next} disabled={!state.consent} aria-describedby="pay-hint">
           Get my plan · {formatUsd(selected.introUsd)}
         </Button>
-        <p id="pay-hint" className="text-center text-xs text-muted">
+        <p id="pay-hint" className="text-center text-xs text-ink-muted">
           {state.consent
             ? "Demo: no payment is taken."
             : "Tick the renewal box above to continue."}
@@ -224,7 +224,7 @@ export function CheckoutScreen() {
           <span>{plan.name} · first period</span>
           <b>{formatUsd(plan.introUsd)}</b>
         </div>
-        <p className="mt-1.5 text-[11.5px] text-muted">
+        <p className="mt-1.5 text-[11.5px] text-ink-muted">
           Then {formatUsd(plan.fullUsd)} every {weeksOf(plan)}. Reminder email 3 days before. Cancel
           anytime.
         </p>
@@ -263,7 +263,7 @@ export function UpsellScreen() {
       <Card className="flex items-center justify-between gap-3">
         <span>
           <b>{formatUsd(FIRST_CLIENT_KIT.priceUsd)}</b>{" "}
-          <span className="text-sm text-muted">one-off, not a subscription</span>
+          <span className="text-sm text-ink-muted">one-off, not a subscription</span>
         </span>
         <Pill tone="warn">Only now</Pill>
       </Card>

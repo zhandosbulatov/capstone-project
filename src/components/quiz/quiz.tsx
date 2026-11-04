@@ -92,7 +92,7 @@ function DemoMap() {
   if (!demo) return null;
   return (
     <nav aria-label="Demo screen map" className="border-t border-dashed border-line px-4 py-3">
-      <p className="mb-2 text-[11px] font-bold tracking-[0.05em] text-muted uppercase">
+      <p className="mb-2 text-[11px] font-bold tracking-[0.05em] text-ink-muted uppercase">
         Demo · jump to a screen
       </p>
       <div className="flex flex-wrap gap-1.5">
@@ -102,7 +102,7 @@ function DemoMap() {
             type="button"
             onClick={() => actions.jumpTo(id)}
             aria-current={id === state.screen ? "step" : undefined}
-            className={`cursor-pointer rounded-full border px-2.5 py-1 text-xs ${id === state.screen ? "border-accent font-semibold text-accent" : "border-line text-muted"}`}
+            className={`cursor-pointer rounded-full border px-2.5 py-1 text-xs ${id === state.screen ? "border-ink font-semibold text-brand-ink" : "border-line text-ink-muted"}`}
           >
             {i + 1}. {SCREENS[id].name}
           </button>
