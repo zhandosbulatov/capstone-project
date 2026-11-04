@@ -1,8 +1,12 @@
-// A static picture of the real app for the landing hero: the status window and a day-2 quest.
-// Same layout and tokens as /app, filled with sample progress.
+// A static picture of the real app for the landing page: your card, progress and today's quest. Built from the same components and tokens as /app, with sample data.
 
-import { STAT_KEYS, STATS } from "@/lib/game";
 import { HuginAvatar } from "@/components/coach/hugin";
+import { XpBar } from "@/components/xp-bar";
+import { Icon } from "@/components/icons";
+import { BusinessCard } from "@/components/business-card";
+import { Rail, Stop } from "@/components/route";
+import { Rewards } from "@/components/ui";
+import { STAT_KEYS, STATS } from "@/lib/game";
 
 const SAMPLE_STATS: Record<(typeof STAT_KEYS)[number], number> = {
   clarity: 3,
@@ -16,57 +20,60 @@ const SAMPLE_STATS: Record<(typeof STAT_KEYS)[number], number> = {
 export function AppPreview() {
   return (
     <div
-      aria-label="A preview of the app: your title, level, stats and today's quest"
+      aria-label="A preview of the app: your card with service, price, title and level, your stats and today's quest"
       role="img"
-      className="mx-auto w-full max-w-[380px] rounded-[28px] border border-line bg-bg p-3 shadow-[0_24px_60px_-30px_rgb(0_0_0/0.35)]"
+      className="mx-auto w-full max-w-[380px] rounded-md border border-line-strong bg-canvas p-3"
     >
       <div className="flex items-center justify-between px-1 pt-1 pb-2 text-sm">
-        <p className="font-bold">
-          Day 8 <span className="font-normal text-muted">of 30</span>
+        <p className="font-display text-base">
+          Day 8 <span className="font-semibold text-ink-muted">of 30</span>
         </p>
-        <p className="flex items-center gap-2.5 font-semibold">
-          <span>🔥 7</span>
-          <span>🛡 1</span>
+        <p className="flex items-center gap-2.5 font-semibold tabular-nums">
+          <span className="flex items-center gap-1">
+            <Icon name="flame" size={15} className="text-brand" />7
+          </span>
+          <span className="flex items-center gap-1">
+            <Icon name="shield" size={15} className="text-ink-muted" />1
+          </span>
           <HuginAvatar size={26} />
         </p>
       </div>
 
-      <div className="rounded-2xl border border-line bg-surface p-3.5">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-[10px] font-bold tracking-[0.06em] text-muted uppercase">Title</p>
-            <p className="font-display text-xl leading-tight">Side Starter</p>
-          </div>
-          <div className="text-right">
-            <p className="text-[10px] font-bold tracking-[0.06em] text-muted uppercase">Level</p>
-            <p className="font-display text-xl leading-tight">3</p>
-          </div>
+      <BusinessCard
+        service="Brand starter kit for local businesses"
+        price="$450 per project"
+        title="Side Starter · Level 3"
+      />
+      <div className="mt-2.5 rounded-md border border-line bg-surface px-3.5 pt-2.5 pb-1">
+        <div className="flex items-baseline justify-between">
+          <p className="type-label">Progress to level 4</p>
+          <p className="text-xs text-ink-muted tabular-nums">80 / 100 XP</p>
         </div>
-        <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-line">
-          <div className="h-full w-[80%] rounded-full bg-accent" />
+        <div className="mt-1.5">
+          <XpBar into={80} needed={100} level={3} />
         </div>
-        <p className="mt-1 text-[11px] text-muted">80 / 100 XP</p>
-        <div className="mt-2.5 grid grid-cols-3 gap-1.5">
-          {STAT_KEYS.map((stat) => (
-            <div key={stat} className="rounded-lg bg-bg px-2 py-1.5">
-              <p className="truncate text-[10px] text-muted">{STATS[stat].label}</p>
-              <p className="text-base leading-tight font-semibold">{SAMPLE_STATS[stat]}</p>
+        <dl className="mt-2.5 grid grid-cols-3 border-t border-line">
+          {STAT_KEYS.map((stat, i) => (
+            <div key={stat} className={`py-1.5 ${i < 3 ? "border-b border-line" : ""}`}>
+              <dt className="truncate text-xs text-ink-muted">{STATS[stat].label}</dt>
+              <dd className="text-base leading-tight font-bold tabular-nums">{SAMPLE_STATS[stat]}</dd>
             </div>
           ))}
-        </div>
+        </dl>
       </div>
 
-      <div className="mt-2.5 rounded-2xl border border-line bg-surface p-3.5">
-        <span className="inline-block rounded-full bg-accent-soft px-2 py-[3px] text-[10px] font-bold tracking-[0.04em] text-accent uppercase">
-          Today’s quest · 20 min
-        </span>
-        <p className="mt-1.5 font-bold">Offer a 15-minute call to 3 people</p>
-        <p className="mt-0.5 text-[11px] text-muted">Reward: +10 XP · Reach +1 · Persuasion +1</p>
-        <p className="mt-2.5 flex items-start gap-2 text-[13px] text-muted">
-          <HuginAvatar size={22} />
-          <span className="pt-0.5">Fifteen minutes gets a yes. An hour gets a maybe.</span>
-        </p>
-      </div>
+      <Rail className="mt-3">
+        <Stop kind="now" segment="none" label="Day 8 · today · 20 min">
+          <div className="mt-1.5 rounded-md border border-line bg-surface p-3">
+            <p className="font-display text-lg leading-snug">Offer a 15-minute call to 3 people</p>
+            <Rewards parts={["+10 XP", "Reach +1", "Persuasion +1"]} />
+            <p className="mt-2.5 flex items-start gap-2 text-label text-ink-muted">
+              <HuginAvatar size={22} />
+              <span className="pt-0.5">Fifteen minutes gets a yes. An hour gets a maybe.</span>
+            </p>
+          </div>
+        </Stop>
+      </Rail>
     </div>
   );
 }

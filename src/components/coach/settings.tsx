@@ -4,6 +4,7 @@ import { useState } from "react";
 import { formatMonthDay } from "@/lib/plan";
 import { formatUsd } from "@/lib/pricing";
 import { SKILLS } from "@/lib/quiz-data";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Button, Card, Label } from "@/components/ui";
 import { useCoach } from "./app-context";
 
@@ -20,7 +21,7 @@ export function Settings() {
       <Card className="my-0">
         <Label>Your plan</Label>
         <p className="mt-1 font-semibold">{plan.name}</p>
-        <p className="text-sm text-muted">
+        <p className="text-sm text-ink-muted">
           {saved.cancelled
             ? `Cancelled. You keep access until ${formatMonthDay(meta.renewsOn)}. Nothing else will be charged.`
             : `Renews on ${formatMonthDay(meta.renewsOn)} at ${formatUsd(plan.fullUsd)} every ${plan.weeks} weeks. We email you 3 days before.`}
@@ -36,39 +37,45 @@ export function Settings() {
             </Button>
           )}
         </div>
-        <p className="mt-2 text-xs text-muted">Demo: no payment was taken and none will be.</p>
+        <p className="mt-2 text-xs text-ink-muted">Demo: no payment was taken and none will be.</p>
       </Card>
 
       <Card className="my-0">
         <Label>About you</Label>
         <dl className="mt-1 flex flex-col gap-1 text-sm">
           <div className="flex justify-between gap-3">
-            <dt className="text-muted">Service</dt>
+            <dt className="text-ink-muted">Service</dt>
             <dd className="text-right">{SKILLS[meta.answers.skill].service}</dd>
           </div>
           <div className="flex justify-between gap-3">
-            <dt className="text-muted">Starting price</dt>
+            <dt className="text-ink-muted">Starting price</dt>
             <dd>{meta.plan.priceLabel}</dd>
           </div>
           <div className="flex justify-between gap-3">
-            <dt className="text-muted">Time a day</dt>
+            <dt className="text-ink-muted">Time a day</dt>
             <dd>{meta.answers.time} min</dd>
           </div>
           {saved.email ? (
             <div className="flex justify-between gap-3">
-              <dt className="text-muted">Email</dt>
+              <dt className="text-ink-muted">Email</dt>
               <dd className="truncate">{saved.email}</dd>
             </div>
           ) : null}
         </dl>
-        <p className="mt-2 text-xs text-muted">
+        <p className="mt-2 text-xs text-ink-muted">
           Your answers and progress are saved in this browser only.
         </p>
       </Card>
 
       <Card className="my-0">
+        <Label>Appearance</Label>
+        <ThemeSwitcher className="mt-2" />
+        <p className="mt-2 text-xs text-ink-muted">System follows your device&apos;s light or dark setting.</p>
+      </Card>
+
+      <Card className="my-0">
         <Label>Start over</Label>
-        <p className="mt-1 text-sm text-muted">
+        <p className="mt-1 text-sm text-ink-muted">
           Deletes your answers, offer, list and progress from this browser.
         </p>
         <div className="mt-3">

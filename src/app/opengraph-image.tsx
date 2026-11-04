@@ -4,12 +4,12 @@ export const alt = "AI Business Coach: Good at your job? Someone will pay you fo
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-// Colours from the design tokens (light theme).
-const BG = "#fbfaf7";
-const INK = "#1b1b1a";
-const MUTED = "#5f5e5a";
-const ACCENT = "#2862c9";
-const ACCENT_SOFT = "#e7effc";
+// Colours from the design tokens (light theme): canvas, ink, ink-muted, brand peach and sunshine. OG images cannot read CSS variables.
+const BG = "#F9F6F3";
+const INK = "#1B1624";
+const MUTED = "#5F5B66";
+const ACCENT = "#FD976D";
+const ACCENT_SOFT = "#FDD46B";
 
 export default function OpengraphImage() {
   return new ImageResponse(
@@ -44,22 +44,10 @@ export default function OpengraphImage() {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <div
-            style={{
-              display: "flex",
-              alignSelf: "flex-start",
-              background: ACCENT_SOFT,
-              color: ACCENT,
-              fontSize: 26,
-              fontWeight: 700,
-              padding: "8px 20px",
-              borderRadius: 999,
-              letterSpacing: 1,
-            }}
-          >
-            GOOD AT YOUR JOB?
+          <div style={{ display: "flex", fontSize: 72, lineHeight: 1.05, color: MUTED, letterSpacing: -1 }}>
+            Good at your job?
           </div>
-          <div style={{ fontSize: 72, lineHeight: 1.05, marginTop: 28, letterSpacing: -1 }}>
+          <div style={{ fontSize: 72, lineHeight: 1.05, letterSpacing: -1 }}>
             Someone will pay you for it.
           </div>
           <div style={{ fontSize: 32, color: MUTED, marginTop: 20, maxWidth: 900 }}>
@@ -76,8 +64,8 @@ export default function OpengraphImage() {
                   display: "flex",
                   flexShrink: 0,
                   whiteSpace: "nowrap",
-                  border: "2px solid #e6e3dc",
-                  borderRadius: 14,
+                  borderTop: `6px solid ${ACCENT}`,
+                  borderRadius: 6,
                   padding: "10px 16px",
                 }}
               >

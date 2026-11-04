@@ -3,6 +3,7 @@
 // Parts every quiz screen is built from: the top bar, titles, option lists and the bottom CTA.
 
 import type { ReactNode } from "react";
+import { Icon } from "@/components/icons";
 import { useQuiz } from "./quiz-context";
 
 export function QuizBar() {
@@ -13,12 +14,12 @@ export function QuizBar() {
         type="button"
         onClick={actions.back}
         aria-label="Back"
-        className={`cursor-pointer rounded-lg px-1.5 py-1 text-lg leading-none text-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-accent ${meta.canGoBack ? "" : "invisible"}`}
+        className={`grid size-9 cursor-pointer place-items-center rounded-md text-ink-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-ink ${meta.canGoBack ? "" : "invisible"}`}
       >
-        ←
+        <Icon name="arrowLeft" size={20} />
       </button>
       <div
-        className={`h-1.5 flex-1 overflow-hidden rounded-full bg-line ${meta.isQuizScreen ? "" : "invisible"}`}
+        className={`h-1.5 flex-1 overflow-hidden rounded-full bg-brand-soft ${meta.isQuizScreen ? "" : "invisible"}`}
         role="progressbar"
         aria-label="Quiz progress"
         aria-valuemin={0}
@@ -26,13 +27,11 @@ export function QuizBar() {
         aria-valuenow={meta.progress}
       >
         <div
-          className="h-full rounded-full bg-accent transition-[width] duration-300 motion-reduce:transition-none"
-          style={{ width: `${meta.progress}%` }}
+          className="h-full origin-left rounded-full bg-brand transition-transform duration-300 ease-out motion-reduce:transition-none"
+          style={{ transform: `scaleX(${meta.progress / 100})` }}
         />
       </div>
-      <span className="text-xs font-bold tracking-[0.04em] whitespace-nowrap text-muted">
-        AI BUSINESS COACH
-      </span>
+      <span className="font-display text-sm whitespace-nowrap text-ink-muted">AI Business Coach</span>
     </div>
   );
 }
@@ -45,14 +44,14 @@ export function ScreenBody({ children }: { children: ReactNode }) {
 /** tabIndex -1 lets the quiz move focus here when the screen changes. */
 export function ScreenTitle({ children }: { children: ReactNode }) {
   return (
-    <h1 tabIndex={-1} className="mt-2 mb-1.5 text-[22px] leading-tight font-bold focus:outline-none">
+    <h1 tabIndex={-1} className="mt-2 mb-1.5 font-display text-h2 leading-tight focus:outline-none">
       {children}
     </h1>
   );
 }
 
 export function ScreenSub({ children }: { children: ReactNode }) {
-  return <p className="mb-3 text-sm text-muted">{children}</p>;
+  return <p className="mb-3 text-sm text-ink-muted">{children}</p>;
 }
 
 export function OptionList({ label, children }: { label: string; children: ReactNode }) {
@@ -64,11 +63,11 @@ export function OptionList({ label, children }: { label: string; children: React
 }
 
 export function Option({
-  icon,
   selected,
   onSelect,
   children,
 }: {
+  /** Kept for the quiz data; options render as text only (no emoji icons, see DESIGN.md). */
   icon?: string;
   selected: boolean;
   onSelect: () => void;
@@ -79,13 +78,9 @@ export function Option({
       type="button"
       aria-pressed={selected}
       onClick={onSelect}
-      className={`flex w-full cursor-pointer items-center gap-3 rounded-[14px] border-[1.5px] px-4 py-3.5 text-left transition-colors hover:border-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${selected ? "border-accent bg-accent-soft" : "border-line bg-surface"}`}
+      className={`flex w-full cursor-pointer items-center gap-3 rounded-md border-[1.5px] px-4 py-3.5 text-left transition-colors hover:border-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink ${selected ? "border-ink bg-sun-soft" : "border-line-strong bg-surface"}`}
     >
-      {icon ? (
-        <span aria-hidden className="w-[26px] text-center text-xl">
-          {icon}
-        </span>
-      ) : null}
+
       <span>{children}</span>
     </button>
   );
@@ -98,5 +93,5 @@ export function Cta({ children }: { children: ReactNode }) {
 
 /** Small print under an action. */
 export function Note({ children }: { children: ReactNode }) {
-  return <p className="mt-2 text-xs text-muted">{children}</p>;
+  return <p className="mt-2 text-xs text-ink-muted">{children}</p>;
 }

@@ -10,7 +10,7 @@ function DemoButton({ onClick, children }: { onClick: () => void; children: stri
     <button
       type="button"
       onClick={onClick}
-      className="cursor-pointer rounded-full border border-line bg-surface px-3 py-1.5 text-xs font-semibold hover:border-accent focus-visible:outline-2 focus-visible:outline-accent"
+      className="cursor-pointer rounded-full border border-line bg-surface px-3 py-1.5 text-xs font-semibold hover:border-ink focus-visible:outline-2 focus-visible:outline-ink"
     >
       {children}
     </button>
@@ -23,9 +23,9 @@ export function DemoPanel() {
   return (
     <section
       aria-label="Demo controls"
-      className="rounded-2xl border-2 border-dashed border-warn bg-warn-soft/40 px-3.5 py-3"
+      className="rounded-md border-2 border-dashed border-warning bg-warning-soft/40 px-3.5 py-3"
     >
-      <p className="text-[11px] font-bold tracking-[0.05em] text-warn uppercase">
+      <p className="text-xs font-bold tracking-[0.05em] text-warning-ink uppercase">
         Demo controls · day {state.saved.game.day}
       </p>
       <div className="mt-2 flex flex-wrap gap-1.5">

@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { HeroCards } from "@/components/business-card";
 import { HuginAvatar } from "@/components/coach/hugin";
+import { Rail, RouteStrip, Stop } from "@/components/route";
+import { ThemeSwitcher } from "@/components/theme-switcher";
+import { buttonClass, lowerFirst } from "@/components/ui";
 import { AppPreview } from "@/components/landing/app-preview";
 import { BOSS_KEYS, BOSSES, STAT_KEYS, STATS, TITLE_ORDER, TITLES } from "@/lib/game";
 import { formatUsd } from "@/lib/pricing";
@@ -19,7 +23,7 @@ function Cta({ children = "Take the 1-minute quiz" }: { children?: ReactNode }) 
   return (
     <Link
       href={QUIZ}
-      className="inline-flex h-13 items-center justify-center rounded-[14px] bg-accent px-7 text-base font-bold text-accent-ink transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+      className={buttonClass({ width: "auto" })}
     >
       {children}
     </Link>
@@ -39,10 +43,10 @@ function Section({
 }) {
   return (
     <section aria-labelledby={id} className="border-t border-line py-14 sm:py-20">
-      <h2 id={id} className="font-display text-3xl leading-tight sm:text-4xl">
+      <h2 id={id} className="font-display text-h1 leading-[1.15] sm:text-display">
         {title}
       </h2>
-      {intro ? <p className="mt-3 max-w-2xl text-lg text-muted">{intro}</p> : null}
+      {intro ? <p className="mt-3 max-w-2xl text-lg text-ink-muted">{intro}</p> : null}
       <div className="mt-8">{children}</div>
     </section>
   );
@@ -110,14 +114,14 @@ export default function Home() {
       <header className="flex items-center justify-between py-5">
         <Link
           href="/"
-          className="flex items-center gap-2 rounded-lg font-bold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+          className="flex items-center gap-2 rounded-md font-bold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
         >
           <HuginAvatar size={30} />
           AI Business Coach
         </Link>
         <Link
           href={QUIZ}
-          className="rounded-full border border-line px-4 py-2 text-sm font-semibold hover:border-accent focus-visible:outline-2 focus-visible:outline-accent"
+          className={buttonClass({ variant: "secondary", size: "sm", width: "auto" })}
         >
           Take the quiz
         </Link>
@@ -126,24 +130,22 @@ export default function Home() {
       <main id="main">
         <section className="grid items-center gap-12 pt-8 pb-16 sm:pt-14 lg:grid-cols-[1.1fr_1fr]">
           <div>
-            <p className="inline-block rounded-full bg-accent-soft px-3 py-1 text-xs font-bold tracking-[0.04em] text-accent uppercase">
-              Good at your job?
-            </p>
-            <h1 className="mt-4 font-display text-5xl leading-[1.05] sm:text-6xl">
+            <h1 className="type-display text-display sm:text-hero">
+              <span className="block text-brand-ink">Good at your job?</span>
               Someone will pay you for it.
             </h1>
-            <p className="mt-5 max-w-xl text-xl text-muted">
+            <p className="mt-5 max-w-xl text-lg text-ink-muted sm:text-xl">
               Get your first paying client in 30 days. 20 minutes a day, without quitting your
               job.
             </p>
             <div className="mt-8 flex flex-col items-start gap-3">
               <Cta />
-              <p className="text-sm text-muted">
+              <p className="text-sm text-ink-muted">
                 6 questions. You see your service, starting price and 30-day plan before you pay.
               </p>
             </div>
           </div>
-          <AppPreview />
+          <HeroCards />
         </section>
 
         <Section
@@ -151,12 +153,14 @@ export default function Home() {
           title="Sell the skill you already have"
           intro="You don’t need a new skill. You need one offer, a price and people who already know your work."
         >
-          <ul className="grid gap-4 sm:grid-cols-3">
+          <ul className="grid gap-x-8 gap-y-6 sm:grid-cols-3">
             {INSTEAD.map((item) => (
-              <li key={item.title} className="rounded-2xl border border-line bg-surface p-5">
-                <p className="text-xs font-bold tracking-[0.05em] text-muted uppercase">Instead of</p>
-                <p className="mt-1 text-lg font-bold">{item.title}</p>
-                <p className="mt-1.5 text-muted">{item.body}</p>
+              <li key={item.title} className="border-t-[1.5px] border-ink pt-3">
+                <p className="text-label font-semibold text-ink-muted">Instead of</p>
+                <p className="mt-0.5 font-display text-xl text-ink-muted line-through decoration-brand decoration-2">
+                  {item.title}
+                </p>
+                <p className="mt-1.5">{item.body}</p>
               </li>
             ))}
           </ul>
@@ -167,19 +171,40 @@ export default function Home() {
           title="Four weeks, four bosses"
           intro="Each week ends with a boss: a real result, not a task. Beat it to unlock the tool you need for the next week."
         >
-          <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <RouteStrip day={1} you="Day 1" className="max-w-md" />
+          <Rail className="mt-8 sm:hidden">
+            {BOSS_KEYS.map((key, i) => {
+              const boss = BOSSES[key];
+              return (
+                <Stop
+                  key={key}
+                  kind="boss"
+                  segment={i === BOSS_KEYS.length - 1 ? "none" : "ahead"}
+                  label={`Week ${boss.week} · day ${boss.week * 7}`}
+                >
+                  <p className="font-display text-lg">{boss.name}</p>
+                  <p className="mt-1 text-ink-muted">{WEEKS[key]}</p>
+                  <p className="mt-1.5 text-sm text-ink-muted">Proof: {lowerFirst(boss.proof)}</p>
+                </Stop>
+              );
+            })}
+          </Rail>
+          <ol className="relative mt-10 hidden grid-cols-4 gap-6 sm:grid">
+            <span aria-hidden className="absolute top-[8.5px] right-0 left-0 h-[5px] bg-brand-soft" />
             {BOSS_KEYS.map((key) => {
               const boss = BOSSES[key];
               return (
-                <li key={key} className="rounded-2xl border border-line bg-surface p-5">
-                  <p className="text-xs font-bold tracking-[0.05em] text-accent uppercase">
-                    Week {boss.week}
+                <li key={key} className="relative pt-10">
+                  <span
+                    aria-hidden
+                    className="absolute top-0 left-0 size-[22px] rounded-full border-4 border-ink bg-surface"
+                  />
+                  <p className="text-label font-semibold text-ink-muted">
+                    Week {boss.week} · day {boss.week * 7}
                   </p>
-                  <p className="mt-1 text-lg font-bold">{boss.name}</p>
-                  <p className="mt-1.5 text-muted">{WEEKS[key]}</p>
-                  <p className="mt-3 border-t border-dashed border-line pt-3 text-sm text-muted">
-                    Proof: {boss.proof.charAt(0).toLowerCase() + boss.proof.slice(1)}
-                  </p>
+                  <p className="mt-0.5 font-display text-lg">{boss.name}</p>
+                  <p className="mt-1.5 text-ink-muted">{WEEKS[key]}</p>
+                  <p className="mt-2 text-sm text-ink-muted">Proof: {lowerFirst(boss.proof)}</p>
                 </li>
               );
             })}
@@ -191,15 +216,17 @@ export default function Home() {
           title="Meet Hugin, your coach"
           intro="Hugin is a raven and an AI coach. He drafts your messages, checks your proof screenshots and plans each day around the time you have."
         >
-          <ul className="grid gap-4 sm:grid-cols-3">
+          <ul className="flex max-w-2xl flex-col gap-4">
             {HUGIN_LINES.map((line) => (
-              <li key={line} className="flex items-start gap-3 rounded-2xl border border-line bg-surface p-5">
+              <li key={line} className="flex items-start gap-3">
                 <HuginAvatar size={34} />
-                <p className="pt-1">“{line}”</p>
+                <p className="rounded-md border border-line bg-surface px-4 py-2.5 text-lg">
+                  {line}
+                </p>
               </li>
             ))}
           </ul>
-          <p className="mt-4 text-sm text-muted">
+          <p className="mt-4 text-sm text-ink-muted">
             Calm, dry, short. Hugin never shouts and never promises you money.
           </p>
         </Section>
@@ -211,32 +238,30 @@ export default function Home() {
         >
           <div className="grid gap-8 lg:grid-cols-2">
             <div>
-              <h3 className="font-bold">Titles</h3>
-              <ol className="mt-3 flex flex-col gap-2">
+              <h3 className="font-display text-xl">Titles</h3>
+              <Rail className="mt-4">
                 {TITLE_ORDER.map((key, i) => (
-                  <li key={key} className="flex gap-3">
-                    <span className="grid size-7 flex-none place-items-center rounded-full bg-accent-soft text-sm font-bold text-accent">
-                      {i + 1}
-                    </span>
-                    <span>
-                      <span className="font-semibold">{TITLES[key].label}</span>
-                      <span className="block text-sm text-muted">{TITLES[key].earnedBy}</span>
-                    </span>
-                  </li>
+                  <Stop
+                    key={key}
+                    kind={i === 0 ? "passed" : "boss"}
+                    segment={i === TITLE_ORDER.length - 1 ? "none" : "ahead"}
+                    label={TITLES[key].earnedBy}
+                  >
+                    <p className="font-display text-lg">{TITLES[key].label}</p>
+                  </Stop>
                 ))}
-              </ol>
-            </div>
-            <div>
-              <h3 className="font-bold">Six stats</h3>
-              <dl className="mt-3 grid grid-cols-2 gap-3">
+              </Rail>
+              <h3 className="mt-10 font-display text-xl">Six stats</h3>
+              <dl className="mt-4 grid grid-cols-2 gap-x-6 border-t border-line">
                 {STAT_KEYS.map((stat) => (
-                  <div key={stat} className="rounded-xl border border-line bg-surface px-4 py-3">
+                  <div key={stat} className="border-b border-line py-3">
                     <dt className="font-semibold">{STATS[stat].label}</dt>
-                    <dd className="text-sm text-muted">{STATS[stat].meaning}</dd>
+                    <dd className="text-sm text-ink-muted">{STATS[stat].meaning}</dd>
                   </div>
                 ))}
               </dl>
             </div>
+            <AppPreview />
           </div>
         </Section>
 
@@ -252,66 +277,66 @@ export default function Home() {
               return (
                 <li
                   key={key}
-                  className={`rounded-2xl border p-4 ${plan.tag ? "border-accent bg-accent-soft" : "border-line bg-surface"}`}
+                  className={`rounded-md border p-4 ${plan.tag ? "border-ink bg-sun-soft" : "border-line bg-surface"}`}
                 >
                   <p className="flex items-center justify-between gap-2 font-bold">
                     {plan.name}
                     {plan.tag ? (
-                      <span className="rounded-full bg-accent px-2 py-0.5 text-[11px] tracking-[0.04em] text-accent-ink uppercase">
+                      <span className="rounded-full bg-brand px-2 py-0.5 text-xs font-semibold text-on-bright">
                         {plan.tag}
                       </span>
                     ) : null}
                   </p>
                   <p className="mt-1">
                     <b>{formatUsd(plan.introUsd)}</b> for the first {plan.weeks} weeks{" "}
-                    <span className="text-sm text-muted">({formatUsd(introPerDay(plan))} a day)</span>
+                    <span className="text-sm text-ink-muted">({formatUsd(introPerDay(plan))} a day)</span>
                   </p>
-                  <p className="text-sm text-muted">
+                  <p className="text-sm text-ink-muted">
                     Then {formatUsd(plan.fullUsd)} every {plan.weeks} weeks
                   </p>
                 </li>
               );
             })}
           </ul>
-          <div className="hidden overflow-x-auto rounded-2xl border border-line bg-surface sm:block">
+          <div className="hidden overflow-x-auto rounded-md border border-line bg-surface sm:block">
             <table className="w-full min-w-[520px] text-left">
               <caption className="sr-only">Plans and prices</caption>
-              <thead className="text-sm text-muted">
+              <thead className="text-sm text-ink-muted">
                 <tr className="border-b border-line">
                   <th scope="col" className="px-5 py-3 font-semibold">Plan</th>
-                  <th scope="col" className="px-5 py-3 font-semibold">First period</th>
-                  <th scope="col" className="px-5 py-3 font-semibold">Then</th>
-                  <th scope="col" className="px-5 py-3 font-semibold">Per day, first period</th>
+                  <th scope="col" className="px-5 py-3 text-right font-semibold">First period</th>
+                  <th scope="col" className="px-5 py-3 text-right font-semibold">Then</th>
+                  <th scope="col" className="px-5 py-3 text-right font-semibold">Per day, first period</th>
                 </tr>
               </thead>
               <tbody>
                 {PLAN_KEYS.map((key) => {
                   const plan = PLANS[key];
                   return (
-                    <tr key={key} className={`border-b border-line last:border-b-0 ${plan.tag ? "bg-accent-soft" : ""}`}>
+                    <tr key={key} className={`border-b border-line last:border-b-0 ${plan.tag ? "bg-sun-soft" : ""}`}>
                       <th scope="row" className="px-5 py-4 font-bold">
                         {plan.name}
                         {plan.tag ? (
-                          <span className="ml-2 rounded-full bg-accent px-2 py-0.5 text-[11px] font-bold tracking-[0.04em] text-accent-ink uppercase">
+                          <span className="ml-2 rounded-full bg-brand px-2 py-0.5 text-xs font-semibold text-on-bright">
                             {plan.tag}
                           </span>
                         ) : null}
                       </th>
-                      <td className="px-5 py-4">
+                      <td className="px-5 py-4 text-right tabular-nums">
                         <b>{formatUsd(plan.introUsd)}</b>{" "}
-                        <s className="text-sm text-muted">{formatUsd(plan.fullUsd)}</s>
+                        <s className="text-sm text-ink-muted">{formatUsd(plan.fullUsd)}</s>
                       </td>
-                      <td className="px-5 py-4">
+                      <td className="px-5 py-4 text-right tabular-nums">
                         {formatUsd(plan.fullUsd)} every {plan.weeks} weeks
                       </td>
-                      <td className="px-5 py-4">{formatUsd(introPerDay(plan))}</td>
+                      <td className="px-5 py-4 text-right tabular-nums">{formatUsd(introPerDay(plan))}</td>
                     </tr>
                   );
                 })}
               </tbody>
             </table>
           </div>
-          <ul className="mt-5 flex flex-col gap-1.5 text-muted">
+          <ul className="mt-5 flex flex-col gap-1.5 text-ink-muted">
             <li>We email you 3 days before any renewal.</li>
             <li>Cancel in Settings in two taps.</li>
             <li>14-day money-back guarantee if you finish the week 1 quests.</li>
@@ -323,16 +348,16 @@ export default function Home() {
         </Section>
 
         <Section id="faq" title="Questions">
-          <div className="flex flex-col divide-y divide-line rounded-2xl border border-line bg-surface">
+          <div className="flex flex-col divide-y divide-line rounded-md border border-line bg-surface">
             {FAQ.map((item) => (
               <details key={item.q} className="group px-5 py-4">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold focus-visible:outline-2 focus-visible:outline-accent">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold focus-visible:outline-2 focus-visible:outline-ink">
                   {item.q}
-                  <span aria-hidden className="text-muted transition-transform group-open:rotate-45">
+                  <span aria-hidden className="text-ink-muted transition-transform group-open:rotate-45">
                     +
                   </span>
                 </summary>
-                <p className="mt-2 text-muted">{item.a}</p>
+                <p className="mt-2 text-ink-muted">{item.a}</p>
               </details>
             ))}
           </div>
@@ -340,23 +365,29 @@ export default function Home() {
 
         <section
           aria-labelledby="start"
-          className="my-14 rounded-3xl bg-accent-soft px-6 py-12 text-center sm:my-20 sm:py-16"
+          className="grid items-center gap-8 border-t border-line py-14 sm:py-20 lg:grid-cols-2"
         >
-          <h2 id="start" className="font-display text-3xl leading-tight sm:text-4xl">
-            Your plan takes one minute
-          </h2>
-          <p className="mx-auto mt-3 max-w-lg text-lg text-muted">
-            Answer 6 questions. See your service, your starting price and your first buyers.
-          </p>
-          <div className="mt-7">
-            <Cta>Build my 30-day plan</Cta>
+          <div>
+            <h2 id="start" className="font-display text-h1 leading-[1.15] sm:text-display">
+              Your plan takes one minute
+            </h2>
+            <p className="mt-3 max-w-lg text-lg text-ink-muted">
+              Answer 6 questions. See your service, your starting price and your first buyers.
+            </p>
+            <div className="mt-7">
+              <Cta>Build my 30-day plan</Cta>
+            </div>
           </div>
+          <RouteStrip day={1} you="You, today" end="First client" className="mx-auto max-w-md" />
         </section>
       </main>
 
-      <footer className="border-t border-line py-8 text-sm text-muted">
-        <p>AI Business Coach · Zimran IT School capstone, Team 4.</p>
-        <p className="mt-1">Demo: no payments are taken and no card details are collected.</p>
+      <footer className="flex flex-wrap items-center justify-between gap-6 border-t border-line py-8 text-sm text-ink-muted">
+        <div>
+          <p>AI Business Coach · Zimran IT School capstone, Team 4.</p>
+          <p className="mt-1">Demo: no payments are taken and no card details are collected.</p>
+        </div>
+        <ThemeSwitcher />
       </footer>
     </div>
   );
