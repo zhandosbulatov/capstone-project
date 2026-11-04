@@ -25,9 +25,10 @@ export async function verifyScreenshot(file: File, result: ResultType): Promise<
   try {
     const res = await fetch("/api/verify", { method: "POST", body });
     if (!res.ok) {
+      const error = (await res.json().catch(() => null)) as { error?: string } | null;
       return {
         status: "unavailable",
-        reason: "I can't check screenshots right now. Log it without proof, or try again later.",
+        reason: `${error?.error ?? "I can't check screenshots right now."} You can log it without proof.`,
       };
     }
     const data = (await res.json()) as { verified: boolean; reason: string };

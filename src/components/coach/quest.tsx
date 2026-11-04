@@ -158,6 +158,14 @@ function QuestCard() {
         {meta.isRecovery ? " · keeps your streak" : ""}
       </p>
       <div className="mt-4 flex flex-col gap-2">
+        {quest.draft ? (
+          <Button
+            variant="outline"
+            onClick={() => actions.openSheet({ kind: "draft", draft: quest.draft! })}
+          >
+            Draft with Hugin
+          </Button>
+        ) : null}
         <Button onClick={actions.completeQuest}>Mark as done</Button>
         {quest.boss ? (
           <Button

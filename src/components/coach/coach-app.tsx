@@ -6,6 +6,8 @@ import { loadRaw, parseState, type SavedState } from "@/lib/storage";
 import { AppProvider, isActive, useCoach, type Tab } from "./app-context";
 import { BossCard, LogResultSheet } from "./boss";
 import { DemoPanel } from "./demo-panel";
+import { HuginAvatar } from "./hugin";
+import { ChatSheet, DraftSheet } from "./hugin-sheets";
 import { Journey, ToolSheet } from "./journey";
 import { TodayQuest } from "./quest";
 import { Settings } from "./settings";
@@ -71,7 +73,7 @@ const TABS: { key: Tab; label: string }[] = [
 ];
 
 function Shell() {
-  const { state, meta } = useCoach();
+  const { state, actions, meta } = useCoach();
   const { game } = state.saved;
 
   return (
@@ -80,12 +82,20 @@ function Shell() {
         <p className="font-bold">
           Day {game.day} <span className="font-normal text-muted">of 30</span>
         </p>
-        <p className="flex items-center gap-3 text-sm font-semibold">
+        <div className="flex items-center gap-3 text-sm font-semibold">
           <span aria-label={`Streak ${game.streak} days`}>🔥 {game.streak}</span>
           <span aria-label={`${game.shields} Streak Shields`} title="Streak Shields">
             🛡 {game.shields}
           </span>
-        </p>
+          <button
+            type="button"
+            onClick={() => actions.openSheet({ kind: "chat" })}
+            aria-label="Ask Hugin"
+            className="cursor-pointer rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+          >
+            <HuginAvatar size={32} />
+          </button>
+        </div>
       </header>
 
       <main className="flex flex-1 flex-col px-4">
@@ -170,8 +180,12 @@ function Sheet() {
         >
           {sheet.kind === "log" ? (
             <LogResultSheet initial={sheet.result} />
-          ) : (
+          ) : sheet.kind === "tool" ? (
             <ToolSheet tool={sheet.tool} />
+          ) : sheet.kind === "draft" ? (
+            <DraftSheet kind={sheet.draft} />
+          ) : (
+            <ChatSheet />
           )}
         </div>
       </div>

@@ -28,6 +28,7 @@ import {
   reachGoal,
   recordResult,
   STATS,
+  TITLES,
   titleFor,
   unlockedTools,
   weekOfDay,
@@ -48,9 +49,11 @@ import {
   STREAK_RESET_LINE,
   STUDIO_OWNER_LINE,
 } from "@/lib/hugin-lines";
-import { addDays, buildPlan, type PersonalPlan } from "@/lib/plan";
-import { questForDay, type Quest } from "@/lib/quests";
-import { PLANS, type Plan, type QuizAnswers } from "@/lib/quiz-data";
+import type { HuginContext } from "@/lib/hugin";
+import { streamChat, type ChatMessage } from "@/lib/hugin-client";
+import { addDays, buildPlan, offerDraft, type PersonalPlan } from "@/lib/plan";
+import { questForDay, type DraftKind, type Quest } from "@/lib/quests";
+import { PLANS, SKILLS, type Plan, type QuizAnswers } from "@/lib/quiz-data";
 import { clearState, saveState, type Purchase, type SavedState } from "@/lib/storage";
 import { KIT_UNLOCKS, type AnyToolKey } from "@/lib/tools";
 
@@ -70,6 +73,8 @@ export type Tab = "today" | "journey" | "settings";
 export type Sheet =
   | { kind: "log"; result?: ResultType }
   | { kind: "tool"; tool: AnyToolKey }
+  | { kind: "draft"; draft: DraftKind }
+  | { kind: "chat" }
   | null;
 
 export type Toast = { id: number; text: string; hugin?: string };
@@ -79,6 +84,9 @@ type AppState = {
   tab: Tab;
   sheet: Sheet;
   toasts: Toast[];
+  /** Hugin chat for this visit. Not saved. */
+  chat: ChatMessage[];
+  chatBusy: boolean;
 };
 
 type AppActions = {
@@ -93,6 +101,7 @@ type AppActions = {
   cancelPlan: () => void;
   resumePlan: () => void;
   resetEverything: () => void;
+  sendChat: (text: string) => void;
   demo: {
     nextDay: () => void;
     missDay: () => void;
@@ -115,6 +124,8 @@ type AppMeta = {
   tools: AnyToolKey[];
   renewsOn: Date;
   demo: boolean;
+  /** What Hugin knows about the user for Gemini calls. */
+  huginContext: HuginContext;
 };
 
 type AppContextValue = { state: AppState; actions: AppActions; meta: AppMeta };
@@ -206,8 +217,21 @@ export function AppProvider({
     const { state: game, events } = catchUp(initial.game, today);
     let id = 0;
     const toasts = toToasts(events, () => --id);
-    return { saved: { ...initial, game }, tab: "today", sheet: null, toasts };
+    return {
+      saved: { ...initial, game },
+      tab: "today",
+      sheet: null,
+      toasts,
+      chat: [],
+      chatBusy: false,
+    };
   });
+  // The latest state for async work (the chat stream) without re-creating actions.
+  const stateRef = useRef(state);
+  const huginContextRef = useRef<HuginContext | null>(null);
+  useEffect(() => {
+    stateRef.current = state;
+  }, [state]);
 
   useEffect(() => {
     saveState(state.saved);
@@ -261,6 +285,22 @@ export function AppProvider({
         clearState();
         router.push("/quiz");
       },
+      sendChat: (text) => {
+        const current = stateRef.current;
+        const context = huginContextRef.current;
+        if (current.chatBusy || !text.trim() || !context) return;
+        const history: ChatMessage[] = [...current.chat, { role: "user", text: text.trim() }];
+        // Plain updates, not transitions: streaming text shouldn't trigger view transitions.
+        setState((s) => ({ ...s, chat: [...history, { role: "hugin", text: "" }], chatBusy: true }));
+        const setReply = (reply: string) =>
+          setState((s) => ({
+            ...s,
+            chat: [...s.chat.slice(0, -1), { role: "hugin", text: reply }],
+          }));
+        void streamChat(history, context, setReply).finally(() =>
+          setState((s) => ({ ...s, chatBusy: false })),
+        );
+      },
       demo: {
         nextDay: () => play(advanceDay),
         missDay: () =>
@@ -290,26 +330,46 @@ export function AppProvider({
     const purchasePlan = PLANS[purchase.plan];
     const fromBosses = unlockedTools(game);
     const fromKit = purchase.firstClientKit ? KIT_UNLOCKS : [];
+    const skill = SKILLS[answers.skill];
+    const quest = questForDay(
+      game.day,
+      { minutes: answers.time, price: plan.price, firstStep: plan.firstStep },
+      { recovery },
+    );
+    const title = titleFor(game);
     return {
       answers,
       plan,
       purchasePlan,
-      quest: questForDay(
-        game.day,
-        { minutes: answers.time, price: plan.price, firstStep: plan.firstStep },
-        { recovery },
-      ),
+      quest,
+      huginContext: {
+        skill: skill.label,
+        service: plan.service,
+        price: plan.priceLabel,
+        who: skill.who,
+        deliverable: plan.deliverable,
+        firstBuyers: plan.firstBuyers,
+        offer: saved.offer || offerDraft(answers),
+        day: game.day,
+        week,
+        questTitle: quest.title,
+        title: TITLES[title].label,
+      },
       questDone: isQuestDone(game),
       isRecovery: recovery,
       week,
       boss: (["w1", "w2", "w3", "w4"] as const)[week - 1],
-      title: titleFor(game),
+      title,
       progress: levelProgress(game.xp),
       tools: [...new Set<AnyToolKey>([...fromKit, ...fromBosses])],
       renewsOn: addDays(new Date(purchase.paidAt), purchasePlan.days),
       demo,
     };
   }, [state, demo]);
+
+  useEffect(() => {
+    huginContextRef.current = meta.huginContext;
+  }, [meta.huginContext]);
 
   const value = useMemo(() => ({ state, actions, meta }), [state, actions, meta]);
   return <AppContext value={value}>{children}</AppContext>;
