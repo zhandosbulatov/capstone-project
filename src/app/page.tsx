@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { HeroCards } from "@/components/business-card";
 import { HuginAvatar } from "@/components/coach/hugin";
 import { Rail, RouteStrip, Stop } from "@/components/route";
 import { ThemeSwitcher } from "@/components/theme-switcher";
@@ -129,11 +130,11 @@ export default function Home() {
       <main id="main">
         <section className="grid items-center gap-12 pt-8 pb-16 sm:pt-14 lg:grid-cols-[1.1fr_1fr]">
           <div>
-            <h1 className="font-display text-[44px] leading-[1.05] sm:text-[61px]">
-              <span className="block text-ink-muted">Good at your job?</span>
+            <h1 className="type-display text-[39px] sm:text-[49px]">
+              <span className="block text-brand-ink">Good at your job?</span>
               Someone will pay you for it.
             </h1>
-            <p className="mt-5 max-w-xl text-xl text-ink-muted">
+            <p className="mt-5 max-w-xl text-lg text-ink-muted sm:text-xl">
               Get your first paying client in 30 days. 20 minutes a day, without quitting your
               job.
             </p>
@@ -144,7 +145,7 @@ export default function Home() {
               </p>
             </div>
           </div>
-          <AppPreview />
+          <HeroCards />
         </section>
 
         <Section
@@ -170,7 +171,7 @@ export default function Home() {
           title="Four weeks, four bosses"
           intro="Each week ends with a boss: a real result, not a task. Beat it to unlock the tool you need for the next week."
         >
-          <RouteStrip day={1} you="Day 1" className="max-w-3xl" />
+          <RouteStrip day={1} you="Day 1" className="max-w-md" />
           <Rail className="mt-8 sm:hidden">
             {BOSS_KEYS.map((key, i) => {
               const boss = BOSSES[key];
@@ -250,9 +251,7 @@ export default function Home() {
                   </Stop>
                 ))}
               </Rail>
-            </div>
-            <div>
-              <h3 className="font-display text-xl">Six stats</h3>
+              <h3 className="mt-10 font-display text-xl">Six stats</h3>
               <dl className="mt-4 grid grid-cols-2 gap-x-6 border-t border-line">
                 {STAT_KEYS.map((stat) => (
                   <div key={stat} className="border-b border-line py-3">
@@ -262,6 +261,7 @@ export default function Home() {
                 ))}
               </dl>
             </div>
+            <AppPreview />
           </div>
         </Section>
 
@@ -378,7 +378,7 @@ export default function Home() {
               <Cta>Build my 30-day plan</Cta>
             </div>
           </div>
-          <RouteStrip day={1} you="You, today" end="First client" />
+          <RouteStrip day={1} you="You, today" end="First client" className="mx-auto max-w-md" />
         </section>
       </main>
 

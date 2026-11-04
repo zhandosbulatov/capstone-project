@@ -253,7 +253,19 @@ select {
   animation: 200ms ease-in both sheet-up reverse;
 }
 
+/* The page's one motion moment: the new business card flips over once (HeroCards). */
+@keyframes card-flip {
+  from { transform: rotate(3deg) rotateY(180deg); }
+  to { transform: rotate(3deg) rotateY(0deg); }
+}
+.card-flip {
+  animation: card-flip 800ms cubic-bezier(0.25, 0.8, 0.25, 1) 500ms both;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .card-flip {
+    animation: none;
+  }
   ::view-transition-old(*),
   ::view-transition-new(*),
   ::view-transition-group(*) {

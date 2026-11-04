@@ -1,10 +1,10 @@
-// A static picture of the real app for the landing hero: the route, the status window and today's
-// quest hanging off its stop. Built from the same components and tokens as /app, with sample data.
+// A static picture of the real app for the landing page: your card, progress and today's quest. Built from the same components and tokens as /app, with sample data.
 
 import { HuginAvatar } from "@/components/coach/hugin";
 import { XpBar } from "@/components/coach/status-window";
 import { Icon } from "@/components/icons";
-import { Rail, RouteStrip, Stop } from "@/components/route";
+import { BusinessCard } from "@/components/business-card";
+import { Rail, Stop } from "@/components/route";
 import { Rewards } from "@/components/ui";
 import { STAT_KEYS, STATS } from "@/lib/game";
 
@@ -20,7 +20,7 @@ const SAMPLE_STATS: Record<(typeof STAT_KEYS)[number], number> = {
 export function AppPreview() {
   return (
     <div
-      aria-label="A preview of the app: day 8 of 30 on the route, your title, level, stats and today's quest"
+      aria-label="A preview of the app: your card with service, price, title and level, your stats and today's quest"
       role="img"
       className="mx-auto w-full max-w-[380px] rounded-md border border-line-strong bg-canvas p-3"
     >
@@ -39,10 +39,14 @@ export function AppPreview() {
         </p>
       </div>
 
-      <div className="rounded-md border border-line bg-surface px-3.5 pt-2.5 pb-1">
-        <RouteStrip day={8} />
-        <div className="mt-2 flex items-baseline justify-between">
-          <p className="font-display text-lg leading-tight">Side Starter · Level 3</p>
+      <BusinessCard
+        service="Brand starter kit for local businesses"
+        price="$450 per project"
+        title="Side Starter · Level 3"
+      />
+      <div className="mt-2.5 rounded-md border border-line bg-surface px-3.5 pt-2.5 pb-1">
+        <div className="flex items-baseline justify-between">
+          <p className="type-label">Progress to level 4</p>
           <p className="text-xs text-ink-muted tabular-nums">80 / 100 XP</p>
         </div>
         <div className="mt-1.5">
@@ -52,7 +56,7 @@ export function AppPreview() {
           {STAT_KEYS.map((stat, i) => (
             <div key={stat} className={`py-1.5 ${i < 3 ? "border-b border-line" : ""}`}>
               <dt className="truncate text-xs text-ink-muted">{STATS[stat].label}</dt>
-              <dd className="font-display text-base leading-tight">{SAMPLE_STATS[stat]}</dd>
+              <dd className="text-base leading-tight font-bold tabular-nums">{SAMPLE_STATS[stat]}</dd>
             </div>
           ))}
         </dl>

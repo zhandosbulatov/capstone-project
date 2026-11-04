@@ -1,7 +1,8 @@
 "use client";
 
 import { SKILL_KEYS, SKILLS } from "@/lib/quiz-data";
-import { RouteStrip } from "@/components/route";
+import { BusinessCard } from "@/components/business-card";
+import { buttonClass } from "@/components/ui";
 import { useQuiz } from "../quiz-context";
 import { Note, Option, OptionList, ScreenBody, ScreenSub, ScreenTitle } from "../quiz-ui";
 
@@ -28,9 +29,14 @@ export function AdScreen() {
           <p className="font-display text-lg text-ink-muted">Good at your job?</p>
           <p className="font-display text-[28px] leading-tight">Someone will pay you for it.</p>
           <p className="text-ink-muted">
-            Your first paying client in 30 days — 20 minutes a day, without quitting your job.
+            20 minutes a day, without quitting your job.
           </p>
-          <RouteStrip day={1} you="Day 1" end="First client" className="mt-4" />
+          <BusinessCard
+            service="Brand starter kits for local businesses"
+            price="from $450"
+            title="Your first client in 30 days"
+            className="mt-3 rotate-[-2deg]"
+          />
         </div>
         <footer className="flex items-center justify-between gap-2.5 px-3 py-2.5">
           <p className="text-sm">
@@ -41,7 +47,7 @@ export function AdScreen() {
           <button
             type="button"
             onClick={actions.next}
-            className="cursor-pointer rounded-md bg-line px-3 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-ink"
+            className={buttonClass({ variant: "secondary", size: "sm", width: "auto" })}
           >
             Learn more
           </button>

@@ -5,9 +5,10 @@
 import { useEffect, useState } from "react";
 import { blockerFix, planHeadline } from "@/lib/plan";
 import { PAID_BEFORE, SKILLS } from "@/lib/quiz-data";
+import { BusinessCard } from "@/components/business-card";
 import { Icon } from "@/components/icons";
 import { Rail, RouteStrip, Stop } from "@/components/route";
-import { Button, Card, fieldClass, Label } from "@/components/ui";
+import { Button, fieldClass, Label } from "@/components/ui";
 import { EMAIL_PATTERN, useQuiz } from "../quiz-context";
 import { Cta, Note, ScreenBody, ScreenSub, ScreenTitle } from "../quiz-ui";
 
@@ -108,32 +109,21 @@ export function PlanScreen() {
     <ScreenBody>
       <p className="mt-2 text-sm font-semibold text-success-ink">Your plan is ready</p>
       <ScreenTitle>{planHeadline(plan)}</ScreenTitle>
-      <Card>
-        <dl className="flex flex-col gap-3">
-          <div>
-            <dt>
-              <Label>Your service</Label>
-            </dt>
-            <dd className="font-display text-[19px] leading-snug">{plan.service}</dd>
-          </div>
-          <div className="grid grid-cols-[auto_1fr] gap-x-6">
-            <div>
-              <dt>
-                <Label>Starting price</Label>
-              </dt>
-              <dd className="font-display text-[19px] leading-snug">{plan.priceLabel}</dd>
-            </div>
-            <div>
-              <dt>
-                <Label>Your first buyers</Label>
-              </dt>
-              <dd className="text-[15px] leading-snug">{plan.firstBuyers}</dd>
-            </div>
-          </div>
-        </dl>
-      </Card>
-      <section aria-labelledby="route" className="mt-2">
-        <h2 id="route" className="text-[13px] font-semibold text-ink-muted">
+      <h2 className="sr-only">Your new card</h2>
+      <BusinessCard
+        service={plan.service}
+        price={plan.priceLabel}
+        title="Side Starter after week 1"
+        className="mt-3 rotate-[-1.5deg]"
+      />
+      <dl className="mt-4">
+        <dt>
+          <Label>Your first buyers</Label>
+        </dt>
+        <dd className="text-[15px] leading-snug">{plan.firstBuyers}</dd>
+      </dl>
+      <section aria-labelledby="route" className="mt-6">
+        <h2 id="route" className="type-label">
           Your route · 30 days · {plan.minutes} min a day
         </h2>
         <RouteStrip day={1} you="Today" end="First client" className="mt-2" />

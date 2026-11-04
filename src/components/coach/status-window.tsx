@@ -1,10 +1,10 @@
 "use client";
 
-// The status window: where you are on the 30-day route, your title, level, XP and the six stats.
-// Game-style information, calm presentation.
+// The status window: your business card (service, price, title and level), then XP and the six
+// stats. Game-style information, calm presentation.
 
 import { ViewTransition } from "react";
-import { RouteStrip } from "@/components/route";
+import { BusinessCard } from "@/components/business-card";
 import { STAT_KEYS, STATS, TITLES } from "@/lib/game";
 import { useCoach } from "./app-context";
 
@@ -43,19 +43,26 @@ export function StatusWindow() {
   const { level, into, needed } = meta.progress;
 
   return (
-    <section aria-label="Your status" className="rounded-md border border-line bg-surface px-4 pt-3 pb-1">
-      <RouteStrip day={game.day} />
+    <section aria-label="Your status" className="flex flex-col gap-3">
+      <BusinessCard
+        service={meta.plan.service}
+        price={meta.plan.priceLabel}
+        title={
+          <>
+            <ViewTransition key={meta.title} enter="bump" exit="none" default="none">
+              <span className="inline-block">{TITLES[meta.title].label}</span>
+            </ViewTransition>
+            {" · "}
+            <span className="whitespace-nowrap">
+              Level <Ticker value={level} />
+            </span>
+          </>
+        }
+      />
 
-      <div className="mt-3 flex items-baseline justify-between gap-3">
-        <h2 className="font-display text-[22px] leading-tight">
-          <ViewTransition key={meta.title} enter="bump" exit="none" default="none">
-            <span className="inline-block">{TITLES[meta.title].label}</span>
-          </ViewTransition>
-          <span className="text-ink-muted"> · </span>
-          <span className="whitespace-nowrap">
-            Level <Ticker value={level} />
-          </span>
-        </h2>
+      <div className="rounded-md border border-line bg-surface px-4 pt-3 pb-1">
+      <div className="flex items-baseline justify-between gap-3">
+        <h2 className="type-label">Progress to level {level + 1}</h2>
         <p className="text-[13px] whitespace-nowrap text-ink-muted tabular-nums">
           {into} / {needed} XP
         </p>
@@ -72,12 +79,13 @@ export function StatusWindow() {
             className={`py-2 ${i < 3 ? "border-b border-line" : ""}`}
           >
             <dt className="truncate text-[13px] text-ink-muted">{STATS[stat].label}</dt>
-            <dd className="font-display text-lg leading-tight">
+            <dd className="text-lg leading-tight font-bold tabular-nums">
               <Ticker value={game.stats[stat]} />
             </dd>
           </div>
         ))}
       </dl>
+      </div>
     </section>
   );
 }
