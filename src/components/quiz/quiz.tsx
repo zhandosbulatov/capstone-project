@@ -1,0 +1,96 @@
+"use client";
+
+import { useSyncExternalStore, ViewTransition, type ComponentType } from "react";
+import { QuizProvider, SCREEN_IDS, useQuiz, type ScreenId } from "./quiz-context";
+import { QuizBar } from "./quiz-ui";
+import { AdScreen, LandingScreen } from "./screens/intro";
+import {
+  BlockerScreen,
+  GoalScreen,
+  PaidScreen,
+  TimeScreen,
+  YearsScreen,
+} from "./screens/questions";
+import { EmailScreen, LoaderScreen, PlanScreen, TeaserScreen } from "./screens/plan";
+import { CheckoutScreen, PaywallScreen, UpsellScreen } from "./screens/purchase";
+
+const SCREENS: Record<ScreenId, { name: string; Component: ComponentType }> = {
+  ad: { name: "Ad", Component: AdScreen },
+  landing: { name: "Landing + Q1", Component: LandingScreen },
+  years: { name: "Q2 Experience", Component: YearsScreen },
+  paid: { name: "Q3 Paid before", Component: PaidScreen },
+  tease: { name: "Teaser", Component: TeaserScreen },
+  goal: { name: "Q4 Goal", Component: GoalScreen },
+  time: { name: "Q5 Time", Component: TimeScreen },
+  block: { name: "Q6 Blocker", Component: BlockerScreen },
+  loader: { name: "Building plan", Component: LoaderScreen },
+  plan: { name: "Personal plan", Component: PlanScreen },
+  email: { name: "Email", Component: EmailScreen },
+  paywall: { name: "Paywall", Component: PaywallScreen },
+  checkout: { name: "Checkout", Component: CheckoutScreen },
+  upsell: { name: "Upsell", Component: UpsellScreen },
+};
+
+export function Quiz() {
+  return (
+    <QuizProvider>
+      <QuizFrame />
+    </QuizProvider>
+  );
+}
+
+function QuizFrame() {
+  const { state } = useQuiz();
+  const { Component } = SCREENS[state.screen];
+  return (
+    <div className="mx-auto flex w-full max-w-[440px] flex-1 flex-col sm:my-6 sm:rounded-3xl sm:border sm:border-line sm:bg-surface">
+      <QuizBar />
+      <main className="flex flex-1 flex-col">
+        <ViewTransition
+          key={state.screen}
+          enter={{ "nav-forward": "nav-forward", "nav-back": "nav-back", default: "none" }}
+          exit={{ "nav-forward": "nav-forward", "nav-back": "nav-back", default: "none" }}
+          default="none"
+        >
+          <div className="flex flex-1 flex-col">
+            <Component />
+          </div>
+        </ViewTransition>
+      </main>
+      <DemoMap />
+    </div>
+  );
+}
+
+const subscribe = () => () => {};
+
+/** ?demo=1 shows a screen map for jumping around during a live demo. */
+function DemoMap() {
+  const { state, actions } = useQuiz();
+  const demo = useSyncExternalStore(
+    subscribe,
+    () => new URLSearchParams(window.location.search).has("demo"),
+    () => false,
+  );
+  if (!demo) return null;
+  return (
+    <nav aria-label="Demo screen map" className="border-t border-dashed border-line px-4 py-3">
+      <p className="mb-2 text-[11px] font-bold tracking-[0.05em] text-muted uppercase">
+        Demo · jump to a screen
+      </p>
+      <div className="flex flex-wrap gap-1.5">
+        {SCREEN_IDS.map((id, i) => (
+          <button
+            key={id}
+            type="button"
+            onClick={() => actions.jumpTo(id)}
+            aria-current={id === state.screen ? "step" : undefined}
+            className={`cursor-pointer rounded-full border px-2.5 py-1 text-xs ${id === state.screen ? "border-accent font-semibold text-accent" : "border-line text-muted"}`}
+          >
+            {i + 1}. {SCREENS[id].name}
+          </button>
+        ))}
+      </div>
+    </nav>
+  );
+}
