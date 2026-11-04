@@ -35,7 +35,8 @@ function CopyButton({ text }: { text: string }) {
           // Clipboard blocked: the text is still there to select by hand.
         }
       }}
-      className="cursor-pointer rounded-lg border border-line px-2.5 py-1 text-xs font-semibold hover:border-accent focus-visible:outline-2 focus-visible:outline-accent"
+      aria-live="polite"
+      className="min-h-10 min-w-16 cursor-pointer rounded-lg border border-line px-3 text-sm font-semibold hover:border-accent focus-visible:outline-2 focus-visible:outline-accent"
     >
       {copied ? "Copied" : "Copy"}
     </button>
@@ -185,6 +186,11 @@ export function ChatSheet() {
       <p className="mt-2 text-xs text-muted">
         Hugin is an AI. He can be wrong, and he doesn&apos;t give legal, tax or medical advice.
       </p>
+      <div className="mt-3">
+        <Button variant="ghost" onClick={actions.closeSheet}>
+          Close
+        </Button>
+      </div>
     </div>
   );
 }

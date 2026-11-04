@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
-/* Design tokens. Calm warm neutrals with one blue accent, taken from the onboarding prototype. */
+/* Design tokens. Calm warm neutrals with one blue accent, taken from the onboarding prototype.
+   Accent, good and warn are a shade darker than the prototype so small text on their soft
+   backgrounds passes WCAG AA (4.5:1). */
 :root {
   --bg: #fbfaf7;
   --surface: #ffffff;
@@ -8,13 +10,13 @@
   --muted: #5f5e5a;
   --line: #e6e3dc;
   --bar: #c9c6bd;
-  --accent: #2f6fde;
+  --accent: #2862c9;
   --accent-ink: #ffffff;
   --accent-soft: #e7effc;
-  --good: #2e7d4f;
+  --good: #276b44;
   --good-soft: #e5f3ea;
   --bad: #b33a3a;
-  --warn: #a8650b;
+  --warn: #8a5309;
   --warn-soft: #fbf0dc;
   color-scheme: light;
 }
@@ -60,6 +62,28 @@
 
 body {
   background: var(--bg);
+  color: var(--ink);
+}
+
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+
+/* No double-tap zoom delay on controls. */
+a,
+button,
+input,
+label,
+select,
+summary,
+textarea {
+  touch-action: manipulation;
+}
+
+select {
+  background-color: var(--surface);
   color: var(--ink);
 }
 

@@ -57,7 +57,7 @@ const TEMPLATES: QuestTemplate[] = [
     stats: ["reach"],
     count: 3,
     draft: "outreach",
-    hugin: "Same as Tuesday. It gets easier on the third one.",
+    hugin: "Same as day 2. By the third message it stops feeling strange.",
   },
   {
     title: "Follow up with {n} people",
@@ -117,7 +117,7 @@ const TEMPLATES: QuestTemplate[] = [
     stats: ["persuasion", "consistency"],
     count: 3,
     draft: "follow-up",
-    hugin: "\"Tuesday at 6 or Thursday at 7\" gets booked. \"Sometime next week\" doesn't.",
+    hugin: "“Tuesday at 6 or Thursday at 7” gets booked. “Sometime next week” doesn’t.",
   },
   {
     title: "Book your first call",
@@ -185,7 +185,7 @@ const TEMPLATES: QuestTemplate[] = [
     hugin: "Most deals close on the follow-up, not the proposal.",
   },
   {
-    title: "Prepare for \"too expensive\" and \"not now\"",
+    title: "Prepare for “too expensive” and “not now”",
     text: "Write a calm reply to each. Offer a smaller first step instead of a discount.",
     stats: ["pricingPower", "persuasion"],
     hugin: "A smaller scope keeps the price. A discount doesn't.",

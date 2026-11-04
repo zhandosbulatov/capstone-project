@@ -49,7 +49,7 @@ export function StatusWindow() {
           aria-valuenow={into}
         >
           <div
-            className="h-full rounded-full bg-accent transition-[width] duration-700 ease-out"
+            className="h-full rounded-full bg-accent transition-[width] duration-700 ease-out motion-reduce:transition-none"
             style={{ width: `${pct}%` }}
           />
         </div>

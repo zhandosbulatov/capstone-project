@@ -166,9 +166,11 @@ export function EmailScreen() {
       </label>
       <input
         id="email"
+        name="email"
         type="email"
         inputMode="email"
         autoComplete="email"
+        spellCheck={false}
         placeholder="you@example.com"
         value={state.email}
         onChange={(e) => actions.setEmail(e.target.value)}
@@ -179,9 +181,14 @@ export function EmailScreen() {
       />
       <Note>Demo: your email stays in this browser and is never sent anywhere.</Note>
       <Cta>
-        <Button onClick={actions.next} disabled={!valid}>
+        <Button onClick={actions.next} disabled={!valid} aria-describedby={valid ? undefined : "email-hint"}>
           Continue
         </Button>
+        {valid ? null : (
+          <p id="email-hint" className="text-center text-xs text-muted">
+            Enter an email like name@example.com to continue.
+          </p>
+        )}
       </Cta>
     </ScreenBody>
   );

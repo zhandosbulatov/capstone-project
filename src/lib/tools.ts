@@ -54,11 +54,11 @@ export function toolDoc(tool: AnyToolKey, answers: QuizAnswers, offer: string | 
         sections: [
           {
             heading: "Open (30 seconds)",
-            body: `"Thanks for making time. I'd like to understand how you handle this today, and then I'll tell you if I think I can help. Sound fair?"`,
+            body: `“Thanks for making time. I'd like to understand how you handle this today, and then I'll tell you if I think I can help. Sound fair?”`,
           },
           {
             heading: "Three questions",
-            body: `1. "What's not working right now with this?"\n2. "What have you tried so far?"\n3. "If this was sorted in a month, what would be different?"`,
+            body: `1. “What’s not working right now with this?”\n2. “What have you tried so far?”\n3. “If this was sorted in a month, what would be different?”`,
           },
           {
             heading: "Your offer, in one sentence",
@@ -66,7 +66,7 @@ export function toolDoc(tool: AnyToolKey, answers: QuizAnswers, offer: string | 
           },
           {
             heading: "Next step",
-            body: `"I'll send a short proposal by tomorrow: ${skill.deliverable}, for ${priceText}. Does Thursday work to go through it?"`,
+            body: `“I'll send a short proposal by tomorrow: ${skill.deliverable}, for ${priceText}. Does Thursday work to go through it?”`,
           },
         ],
       };
@@ -81,30 +81,30 @@ export function toolDoc(tool: AnyToolKey, answers: QuizAnswers, offer: string | 
           { heading: "Price", body: `${priceText}. 50% to start, 50% on delivery.` },
           {
             heading: "Next step",
-            body: "Reply \"yes\" and I'll send the invoice and a start date.",
+            body: "Reply “yes” and I’ll send the invoice and a start date.",
           },
         ],
       };
     case "followUpScript":
       return {
         title: "Follow-up and closing script",
-        intro: "Most deals close on the follow-up. Keep it short and easy to answer.",
+        intro: "Most deals close on the follow-up. Keep it short, with one question they can answer in a line.",
         sections: [
           {
             heading: "Three days after the proposal",
-            body: `"Hi [name], did the proposal make sense? Happy to adjust the scope if the timing is tight."`,
+            body: `“Hi [name], did the proposal make sense? Happy to adjust the scope if the timing is tight.”`,
           },
           {
             heading: "If they say it's too expensive",
-            body: `"Understood. We could start smaller: [one part of the work] first, then decide on the rest. The price for the full ${skill.service.toLowerCase()} stays ${formatUsd(price)}."`,
+            body: `“Understood. We could start smaller: [one part of the work] first, then decide on the rest. The price for the full ${skill.service.toLowerCase()} stays ${formatUsd(price)}.”`,
           },
           {
             heading: "If they say not now",
-            body: `"No problem. Shall I check back in [two weeks]?"`,
+            body: `“No problem. Shall I check back in [two weeks]?”`,
           },
           {
             heading: "When they say yes",
-            body: `"Great. I'll send the invoice today and we start on [date]."`,
+            body: `“Great. I'll send the invoice today and we start on [date].”`,
           },
         ],
       };
@@ -115,7 +115,7 @@ export function toolDoc(tool: AnyToolKey, answers: QuizAnswers, offer: string | 
         sections: [
           {
             heading: "The message",
-            body: `"Thanks for working with me. Would you answer three quick questions? It helps me a lot."`,
+            body: `“Thanks for working with me. Would you answer three quick questions? It helps me a lot.”`,
           },
           {
             heading: "The questions",
@@ -147,16 +147,16 @@ export function toolDoc(tool: AnyToolKey, answers: QuizAnswers, offer: string | 
 type OutreachWriter = (who: string, result: string, deliverable: string) => string;
 
 const OUTREACH: OutreachWriter[] = [
-  (who) => `"Hi [name], how's [their project] going? I've started helping ${who} on the side and thought of you."`,
-  (_, result) => `"Hi [name], quick one: is getting ${result} on your list this quarter? I've got space for one project."`,
-  (_, __, deliverable) => `"Hi [name], I'm doing a small package now: ${deliverable}. Would that help you, or someone you know?"`,
-  () => `"Hi [name], I saw [something they posted]. Nice work. I do this kind of thing on the side now, if it's ever useful."`,
-  (who) => `"Hi [name], do you know any ${who} who've complained about this lately? I can help."`,
-  () => `"Hi [name], it's been a while. I'm taking on a couple of side projects. Fancy a 15-minute catch-up?"`,
-  (_, result) => `"Hi [name], if ${result} would make your month easier, I'd love to hear what's in the way."`,
-  () => `"Hi [name], no pitch, just a question: how do you handle [the problem] right now?"`,
-  (_, __, deliverable) => `"Hi [name], I've put together ${deliverable} for someone like you. Want to see what it looks like?"`,
-  () => `"Hi [name], you mentioned [the problem] last time we spoke. Still a headache?"`,
-  (who) => `"Hi [name], I'm looking for one or two ${who} to work with this month. Anyone come to mind?"`,
-  () => `"Hi [name], thanks again for the intro last time. If you meet anyone who needs this, I'd be grateful."`,
+  (who) => `“Hi [name], how's [their project] going? I've started helping ${who} on the side and thought of you.”`,
+  (_, result) => `“Hi [name], quick one: is getting ${result} on your list this quarter? I've got space for one project.”`,
+  (_, __, deliverable) => `“Hi [name], I'm doing a small package now: ${deliverable}. Would that help you, or someone you know?”`,
+  () => `“Hi [name], I saw [something they posted]. Nice work. I do this kind of thing on the side now, if it's ever useful.”`,
+  (who) => `“Hi [name], do you know any ${who} who've complained about this lately? I can help.”`,
+  () => `“Hi [name], it's been a while. I'm taking on a couple of side projects. Fancy a 15-minute catch-up?”`,
+  (_, result) => `“Hi [name], if ${result} would make your month easier, I'd love to hear what's in the way.”`,
+  () => `“Hi [name], no pitch, just a question: how do you handle [the problem] right now?”`,
+  (_, __, deliverable) => `“Hi [name], I've put together ${deliverable} for someone like you. Want to see what it looks like?”`,
+  () => `“Hi [name], you mentioned [the problem] last time we spoke. Still a headache?”`,
+  (who) => `“Hi [name], I'm looking for one or two ${who} to work with this month. Anyone come to mind?”`,
+  () => `“Hi [name], thanks again for the intro last time. If you meet anyone who needs this, I'd be grateful.”`,
 ];

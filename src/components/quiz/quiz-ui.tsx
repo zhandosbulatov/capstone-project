@@ -26,7 +26,7 @@ export function QuizBar() {
         aria-valuenow={meta.progress}
       >
         <div
-          className="h-full rounded-full bg-accent transition-[width] duration-300"
+          className="h-full rounded-full bg-accent transition-[width] duration-300 motion-reduce:transition-none"
           style={{ width: `${meta.progress}%` }}
         />
       </div>
@@ -42,8 +42,13 @@ export function ScreenBody({ children }: { children: ReactNode }) {
   return <div className="flex flex-1 flex-col px-5 pt-2 pb-5">{children}</div>;
 }
 
+/** tabIndex -1 lets the quiz move focus here when the screen changes. */
 export function ScreenTitle({ children }: { children: ReactNode }) {
-  return <h1 className="mt-2 mb-1.5 text-[22px] leading-tight font-bold">{children}</h1>;
+  return (
+    <h1 tabIndex={-1} className="mt-2 mb-1.5 text-[22px] leading-tight font-bold focus:outline-none">
+      {children}
+    </h1>
+  );
 }
 
 export function ScreenSub({ children }: { children: ReactNode }) {

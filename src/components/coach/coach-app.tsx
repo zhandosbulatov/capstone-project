@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useSyncExternalStore, ViewTransition } from "react";
+import { useEffect, useRef, useSyncExternalStore, ViewTransition } from "react";
 import { useRouter } from "next/navigation";
 import { loadRaw, parseState, type SavedState } from "@/lib/storage";
-import { AppProvider, isActive, useCoach, type Tab } from "./app-context";
+import { AppProvider, isActive, useCoach, type Sheet as SheetState, type Tab } from "./app-context";
 import { BossCard, LogResultSheet } from "./boss";
 import { DemoPanel } from "./demo-panel";
 import { HuginAvatar } from "./hugin";
@@ -83,22 +83,28 @@ function Shell() {
           Day {game.day} <span className="font-normal text-muted">of 30</span>
         </p>
         <div className="flex items-center gap-3 text-sm font-semibold">
-          <span aria-label={`Streak ${game.streak} days`}>🔥 {game.streak}</span>
-          <span aria-label={`${game.shields} Streak Shields`} title="Streak Shields">
-            🛡 {game.shields}
+          <span title="Streak">
+            <span aria-hidden>🔥 </span>
+            {game.streak}
+            <span className="sr-only"> day streak</span>
+          </span>
+          <span title="Streak Shields">
+            <span aria-hidden>🛡 </span>
+            {game.shields}
+            <span className="sr-only"> Streak Shields</span>
           </span>
           <button
             type="button"
             onClick={() => actions.openSheet({ kind: "chat" })}
             aria-label="Ask Hugin"
-            className="cursor-pointer rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            className="-m-1 cursor-pointer rounded-full p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
           >
-            <HuginAvatar size={32} />
+            <HuginAvatar size={34} />
           </button>
         </div>
       </header>
 
-      <main className="flex flex-1 flex-col px-4">
+      <main id="main" className="flex flex-1 flex-col px-4">
         <ViewTransition key={state.tab} enter="fade-in" exit="fade-out" default="none">
           <div className="flex flex-col gap-3">
             {state.tab === "today" ? (
@@ -149,34 +155,62 @@ function TabBar() {
   );
 }
 
-/** Bottom sheet for logging a result or reading a tool. */
+const SHEET_LABELS: Record<Exclude<SheetState, null>["kind"], string> = {
+  log: "Log a result",
+  tool: "Tool",
+  draft: "Drafts from Hugin",
+  chat: "Ask Hugin",
+};
+
+/** Bottom sheet for logging a result, reading a tool, drafts and chat. */
 function Sheet() {
   const { state, actions } = useCoach();
   const { sheet } = state;
+  const { closeSheet } = actions;
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const isOpen = sheet !== null;
 
+  // Move focus into the sheet when it opens, keep Tab inside it, and give focus back on close.
   useEffect(() => {
-    if (!sheet) return;
+    if (!isOpen) return;
+    const opener = document.activeElement as HTMLElement | null;
+    dialogRef.current?.focus();
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") actions.closeSheet();
+      if (e.key === "Escape") closeSheet();
+      if (e.key !== "Tab" || !dialogRef.current) return;
+      const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])',
+      );
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [sheet, actions]);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      opener?.focus?.();
+    };
+  }, [isOpen, closeSheet]);
 
   if (!sheet) return null;
   return (
     <ViewTransition enter="sheet-in" exit="sheet-out" default="none">
       <div className="fixed inset-0 z-40 flex items-end justify-center">
-        <button
-          type="button"
-          aria-label="Close"
-          onClick={actions.closeSheet}
-          className="absolute inset-0 cursor-default bg-black/40"
-        />
+        <div aria-hidden onClick={closeSheet} className="absolute inset-0 bg-black/40" />
         <div
+          ref={dialogRef}
           role="dialog"
           aria-modal="true"
-          className="relative max-h-[88vh] w-full max-w-[440px] overflow-y-auto rounded-t-3xl bg-surface px-5 pt-5 pb-8"
+          aria-label={SHEET_LABELS[sheet.kind]}
+          tabIndex={-1}
+          className="relative max-h-[88vh] w-full max-w-[440px] overflow-y-auto overscroll-contain rounded-t-3xl bg-surface px-5 pt-5 pb-8 focus:outline-none"
         >
           {sheet.kind === "log" ? (
             <LogResultSheet initial={sheet.result} />

@@ -108,7 +108,10 @@ export default function Home() {
   return (
     <div className="mx-auto w-full max-w-5xl px-4 sm:px-6">
       <header className="flex items-center justify-between py-5">
-        <Link href="/" className="flex items-center gap-2 font-bold">
+        <Link
+          href="/"
+          className="flex items-center gap-2 rounded-lg font-bold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent"
+        >
           <HuginAvatar size={30} />
           AI Business Coach
         </Link>
@@ -120,7 +123,7 @@ export default function Home() {
         </Link>
       </header>
 
-      <main>
+      <main id="main">
         <section className="grid items-center gap-12 pt-8 pb-16 sm:pt-14 lg:grid-cols-[1.1fr_1fr]">
           <div>
             <p className="inline-block rounded-full bg-accent-soft px-3 py-1 text-xs font-bold tracking-[0.04em] text-accent uppercase">

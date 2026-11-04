@@ -1,6 +1,12 @@
 "use client";
 
-import { useSyncExternalStore, ViewTransition, type ComponentType } from "react";
+import {
+  useEffect,
+  useRef,
+  useSyncExternalStore,
+  ViewTransition,
+  type ComponentType,
+} from "react";
 import { QuizProvider, SCREEN_IDS, useQuiz, type ScreenId } from "./quiz-context";
 import { QuizBar } from "./quiz-ui";
 import { AdScreen, LandingScreen } from "./screens/intro";
@@ -42,10 +48,21 @@ export function Quiz() {
 function QuizFrame() {
   const { state } = useQuiz();
   const { Component } = SCREENS[state.screen];
+  const mainRef = useRef<HTMLElement>(null);
+  const shownScreen = useRef(state.screen);
+
+  // When the screen changes, move focus to its heading so keyboard and screen reader users
+  // start at the top of the new screen instead of on a button that no longer exists.
+  useEffect(() => {
+    if (shownScreen.current === state.screen) return;
+    shownScreen.current = state.screen;
+    const target = mainRef.current?.querySelector<HTMLElement>("h1") ?? mainRef.current;
+    target?.focus({ preventScroll: true });
+  }, [state.screen]);
   return (
     <div className="mx-auto flex w-full max-w-[440px] flex-1 flex-col sm:my-6 sm:rounded-3xl sm:border sm:border-line sm:bg-surface">
       <QuizBar />
-      <main className="flex flex-1 flex-col">
+      <main id="main" ref={mainRef} tabIndex={-1} className="flex flex-1 flex-col focus:outline-none">
         <ViewTransition
           key={state.screen}
           enter={{ "nav-forward": "nav-forward", "nav-back": "nav-back", default: "none" }}

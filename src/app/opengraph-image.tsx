@@ -8,7 +8,7 @@ export const contentType = "image/png";
 const BG = "#fbfaf7";
 const INK = "#1b1b1a";
 const MUTED = "#5f5e5a";
-const ACCENT = "#2f6fde";
+const ACCENT = "#2862c9";
 const ACCENT_SOFT = "#e7effc";
 
 export default function OpengraphImage() {

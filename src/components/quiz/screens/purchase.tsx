@@ -92,19 +92,24 @@ export function PaywallScreen() {
 
       <ScreenTitle>Get your personal plan</ScreenTitle>
 
-      <div role="radiogroup" aria-label="Choose a plan">
+      <fieldset>
+        <legend className="sr-only">Choose a plan</legend>
         {PLAN_KEYS.map((key) => {
           const plan = PLANS[key];
           const checked = state.plan === key;
           return (
-            <button
+            <label
               key={key}
-              type="button"
-              role="radio"
-              aria-checked={checked}
-              onClick={() => actions.choosePlan(key)}
-              className={`relative my-2 grid w-full cursor-pointer grid-cols-[22px_1fr_auto] items-center gap-2.5 rounded-[14px] border-[1.5px] p-3.5 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${checked ? "border-accent bg-accent-soft" : "border-line bg-surface"}`}
+              className={`relative my-2 grid w-full cursor-pointer grid-cols-[22px_1fr_auto] items-center gap-2.5 rounded-[14px] border-[1.5px] p-3.5 text-left has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent ${checked ? "border-accent bg-accent-soft" : "border-line bg-surface"}`}
             >
+              <input
+                type="radio"
+                name="plan"
+                value={key}
+                checked={checked}
+                onChange={() => actions.choosePlan(key)}
+                className="sr-only"
+              />
               {plan.tag ? (
                 <span className="absolute -top-2.5 right-3 rounded-full bg-accent px-2 py-[3px] text-[10.5px] font-bold tracking-[0.05em] text-accent-ink uppercase">
                   {plan.tag}
@@ -130,10 +135,10 @@ export function PaywallScreen() {
                 <b className="block text-[17px]">{formatUsd(introPerDay(plan))}</b>
                 <span className="text-[11.5px] text-muted">per day</span>
               </span>
-            </button>
+            </label>
           );
         })}
-      </div>
+      </fieldset>
 
       <Card>
         <b className="text-sm">How billing works</b>

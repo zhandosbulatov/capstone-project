@@ -87,6 +87,7 @@ function Day1Quest() {
               key={i}
               aria-label={`Name ${i + 1}`}
               placeholder={`Name ${i + 1}`}
+              autoComplete="off"
               value={name}
               onChange={(e) =>
                 setNames((prev) => prev.map((n, j) => (j === i ? e.target.value : n)))
@@ -191,7 +192,7 @@ function QuestDone() {
         Day {state.saved.game.day} is done. Your next quest opens tomorrow.
       </p>
       <p className="mt-3 text-sm text-muted">
-        Got a reply, a call or a payment today? Log it on the boss card below.
+        Log any reply, call or payment on the boss card below.
       </p>
     </Card>
   );
