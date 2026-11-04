@@ -396,6 +396,30 @@ export function reachGoal(prev: GameState): Step {
   return finalize(prev, { ...prev, goalReached: true }, []);
 }
 
+/** Demo mode only: add XP without a quest or result. */
+export function grantXp(prev: GameState, amount: number): Step {
+  return finalize(prev, { ...prev, xp: prev.xp + amount }, [{ kind: "xp", amount }]);
+}
+
+/** Days from the plan start to `today`, counting the start day as day 1. */
+export function calendarDay(planStartedAt: Date, today: Date): number {
+  const start = new Date(planStartedAt.getFullYear(), planStartedAt.getMonth(), planStartedAt.getDate());
+  const now = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  return Math.max(1, Math.round((now.getTime() - start.getTime()) / 86_400_000) + 1);
+}
+
+/** Bring the game up to the calendar: every day the user didn't open the app counts as missed. */
+export function catchUp(prev: GameState, day: number): Step {
+  let state = prev;
+  const events: GameEvent[] = [];
+  while (state.day < day) {
+    const step = advanceDay(state);
+    state = step.state;
+    events.push(...step.events);
+  }
+  return { state, events };
+}
+
 /** Adds level-up and new-title events by comparing before and after. */
 function finalize(prev: GameState, next: GameState, events: GameEvent[]): Step {
   const before = levelFromXp(prev.xp);

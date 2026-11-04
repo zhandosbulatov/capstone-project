@@ -112,6 +112,47 @@ body {
     var(--duration-move) ease-in-out both slide;
 }
 
+/* Cross-fade for tabs and quest card states. */
+::view-transition-old(.fade-out) {
+  animation: var(--duration-exit) ease-in both fade reverse;
+}
+::view-transition-new(.fade-in) {
+  animation: var(--duration-enter) ease-out var(--duration-exit) both fade;
+}
+
+/* A number or title that just grew: a small, calm lift. */
+@keyframes bump {
+  from { transform: translateY(6px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+::view-transition-new(.bump) {
+  animation: 260ms ease-out both bump;
+}
+
+/* Toasts rise in and fade out. */
+@keyframes rise {
+  from { transform: translateY(12px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+::view-transition-new(.toast-in) {
+  animation: 220ms ease-out both rise;
+}
+::view-transition-old(.toast-out) {
+  animation: 180ms ease-in both fade reverse;
+}
+
+/* Bottom sheet slides up. */
+@keyframes sheet-up {
+  from { transform: translateY(40px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+::view-transition-new(.sheet-in) {
+  animation: 260ms ease-out both sheet-up;
+}
+::view-transition-old(.sheet-out) {
+  animation: 200ms ease-in both sheet-up reverse;
+}
+
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(*),
   ::view-transition-new(*),

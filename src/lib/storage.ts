@@ -22,6 +22,10 @@ export type SavedState = {
   planStartedAt: string | null;
   game: GameState;
   cancelled: boolean;
+  /** The offer the user wrote on day 1. */
+  offer: string | null;
+  /** The warm list from day 1. */
+  warmList: string[];
 };
 
 export function emptyState(): SavedState {
@@ -33,20 +37,34 @@ export function emptyState(): SavedState {
     planStartedAt: null,
     game: createGame(),
     cancelled: false,
+    offer: null,
+    warmList: [],
   };
 }
 
-/** Returns null on the server, in private windows with storage blocked, or for an old version. */
-export function loadState(): SavedState | null {
+/** The raw saved string, or null if nothing is saved or storage is blocked. */
+export function loadRaw(): string | null {
   try {
-    const raw = window.localStorage.getItem(KEY);
-    if (!raw) return null;
+    return window.localStorage.getItem(KEY);
+  } catch {
+    return null;
+  }
+}
+
+/** Returns null for missing, broken or old-version data. */
+export function parseState(raw: string | null): SavedState | null {
+  if (!raw) return null;
+  try {
     const parsed = JSON.parse(raw) as Partial<SavedState>;
     if (parsed.version !== VERSION || !parsed.game) return null;
     return { ...emptyState(), ...parsed } as SavedState;
   } catch {
     return null;
   }
+}
+
+export function loadState(): SavedState | null {
+  return parseState(loadRaw());
 }
 
 /** Returns false if the browser refused to save. */

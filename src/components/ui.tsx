@@ -1,5 +1,10 @@
 // Small shared building blocks. Variants are explicit strings, not boolean flags.
 
+/** "The reply in a chat, email or DM" → "the reply in a chat, email or DM" */
+export function lowerFirst(text: string): string {
+  return text.charAt(0).toLowerCase() + text.slice(1);
+}
+
 import type { ComponentProps, ReactNode } from "react";
 
 type ButtonVariant = "primary" | "dark" | "outline" | "ghost";

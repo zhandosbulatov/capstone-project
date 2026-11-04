@@ -211,8 +211,11 @@ export function QuizProvider({ children }: { children: ReactNode }) {
           planStartedAt: today.toISOString(),
           game: createGame(),
           cancelled: false,
+          offer: null,
+          warmList: [],
         }));
-        router.push("/app");
+        const demo = new URLSearchParams(window.location.search).has("demo");
+        router.push(demo ? "/app?demo=1" : "/app");
       },
     };
   }, [navigate, router, state.answers, state.email, state.plan, state.screen, today]);

@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   advanceDay,
+  calendarDay,
+  catchUp,
   completeQuest,
   createGame,
   formatEvent,
@@ -121,6 +123,29 @@ describe("streak, Streak Shield and recovery", () => {
     expect(events).toEqual([]);
     expect(state.day).toBe(2);
     expect(state.recovery).toBeNull();
+  });
+});
+
+describe("calendar", () => {
+  it("counts the start day as day 1, ignoring the time of day", () => {
+    const start = new Date(2026, 10, 4, 23, 30);
+    expect(calendarDay(start, new Date(2026, 10, 4, 8))).toBe(1);
+    expect(calendarDay(start, new Date(2026, 10, 5, 0, 5))).toBe(2);
+    expect(calendarDay(start, new Date(2026, 11, 4))).toBe(31);
+  });
+
+  it("catching up after two days away uses the shield, then offers a recovery quest", () => {
+    const week = playDays(createGame(), 7); // day 8, streak 7, one shield
+    const { state, events } = catchUp(week, 10);
+    expect(state.day).toBe(10);
+    expect(events.map((e) => e.kind)).toEqual(["shieldUsed", "recoveryOffered"]);
+    expect(state.streak).toBe(7);
+    expect(state.recovery).toEqual({ missedDay: 9, day: 10 });
+  });
+
+  it("does nothing when the game is already ahead of the calendar (demo mode)", () => {
+    const ahead = { ...createGame(), day: 14 };
+    expect(catchUp(ahead, 3)).toEqual({ state: ahead, events: [] });
   });
 });
 
