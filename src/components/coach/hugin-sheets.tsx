@@ -78,7 +78,7 @@ export function DraftSheet({ kind }: { kind: DraftKind }) {
         ) : (
           state.drafts.map((draft, i) => (
             <div key={i} className="rounded-md border border-line bg-canvas px-3.5 py-3">
-              <p className="text-[15px] whitespace-pre-line">{draft}</p>
+              <p className="text-base whitespace-pre-line">{draft}</p>
               <div className="mt-2 flex justify-end">
                 <CopyButton text={draft} />
               </div>
@@ -139,14 +139,14 @@ export function ChatSheet() {
             m.role === "user" ? (
               <p
                 key={i}
-                className="max-w-[85%] self-end rounded-md bg-brand px-3.5 py-2.5 text-[15px] whitespace-pre-line text-on-bright"
+                className="max-w-[85%] self-end rounded-md bg-brand px-3.5 py-2.5 text-base whitespace-pre-line text-on-bright"
               >
                 {m.text}
               </p>
             ) : (
               <div key={i} className="flex max-w-[92%] items-start gap-2">
                 <HuginAvatar size={24} />
-                <p className="rounded-md bg-canvas px-3.5 py-2.5 text-[15px] whitespace-pre-line">
+                <p className="rounded-md bg-canvas px-3.5 py-2.5 text-base whitespace-pre-line">
                   {m.text || "…"}
                 </p>
               </div>
@@ -173,7 +173,7 @@ export function ChatSheet() {
           placeholder="Type a question"
           autoComplete="off"
           maxLength={2000}
-          className="min-w-0 flex-1 rounded-md border-[1.5px] border-line-strong bg-surface px-3.5 py-3 text-[15px] focus:border-ink focus:outline-2 focus:outline-offset-1 focus:outline-ink"
+          className="min-w-0 flex-1 rounded-md border-[1.5px] border-line-strong bg-surface px-3.5 py-3 text-base focus:border-ink focus:outline-2 focus:outline-offset-1 focus:outline-ink"
         />
         <button
           type="submit"

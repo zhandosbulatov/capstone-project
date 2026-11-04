@@ -68,7 +68,7 @@ export function RouteStrip({
       ))}
       <circle cx={xd} cy={Y} r={8} className="fill-ink" />
       <circle cx={xd} cy={Y} r={3} className="fill-surface" />
-      <g className="text-[11px]">
+      <g className="text-xs">
         {nearStart ? null : (
           <text x={PAD - 6} y={42} className="fill-ink-muted">
             {start}
@@ -131,7 +131,7 @@ export function Stop({
       <span aria-hidden className={`absolute z-10 rounded-full ${MARKERS[kind]}`}>
         {kind === "bossDone" ? <Icon name="check" size={12} strokeWidth={3} /> : null}
       </span>
-      <p className="text-[13px] leading-[18px] font-semibold text-ink-muted">{label}</p>
+      <p className="text-label leading-[18px] font-semibold text-ink-muted">{label}</p>
       {children}
     </li>
   );

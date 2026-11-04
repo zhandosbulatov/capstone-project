@@ -43,7 +43,7 @@ function Section({
 }) {
   return (
     <section aria-labelledby={id} className="border-t border-line py-14 sm:py-20">
-      <h2 id={id} className="font-display text-[31px] leading-[1.15] sm:text-[39px]">
+      <h2 id={id} className="font-display text-h1 leading-[1.15] sm:text-display">
         {title}
       </h2>
       {intro ? <p className="mt-3 max-w-2xl text-lg text-ink-muted">{intro}</p> : null}
@@ -130,7 +130,7 @@ export default function Home() {
       <main id="main">
         <section className="grid items-center gap-12 pt-8 pb-16 sm:pt-14 lg:grid-cols-[1.1fr_1fr]">
           <div>
-            <h1 className="type-display text-[39px] sm:text-[49px]">
+            <h1 className="type-display text-display sm:text-hero">
               <span className="block text-brand-ink">Good at your job?</span>
               Someone will pay you for it.
             </h1>
@@ -156,7 +156,7 @@ export default function Home() {
           <ul className="grid gap-x-8 gap-y-6 sm:grid-cols-3">
             {INSTEAD.map((item) => (
               <li key={item.title} className="border-t-[1.5px] border-ink pt-3">
-                <p className="text-[13px] font-semibold text-ink-muted">Instead of</p>
+                <p className="text-label font-semibold text-ink-muted">Instead of</p>
                 <p className="mt-0.5 font-display text-xl text-ink-muted line-through decoration-brand decoration-2">
                   {item.title}
                 </p>
@@ -199,7 +199,7 @@ export default function Home() {
                     aria-hidden
                     className="absolute top-0 left-0 size-[22px] rounded-full border-4 border-ink bg-surface"
                   />
-                  <p className="text-[13px] font-semibold text-ink-muted">
+                  <p className="text-label font-semibold text-ink-muted">
                     Week {boss.week} · day {boss.week * 7}
                   </p>
                   <p className="mt-0.5 font-display text-lg">{boss.name}</p>
@@ -220,7 +220,7 @@ export default function Home() {
             {HUGIN_LINES.map((line) => (
               <li key={line} className="flex items-start gap-3">
                 <HuginAvatar size={34} />
-                <p className="rounded-md border border-line bg-surface px-4 py-2.5 text-[17px]">
+                <p className="rounded-md border border-line bg-surface px-4 py-2.5 text-lg">
                   {line}
                 </p>
               </li>
@@ -368,7 +368,7 @@ export default function Home() {
           className="grid items-center gap-8 border-t border-line py-14 sm:py-20 lg:grid-cols-2"
         >
           <div>
-            <h2 id="start" className="font-display text-[31px] leading-[1.15] sm:text-[39px]">
+            <h2 id="start" className="font-display text-h1 leading-[1.15] sm:text-display">
               Your plan takes one minute
             </h2>
             <p className="mt-3 max-w-lg text-lg text-ink-muted">

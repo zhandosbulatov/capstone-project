@@ -45,7 +45,7 @@ function OfferTimer({ endsAt }: { endsAt: number | null }) {
   // Clamp: the first tick can land a few ms before the end time is set.
   const left = endsAt && now ? Math.min(OFFER_MS, endsAt - now) : OFFER_MS;
   return (
-    <div className="flex items-center justify-between gap-2.5 rounded-md bg-warning-soft px-3.5 py-2.5 text-[13.5px] font-semibold text-warning-ink">
+    <div className="flex items-center justify-between gap-2.5 rounded-md bg-warning-soft px-3.5 py-2.5 text-label font-semibold text-warning-ink">
       <span>{left > 0 ? "50% off your first period is reserved for" : "Your 50% off is still applied"}</span>
       <b className="text-base tabular-nums" aria-live="off">
         {formatCountdown(left)}
@@ -76,17 +76,17 @@ export function PaywallScreen() {
         <div className="rounded-md border border-line bg-surface px-3 py-2.5">
           <Label>Now</Label>
           <b>Salary only</b>
-          <p className="text-[11.5px] text-ink-muted">{skill.label} only at work</p>
+          <p className="text-xs text-ink-muted">{skill.label} only at work</p>
         </div>
         <div className="rounded-md border border-success bg-success-soft px-3 py-2.5">
           <Label>By {meta.plan.clientByLabel}</Label>
           <b>First client</b>
-          <p className="text-[11.5px] text-ink-muted">
+          <p className="text-xs text-ink-muted">
             {skill.service} at {formatUsd(meta.plan.price)}
           </p>
         </div>
       </div>
-      <p className="text-[12px] text-ink-muted">
+      <p className="text-xs text-ink-muted">
         Your 6-month goal: {GOALS[meta.answers.goal].label.toLowerCase()}.
       </p>
 
@@ -122,7 +122,7 @@ export function PaywallScreen() {
               <span>
                 <span className="font-bold">{plan.name}</span>
                 <br />
-                <s className="text-[12.5px] text-ink-muted">
+                <s className="text-label text-ink-muted">
                   <span className="sr-only">Full price </span>
                   {formatUsd(plan.fullUsd)}
                 </s>{" "}
@@ -132,8 +132,8 @@ export function PaywallScreen() {
                 </b>
               </span>
               <span className="text-right">
-                <b className="block text-[17px]">{formatUsd(introPerDay(plan))}</b>
-                <span className="text-[11.5px] text-ink-muted">per day</span>
+                <b className="block text-lg">{formatUsd(introPerDay(plan))}</b>
+                <span className="text-xs text-ink-muted">per day</span>
               </span>
             </label>
           );
@@ -153,16 +153,16 @@ export function PaywallScreen() {
           ].map(([when, what]) => (
             <li
               key={when}
-              className="grid grid-cols-[64px_1fr] gap-2.5 border-b border-dashed border-line py-1.5 text-[13.5px] last:border-b-0"
+              className="grid grid-cols-[64px_1fr] gap-2.5 border-b border-dashed border-line py-1.5 text-label last:border-b-0"
             >
-              <b className="text-[13px] font-semibold text-ink-muted">{when}</b>
+              <b className="text-label font-semibold text-ink-muted">{when}</b>
               <span>{what}</span>
             </li>
           ))}
         </ol>
       </Card>
 
-      <label className="mt-3 mb-1 flex cursor-pointer items-start gap-2.5 text-[13px]">
+      <label className="mt-3 mb-1 flex cursor-pointer items-start gap-2.5 text-label">
         <input
           type="checkbox"
           checked={state.consent}
@@ -178,7 +178,7 @@ export function PaywallScreen() {
         </span>
       </label>
 
-      <p className="my-2.5 border-l-[3px] border-line pl-3 text-[13.5px] text-ink-muted">
+      <p className="my-2.5 border-l-[3px] border-line pl-3 text-label text-ink-muted">
         Reviews from verified users will appear here.
       </p>
       <Note>14-day money-back guarantee if you finish the week 1 quests.</Note>
@@ -224,7 +224,7 @@ export function CheckoutScreen() {
           <span>{plan.name} · first period</span>
           <b>{formatUsd(plan.introUsd)}</b>
         </div>
-        <p className="mt-1.5 text-[11.5px] text-ink-muted">
+        <p className="mt-1.5 text-xs text-ink-muted">
           Then {formatUsd(plan.fullUsd)} every {weeksOf(plan)}. Reminder email 3 days before. Cancel
           anytime.
         </p>

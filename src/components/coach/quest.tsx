@@ -64,7 +64,7 @@ export function TodayRoute() {
       </Stop>
       {last >= first ? (
         <Stop kind="minor" label={first === last ? `Day ${first}` : `Days ${first}–${last}`}>
-          <p className="mt-0.5 text-[15px]">One quest each morning</p>
+          <p className="mt-0.5 text-base">One quest each morning</p>
         </Stop>
       ) : null}
       <Stop

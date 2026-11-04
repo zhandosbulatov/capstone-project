@@ -4,12 +4,12 @@ export const alt = "AI Business Coach: Good at your job? Someone will pay you fo
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-// Colours from the design tokens (light theme). ACCENT is the route line colour.
-const BG = "#f9fafc";
-const INK = "#1a2436";
-const MUTED = "#5c6577";
-const ACCENT = "#e5632a";
-const ACCENT_SOFT = "#f8d9c6";
+// Colours from the design tokens (light theme): canvas, ink, ink-muted, brand peach and sunshine. OG images cannot read CSS variables.
+const BG = "#F9F6F3";
+const INK = "#1B1624";
+const MUTED = "#5F5B66";
+const ACCENT = "#FD976D";
+const ACCENT_SOFT = "#FDD46B";
 
 export default function OpengraphImage() {
   return new ImageResponse(

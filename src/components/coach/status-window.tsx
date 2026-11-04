@@ -63,7 +63,7 @@ export function StatusWindow() {
       <div className="rounded-md border border-line bg-surface px-4 pt-3 pb-1">
       <div className="flex items-baseline justify-between gap-3">
         <h2 className="type-label">Progress to level {level + 1}</h2>
-        <p className="text-[13px] whitespace-nowrap text-ink-muted tabular-nums">
+        <p className="text-label whitespace-nowrap text-ink-muted tabular-nums">
           {into} / {needed} XP
         </p>
       </div>
@@ -78,7 +78,7 @@ export function StatusWindow() {
             title={STATS[stat].meaning}
             className={`py-2 ${i < 3 ? "border-b border-line" : ""}`}
           >
-            <dt className="truncate text-[13px] text-ink-muted">{STATS[stat].label}</dt>
+            <dt className="truncate text-label text-ink-muted">{STATS[stat].label}</dt>
             <dd className="text-lg leading-tight font-bold tabular-nums">
               <Ticker value={game.stats[stat]} />
             </dd>

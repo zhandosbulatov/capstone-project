@@ -16,18 +16,18 @@ export function AdScreen() {
         <header className="flex items-center gap-2.5 px-3 py-2.5">
           <div
             aria-hidden
-            className="grid size-8 place-items-center rounded-full bg-brand text-[13px] font-bold text-on-bright"
+            className="grid size-8 place-items-center rounded-full bg-brand text-label font-bold text-on-bright"
           >
             AI
           </div>
           <div>
-            <p className="text-[13.5px] font-bold">AI Business Coach</p>
-            <p className="text-[11.5px] text-ink-muted">Sponsored</p>
+            <p className="text-label font-bold">AI Business Coach</p>
+            <p className="text-xs text-ink-muted">Sponsored</p>
           </div>
         </header>
         <div className="flex aspect-square flex-col justify-center gap-2.5 border-y border-line bg-surface p-6">
           <p className="font-display text-lg text-ink-muted">Good at your job?</p>
-          <p className="font-display text-[28px] leading-tight">Someone will pay you for it.</p>
+          <p className="font-display text-h1 leading-tight">Someone will pay you for it.</p>
           <p className="text-ink-muted">
             20 minutes a day, without quitting your job.
           </p>
@@ -42,7 +42,7 @@ export function AdScreen() {
           <p className="text-sm">
             <b>Find your first client</b>
             <br />
-            <span className="text-[11.5px] text-ink-muted">Take the 1-minute quiz</span>
+            <span className="text-xs text-ink-muted">Take the 1-minute quiz</span>
           </p>
           <button
             type="button"

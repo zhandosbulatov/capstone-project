@@ -21,7 +21,7 @@ function ToastItem({ toast, delay }: { toast: Toast; delay: number }) {
     <li className="pointer-events-auto rounded-md bg-ink px-3.5 py-2.5 text-sm text-canvas shadow-lg">
       <p className="font-semibold">{toast.text}</p>
       {toast.hugin ? (
-        <p className="mt-1 flex items-center gap-2 text-[13px] opacity-80">
+        <p className="mt-1 flex items-center gap-2 text-label opacity-80">
           <HuginAvatar size={20} />
           {toast.hugin}
         </p>

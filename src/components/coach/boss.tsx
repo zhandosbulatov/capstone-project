@@ -108,7 +108,7 @@ export function LogResultSheet({ initial }: { initial?: ResultType }) {
         ))}
       </select>
 
-      <div className="mt-4 rounded-md bg-warning-soft px-3.5 py-3 text-[13px] text-warning-ink">
+      <div className="mt-4 rounded-md bg-warning-soft px-3.5 py-3 text-label text-warning-ink">
         Crop or blur other people&apos;s names before you upload. We check the screenshot and keep
         only the verdict, never the image.
       </div>

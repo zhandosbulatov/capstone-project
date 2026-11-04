@@ -65,9 +65,9 @@ export function AppPreview() {
       <Rail className="mt-3">
         <Stop kind="now" segment="none" label="Day 8 · today · 20 min">
           <div className="mt-1.5 rounded-md border border-line bg-surface p-3">
-            <p className="font-display text-[17px] leading-snug">Offer a 15-minute call to 3 people</p>
+            <p className="font-display text-lg leading-snug">Offer a 15-minute call to 3 people</p>
             <Rewards parts={["+10 XP", "Reach +1", "Persuasion +1"]} />
-            <p className="mt-2.5 flex items-start gap-2 text-[13px] text-ink-muted">
+            <p className="mt-2.5 flex items-start gap-2 text-label text-ink-muted">
               <HuginAvatar size={22} />
               <span className="pt-0.5">Fifteen minutes gets a yes. An hour gets a maybe.</span>
             </p>

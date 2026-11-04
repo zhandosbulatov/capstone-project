@@ -34,13 +34,13 @@ export function BusinessCard({
 }) {
   return (
     <div className={`relative rounded-md bg-sun px-5 pt-4 pb-14 text-on-bright ${className}`}>
-      {name ? <p className="font-display text-[21px] leading-tight">{name}</p> : null}
-      <p className={`font-semibold leading-snug ${name ? "mt-1.5 text-[15px]" : "font-display text-xl"}`}>
+      {name ? <p className="font-display text-h3 leading-tight">{name}</p> : null}
+      <p className={`font-semibold leading-snug ${name ? "mt-1.5 text-base" : "font-display text-xl"}`}>
         {service}
       </p>
       <p className="mt-2 font-display text-lg">{price}</p>
       {children}
-      <span className="absolute bottom-3.5 left-4 rounded-full bg-on-bright px-2.5 py-0.5 text-[13px] font-bold text-sun">
+      <span className="absolute bottom-3.5 left-4 rounded-full bg-on-bright px-2.5 py-0.5 text-label font-bold text-sun">
         {title}
       </span>
       <span className="absolute right-4 bottom-3">
@@ -64,7 +64,7 @@ export function HeroCards() {
       <span aria-hidden className="absolute top-12 -right-2 size-56 rounded-full bg-accent/35 sm:size-64" />
       <div className="absolute top-0 left-0 w-[78%] -rotate-[5deg] rounded-md border border-line bg-surface p-4 pb-10 text-ink-muted">
         <p className="font-display text-lg text-ink/60">Alex Morgan</p>
-        <p className="text-[13px]">Designer, Northwind Ltd</p>
+        <p className="text-label">Designer, Northwind Ltd</p>
       </div>
       <div className="card-flip absolute top-24 right-0 w-[82%] rotate-[3deg] [transform-style:preserve-3d] sm:top-28">
         <BusinessCard

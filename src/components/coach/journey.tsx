@@ -23,7 +23,7 @@ export function Journey() {
 
   return (
     <div className="flex flex-col gap-3">
-      <h1 className="font-display text-[28px] leading-tight">Your journey</h1>
+      <h1 className="font-display text-h1 leading-tight">Your journey</h1>
 
       <section aria-labelledby="map" className="rounded-md border border-line bg-surface px-4 pt-3 pb-4">
         <h2 id="map" className="sr-only">
@@ -43,7 +43,7 @@ export function Journey() {
                 segment={i === BOSS_KEYS.length - 1 ? "none" : travelled ? "travelled" : "ahead"}
                 label={`Week ${boss.week} · day ${boss.week * 7}${current ? " · you are here" : ""}`}
               >
-                <p className="font-display text-[17px] leading-snug">
+                <p className="font-display text-lg leading-snug">
                   {boss.name}
                   {beaten ? <span className="sr-only"> (beaten)</span> : null}
                 </p>
@@ -141,7 +141,7 @@ export function ToolSheet({ tool }: { tool: AnyToolKey }) {
         {doc.sections.map((section) => (
           <section key={section.heading}>
             <h3 className="text-sm font-bold">{section.heading}</h3>
-            <p className="mt-0.5 text-[15px] whitespace-pre-line">{section.body}</p>
+            <p className="mt-0.5 text-base whitespace-pre-line">{section.body}</p>
           </section>
         ))}
       </div>

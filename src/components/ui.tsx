@@ -97,7 +97,7 @@ export function Button({
 
 /** Text inputs, textareas and selects. 3:1 border, ink border and ring on focus. */
 export const fieldClass =
-  "w-full rounded-md border-[1.5px] border-line-strong bg-surface px-3.5 py-3 text-[15px] text-ink placeholder:text-ink-muted focus:border-ink focus:outline-2 focus:outline-offset-1 focus:outline-ink aria-invalid:border-error-ink disabled:opacity-45";
+  "w-full rounded-md border-[1.5px] border-line-strong bg-surface px-3.5 py-3 text-base text-ink placeholder:text-ink-muted focus:border-ink focus:outline-2 focus:outline-offset-1 focus:outline-ink aria-invalid:border-error-ink disabled:opacity-45";
 
 export type PillTone = "brand" | "accent" | "success" | "warning";
 
@@ -136,7 +136,7 @@ export function Label({ children }: { children: ReactNode }) {
 /** The reward as peach chips: peach always means progress. */
 export function Rewards({ parts, note }: { parts: string[]; note?: string }) {
   return (
-    <p className="mt-2.5 flex flex-wrap items-center gap-1.5 text-[13px]">
+    <p className="mt-2.5 flex flex-wrap items-center gap-1.5 text-label">
       <span className="sr-only">Reward: </span>
       {parts.map((part) => (
         <span key={part} className="rounded-full bg-brand-soft px-2.5 py-0.5 font-semibold text-brand-ink">

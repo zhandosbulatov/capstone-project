@@ -44,7 +44,7 @@ export function ScreenBody({ children }: { children: ReactNode }) {
 /** tabIndex -1 lets the quiz move focus here when the screen changes. */
 export function ScreenTitle({ children }: { children: ReactNode }) {
   return (
-    <h1 tabIndex={-1} className="mt-2 mb-1.5 font-display text-[25px] leading-tight focus:outline-none">
+    <h1 tabIndex={-1} className="mt-2 mb-1.5 font-display text-h2 leading-tight focus:outline-none">
       {children}
     </h1>
   );

@@ -120,7 +120,7 @@ export function PlanScreen() {
         <dt>
           <Label>Your first buyers</Label>
         </dt>
-        <dd className="text-[15px] leading-snug">{plan.firstBuyers}</dd>
+        <dd className="text-base leading-snug">{plan.firstBuyers}</dd>
       </dl>
       <section aria-labelledby="route" className="mt-6">
         <h2 id="route" className="type-label">
@@ -135,7 +135,7 @@ export function PlanScreen() {
               segment={i === plan.weeks.length - 1 ? "none" : "ahead"}
               label={`Week ${week.week} · day ${week.week * 7}`}
             >
-              <p className="font-display text-[17px] leading-snug">{week.title}</p>
+              <p className="font-display text-lg leading-snug">{week.title}</p>
               <p className="text-sm text-ink-muted">{week.text}</p>
             </Stop>
           ))}
