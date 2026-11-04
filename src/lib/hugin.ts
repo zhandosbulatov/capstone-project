@@ -100,7 +100,7 @@ export const DRAFT_TASKS: Record<DraftKind, string> = {
   offer:
     "Write 3 versions of the user's offer, each one sentence a client would understand without context: who it's for, what they get, the price.",
   outreach:
-    "Write 3 short warm messages (2–4 sentences each) to people who have seen the user's work. Open with them, not the offer. Mention the service lightly and end with an easy question. No hard sell.",
+    "Write 3 short warm messages (2–4 sentences each) to people who have seen the user's work. Open with them, not the offer. Mention the service lightly and end with an easy question. No hard sell. Never state a memory, project or conversation you share with them; if one would help, leave a bracket for the user to fill, like [something you worked on together].",
   "follow-up":
     "Write 3 short, friendly follow-up messages (1–3 sentences each) for someone who hasn't replied, or who showed interest but went quiet. No guilt, no pressure, one easy next step.",
   proposal:
