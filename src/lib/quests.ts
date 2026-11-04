@@ -81,7 +81,7 @@ const TEMPLATES: QuestTemplate[] = [
     stats: ["reach", "persuasion"],
     count: 3,
     draft: "outreach",
-    hugin: "Fifteen minutes is easy to say yes to. An hour isn't.",
+    hugin: "Fifteen minutes gets a yes. An hour gets a maybe.",
   },
   {
     title: "Prepare 3 questions for your calls",
