@@ -1,44 +1,72 @@
 @import "tailwindcss";
 
-/* Design tokens. Calm warm neutrals with one blue accent, taken from the onboarding prototype.
-   Accent, good and warn are a shade darker than the prototype so small text on their soft
-   backgrounds passes WCAG AA (4.5:1). */
+/* Design tokens: the route map. Navy ink and grey carry the interface; one signal-orange line
+   (route) carries progress and is used for nothing else. Source of truth: DESIGN.md. */
 :root {
-  --bg: #fbfaf7;
-  --surface: #ffffff;
-  --ink: #1b1b1a;
-  --muted: #5f5e5a;
-  --line: #e6e3dc;
-  --bar: #c9c6bd;
-  --accent: #2862c9;
-  --accent-ink: #ffffff;
-  --accent-soft: #e7effc;
-  --good: #276b44;
-  --good-soft: #e5f3ea;
-  --bad: #b33a3a;
-  --warn: #8a5309;
-  --warn-soft: #fbf0dc;
+  --bg: oklch(0.985 0.003 250);
+  --surface: oklch(1 0 0);
+  --ink: oklch(0.25 0.045 255);
+  --muted: oklch(0.5 0.03 255);
+  --line: oklch(0.9 0.01 255);
+  --bar: oklch(0.82 0.015 255);
+  --accent: oklch(0.3 0.06 245);
+  --accent-ink: oklch(1 0 0);
+  --accent-soft: oklch(0.95 0.015 245);
+  --route: oklch(0.66 0.18 45);
+  --route-soft: oklch(0.9 0.05 50);
+  --route-ink: oklch(0.45 0.13 45);
+  --good: oklch(0.48 0.1 155);
+  --good-soft: oklch(0.95 0.03 155);
+  --bad: oklch(0.52 0.17 25);
+  --warn: oklch(0.5 0.1 80);
+  --warn-soft: oklch(0.95 0.04 85);
   color-scheme: light;
 }
 
+/* Dark theme. It follows the system unless the theme switcher set data-theme on <html>
+   (src/lib/theme.ts). The block is repeated for an explicit "dark" choice; keep both in sync. */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #141413;
-    --surface: #1c1c1b;
-    --ink: #ecebe7;
-    --muted: #a3a19b;
-    --line: #2e2d2a;
-    --bar: #4a4844;
-    --accent: #7aa7ff;
-    --accent-ink: #0f1a2e;
-    --accent-soft: #1d2a44;
-    --good: #6cc08f;
-    --good-soft: #17291f;
-    --bad: #e57b7b;
-    --warn: #e0a54a;
-    --warn-soft: #2e2414;
+  :root:not([data-theme="light"]) {
+    --bg: oklch(0.17 0.015 255);
+    --surface: oklch(0.21 0.018 255);
+    --ink: oklch(0.94 0.01 255);
+    --muted: oklch(0.72 0.02 255);
+    --line: oklch(0.31 0.02 255);
+    --bar: oklch(0.42 0.02 255);
+    --accent: oklch(0.82 0.07 245);
+    --accent-ink: oklch(0.2 0.03 255);
+    --accent-soft: oklch(0.28 0.04 245);
+    --route: oklch(0.72 0.16 50);
+    --route-soft: oklch(0.36 0.07 50);
+    --route-ink: oklch(0.86 0.1 55);
+    --good: oklch(0.76 0.12 155);
+    --good-soft: oklch(0.27 0.04 155);
+    --bad: oklch(0.72 0.14 25);
+    --warn: oklch(0.8 0.12 80);
+    --warn-soft: oklch(0.29 0.04 80);
     color-scheme: dark;
   }
+}
+
+:root[data-theme="dark"] {
+  --bg: oklch(0.17 0.015 255);
+  --surface: oklch(0.21 0.018 255);
+  --ink: oklch(0.94 0.01 255);
+  --muted: oklch(0.72 0.02 255);
+  --line: oklch(0.31 0.02 255);
+  --bar: oklch(0.42 0.02 255);
+  --accent: oklch(0.82 0.07 245);
+  --accent-ink: oklch(0.2 0.03 255);
+  --accent-soft: oklch(0.28 0.04 245);
+  --route: oklch(0.72 0.16 50);
+  --route-soft: oklch(0.36 0.07 50);
+  --route-ink: oklch(0.86 0.1 55);
+  --good: oklch(0.76 0.12 155);
+  --good-soft: oklch(0.27 0.04 155);
+  --bad: oklch(0.72 0.14 25);
+  --warn: oklch(0.8 0.12 80);
+  --warn-soft: oklch(0.29 0.04 80);
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -51,13 +79,22 @@
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
   --color-accent-soft: var(--accent-soft);
+  --color-route: var(--route);
+  --color-route-soft: var(--route-soft);
+  --color-route-ink: var(--route-ink);
   --color-good: var(--good);
   --color-good-soft: var(--good-soft);
   --color-bad: var(--bad);
   --color-warn: var(--warn);
   --color-warn-soft: var(--warn-soft);
-  --font-sans: var(--font-geist-sans);
-  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-atkinson);
+  --font-display: var(--font-familjen);
+}
+
+/* Display type is the signage grotesk at its two heavy weights. */
+.font-display {
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 body {

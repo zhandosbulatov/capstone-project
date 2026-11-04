@@ -14,7 +14,7 @@ import {
   type ResultType,
 } from "@/lib/game";
 import { verifyScreenshot, type Verdict } from "@/lib/verify-client";
-import { Button, Card, lowerFirst, Pill } from "@/components/ui";
+import { Button, Card, lowerFirst, Pill, Rewards } from "@/components/ui";
 import { useCoach } from "./app-context";
 import { HuginLine } from "./hugin";
 
@@ -33,19 +33,18 @@ export function BossCard() {
   const title = BOSS_TITLES[key];
 
   return (
-    <Card className="my-0 border-dashed">
-      <div className="flex items-center justify-between gap-2">
-        <Pill tone={beaten ? "good" : "warn"}>
-          Week {boss.week} boss{beaten ? " · beaten" : ""}
-        </Pill>
-        <span className="text-xs text-muted">Ends day {boss.week * 7}</span>
-      </div>
-      <h2 className="mt-2 text-lg leading-snug font-bold">{boss.name}</h2>
+    <Card className="my-0">
+      {beaten ? (
+        <div className="mb-2">
+          <Pill tone="good">Beaten</Pill>
+        </div>
+      ) : null}
+      <h2 className="font-display text-lg leading-snug">{boss.name}</h2>
       <p className="mt-1 text-sm text-muted">Proof: {lowerFirst(boss.proof)}.</p>
-      <p className="mt-2 text-xs text-muted">
-        Reward: +{XP.boss} XP · {STATS[boss.stat].label} +{STAT_POINTS.boss}
-        {title ? ` · title ${TITLES[title].label}` : ""} · unlocks {TOOLS[boss.unlocks].label.toLowerCase()}
-      </p>
+      <Rewards
+        parts={[`+${XP.boss} XP`, `${STATS[boss.stat].label} +${STAT_POINTS.boss}`]}
+        note={`${title ? `Title ${TITLES[title].label}. ` : ""}Unlocks ${TOOLS[boss.unlocks].label.toLowerCase()}.`}
+      />
       {beaten ? null : (
         <div className="mt-3">
           <Button
@@ -100,7 +99,7 @@ export function LogResultSheet({ initial }: { initial?: ResultType }) {
           setResult(e.target.value as ResultType);
           setStep({ kind: "choose" });
         }}
-        className="mt-1.5 w-full rounded-xl border-[1.5px] border-line bg-surface px-3 py-3 text-[15px] focus:border-accent focus:outline-none"
+        className="mt-1.5 w-full rounded-md border-[1.5px] border-line bg-surface px-3 py-3 text-[15px] focus:border-accent focus:outline-none"
       >
         {RESULT_TYPES.map((type) => (
           <option key={type} value={type}>
@@ -109,7 +108,7 @@ export function LogResultSheet({ initial }: { initial?: ResultType }) {
         ))}
       </select>
 
-      <div className="mt-4 rounded-xl bg-warn-soft px-3.5 py-3 text-[13px] text-warn">
+      <div className="mt-4 rounded-md bg-warn-soft px-3.5 py-3 text-[13px] text-warn">
         Crop or blur other people&apos;s names before you upload. We check the screenshot and keep
         only the verdict, never the image.
       </div>
@@ -120,7 +119,7 @@ export function LogResultSheet({ initial }: { initial?: ResultType }) {
 
       <div className="mt-4 flex flex-col gap-2">
         <label
-          className={`block w-full cursor-pointer rounded-[14px] bg-accent px-[18px] py-[15px] text-center font-bold text-accent-ink focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent ${step.kind === "checking" ? "pointer-events-none opacity-40" : ""}`}
+          className={`block w-full cursor-pointer rounded-md bg-accent px-[18px] py-[14px] text-center font-semibold text-accent-ink focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-accent ${step.kind === "checking" ? "pointer-events-none opacity-40" : ""}`}
         >
           {step.kind === "checking"
             ? "Hugin is checking…"

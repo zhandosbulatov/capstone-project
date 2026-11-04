@@ -4,6 +4,7 @@ import { useState } from "react";
 import { formatMonthDay } from "@/lib/plan";
 import { formatUsd } from "@/lib/pricing";
 import { SKILLS } from "@/lib/quiz-data";
+import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Button, Card, Label } from "@/components/ui";
 import { useCoach } from "./app-context";
 
@@ -64,6 +65,12 @@ export function Settings() {
         <p className="mt-2 text-xs text-muted">
           Your answers and progress are saved in this browser only.
         </p>
+      </Card>
+
+      <Card className="my-0">
+        <Label>Appearance</Label>
+        <ThemeSwitcher className="mt-2" />
+        <p className="mt-2 text-xs text-muted">System follows your device&apos;s light or dark setting.</p>
       </Card>
 
       <Card className="my-0">

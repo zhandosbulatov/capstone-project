@@ -10,11 +10,11 @@ import type { ComponentProps, ReactNode } from "react";
 type ButtonVariant = "primary" | "dark" | "outline" | "ghost";
 
 const BUTTON_STYLES: Record<ButtonVariant, string> = {
-  primary: "bg-accent text-accent-ink font-bold text-base py-[15px]",
-  dark: "bg-ink text-bg font-bold text-base py-[15px]",
+  primary: "bg-accent text-accent-ink font-semibold text-base py-[14px] hover:opacity-92",
+  dark: "bg-ink text-bg font-semibold text-base py-[14px] hover:opacity-92",
   outline:
-    "border-[1.5px] border-line bg-surface font-semibold text-base py-[14px] hover:border-accent",
-  ghost: "bg-transparent text-muted font-medium text-sm py-2.5",
+    "border-[1.5px] border-bar bg-surface font-semibold text-base py-[12.5px] hover:border-ink",
+  ghost: "bg-transparent text-muted font-semibold text-sm py-2.5 hover:text-ink",
 };
 
 export function Button({
@@ -25,24 +25,26 @@ export function Button({
   return (
     <button
       type="button"
-      className={`block w-full cursor-pointer rounded-[14px] px-[18px] text-center transition-opacity focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-40 ${BUTTON_STYLES[variant]} ${className}`}
+      className={`block w-full cursor-pointer rounded-md px-[18px] text-center transition-[opacity,border-color,color,transform] duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent enabled:active:translate-y-px disabled:cursor-not-allowed disabled:opacity-40 ${BUTTON_STYLES[variant]} ${className}`}
       {...props}
     />
   );
 }
 
-type PillTone = "accent" | "good" | "warn";
+type PillTone = "accent" | "good" | "warn" | "route";
 
 const PILL_STYLES: Record<PillTone, string> = {
   accent: "bg-accent-soft text-accent",
   good: "bg-good-soft text-good",
   warn: "bg-warn-soft text-warn",
+  route: "bg-route-soft text-route-ink",
 };
 
+/** Status that changes (Done, Beaten, Recovery). Not a decorative kicker above headings. */
 export function Pill({ tone = "accent", children }: { tone?: PillTone; children: ReactNode }) {
   return (
     <span
-      className={`inline-block w-fit rounded-full px-2 py-[3px] text-[11px] font-bold uppercase tracking-[0.04em] ${PILL_STYLES[tone]}`}
+      className={`inline-block w-fit rounded px-2 py-0.5 text-xs font-semibold ${PILL_STYLES[tone]}`}
     >
       {children}
     </span>
@@ -52,17 +54,28 @@ export function Pill({ tone = "accent", children }: { tone?: PillTone; children:
 export function Card({ className = "", ...props }: ComponentProps<"div">) {
   return (
     <div
-      className={`my-2.5 rounded-[14px] border border-line bg-surface px-4 py-3.5 ${className}`}
+      className={`my-2.5 rounded-md border border-line bg-surface px-4 py-4 ${className}`}
       {...props}
     />
   );
 }
 
-/** Small uppercase label above a value. */
+/** Small label above a value. Sentence case, like a station sign. */
 export function Label({ children }: { children: ReactNode }) {
+  return <span className="block text-[13px] font-semibold text-muted">{children}</span>;
+}
+
+/** The reward as chips on the route colour: orange always means progress. */
+export function Rewards({ parts, note }: { parts: string[]; note?: string }) {
   return (
-    <span className="block text-xs font-semibold uppercase tracking-[0.05em] text-muted">
-      {children}
-    </span>
+    <p className="mt-2.5 flex flex-wrap items-center gap-1.5 text-[13px]">
+      <span className="sr-only">Reward: </span>
+      {parts.map((part) => (
+        <span key={part} className="rounded bg-route-soft px-2 py-0.5 font-semibold text-route-ink">
+          {part}
+        </span>
+      ))}
+      {note ? <span className="text-muted">{note}</span> : null}
+    </p>
   );
 }

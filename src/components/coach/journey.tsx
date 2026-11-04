@@ -9,6 +9,8 @@ import {
   TOOLS,
 } from "@/lib/game";
 import { GOALS } from "@/lib/quiz-data";
+import { Icon } from "@/components/icons";
+import { Rail, RouteStrip, Stop } from "@/components/route";
 import { toolDoc, TOOL_LABELS, type AnyToolKey } from "@/lib/tools";
 import { Button, Card, Label, lowerFirst, Pill } from "@/components/ui";
 import { useCoach } from "./app-context";
@@ -21,39 +23,40 @@ export function Journey() {
 
   return (
     <div className="flex flex-col gap-3">
-      <h1 className="font-display text-3xl">Your journey</h1>
+      <h1 className="font-display text-[28px] leading-tight">Your journey</h1>
 
-      <Card className="my-0">
-        <Label>30-day map</Label>
-        <ol className="mt-2 flex flex-col gap-2.5">
-          {BOSS_KEYS.map((key) => {
+      <section aria-labelledby="map" className="rounded-md border border-line bg-surface px-4 pt-3 pb-4">
+        <h2 id="map" className="sr-only">
+          30-day map
+        </h2>
+        <RouteStrip day={game.day} />
+        <Rail className="mt-4">
+          {BOSS_KEYS.map((key, i) => {
             const boss = BOSSES[key];
             const beaten = game.bossesBeaten.includes(key);
             const current = meta.week === boss.week && !beaten;
+            const travelled = game.day >= boss.week * 7;
             return (
-              <li key={key} className="flex items-start gap-3">
-                <span
-                  aria-hidden
-                  className={`mt-0.5 grid size-6 flex-none place-items-center rounded-full text-xs font-bold ${beaten ? "bg-good text-white" : current ? "border-2 border-accent text-accent" : "border-2 border-line text-muted"}`}
-                >
-                  {beaten ? "✓" : boss.week}
-                </span>
-                <div>
-                  <p className="font-semibold">
-                    Week {boss.week} · {boss.name}
-                    {beaten ? <span className="sr-only"> (beaten)</span> : null}
-                  </p>
-                  <p className="text-sm text-muted">
-                    {beaten
-                      ? `Beaten. Unlocked: ${TOOLS[boss.unlocks].label.toLowerCase()}.`
-                      : `Proof: ${lowerFirst(boss.proof)}.`}
-                  </p>
-                </div>
-              </li>
+              <Stop
+                key={key}
+                kind={beaten ? "bossDone" : current ? "now" : "boss"}
+                segment={i === BOSS_KEYS.length - 1 ? "none" : travelled ? "travelled" : "ahead"}
+                label={`Week ${boss.week} · day ${boss.week * 7}${current ? " · you are here" : ""}`}
+              >
+                <p className="font-display text-[17px] leading-snug">
+                  {boss.name}
+                  {beaten ? <span className="sr-only"> (beaten)</span> : null}
+                </p>
+                <p className="text-sm text-muted">
+                  {beaten
+                    ? `Beaten. Unlocked: ${TOOLS[boss.unlocks].label.toLowerCase()}.`
+                    : `Proof: ${lowerFirst(boss.proof)}.`}
+                </p>
+              </Stop>
             );
           })}
-        </ol>
-      </Card>
+        </Rail>
+      </section>
 
       <Card className="my-0">
         <Label>Titles</Label>
@@ -88,10 +91,10 @@ export function Journey() {
                 <button
                   type="button"
                   onClick={() => actions.openSheet({ kind: "tool", tool })}
-                  className="flex w-full cursor-pointer items-center justify-between rounded-xl bg-bg px-3.5 py-3 text-left font-semibold hover:text-accent focus-visible:outline-2 focus-visible:outline-accent"
+                  className="flex w-full cursor-pointer items-center justify-between rounded-md bg-bg px-3.5 py-3 text-left font-semibold hover:text-accent focus-visible:outline-2 focus-visible:outline-accent"
                 >
                   {TOOL_LABELS[tool]}
-                  <span aria-hidden>→</span>
+                  <Icon name="arrowRight" size={18} className="text-muted" />
                 </button>
               </li>
             ))}

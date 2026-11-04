@@ -1,16 +1,19 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Geist } from "next/font/google";
+import { Atkinson_Hyperlegible_Next, Familjen_Grotesk } from "next/font/google";
+import { ThemeSync } from "@/components/theme-switcher";
+import { THEME_SCRIPT } from "@/lib/theme";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// Body: built for legibility, with signage roots. Display: a plain grotesk for titles.
+const atkinson = Atkinson_Hyperlegible_Next({
+  variable: "--font-atkinson",
   subsets: ["latin"],
 });
 
-const fraunces = Fraunces({
-  variable: "--font-fraunces",
+const familjen = Familjen_Grotesk({
+  variable: "--font-familjen",
   subsets: ["latin"],
-  weight: ["600"],
+  weight: ["600", "700"],
 });
 
 // Vercel sets the production domain; locally the dev server is the base for absolute OG URLs.
@@ -36,18 +39,24 @@ export const metadata: Metadata = {
 // Browser bar colour matches the page background in each theme.
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#fbfaf7" },
-    { media: "(prefers-color-scheme: dark)", color: "#141413" },
+    { media: "(prefers-color-scheme: light)", color: "#f9fafc" },
+    { media: "(prefers-color-scheme: dark)", color: "#121722" },
   ],
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
+    // suppressHydrationWarning: the head script may add data-theme before React hydrates.
     <html
       lang="en"
-      className={`${geistSans.variable} ${fraunces.variable} h-full antialiased`}
+      className={`${atkinson.variable} ${familjen.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body className="min-h-full flex flex-col font-sans">
+        <ThemeSync />
         <a
           href="#main"
           className="sr-only rounded-lg bg-ink px-4 py-2 font-semibold text-bg focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50"

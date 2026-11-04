@@ -77,7 +77,7 @@ export function DraftSheet({ kind }: { kind: DraftKind }) {
           <HuginLine>{state.message}</HuginLine>
         ) : (
           state.drafts.map((draft, i) => (
-            <div key={i} className="rounded-xl border border-line bg-bg px-3.5 py-3">
+            <div key={i} className="rounded-md border border-line bg-bg px-3.5 py-3">
               <p className="text-[15px] whitespace-pre-line">{draft}</p>
               <div className="mt-2 flex justify-end">
                 <CopyButton text={draft} />
@@ -139,14 +139,14 @@ export function ChatSheet() {
             m.role === "user" ? (
               <p
                 key={i}
-                className="max-w-[85%] self-end rounded-2xl rounded-br-md bg-accent px-3.5 py-2.5 text-[15px] whitespace-pre-line text-accent-ink"
+                className="max-w-[85%] self-end rounded-md rounded-br-md bg-accent px-3.5 py-2.5 text-[15px] whitespace-pre-line text-accent-ink"
               >
                 {m.text}
               </p>
             ) : (
               <div key={i} className="flex max-w-[92%] items-start gap-2">
                 <HuginAvatar size={24} />
-                <p className="rounded-2xl rounded-bl-md bg-bg px-3.5 py-2.5 text-[15px] whitespace-pre-line">
+                <p className="rounded-md rounded-bl-md bg-bg px-3.5 py-2.5 text-[15px] whitespace-pre-line">
                   {m.text || "…"}
                 </p>
               </div>
@@ -173,12 +173,12 @@ export function ChatSheet() {
           placeholder="Type a question"
           autoComplete="off"
           maxLength={2000}
-          className="min-w-0 flex-1 rounded-xl border-[1.5px] border-line bg-surface px-3.5 py-3 text-[15px] focus:border-accent focus:outline-none"
+          className="min-w-0 flex-1 rounded-md border-[1.5px] border-line bg-surface px-3.5 py-3 text-[15px] focus:border-accent focus:outline-none"
         />
         <button
           type="submit"
           disabled={!text.trim() || state.chatBusy}
-          className="cursor-pointer rounded-xl bg-accent px-4 font-bold text-accent-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-40"
+          className="cursor-pointer rounded-md bg-accent px-4 font-bold text-accent-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-not-allowed disabled:opacity-40"
         >
           Send
         </button>

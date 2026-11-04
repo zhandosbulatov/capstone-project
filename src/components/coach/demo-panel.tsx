@@ -23,7 +23,7 @@ export function DemoPanel() {
   return (
     <section
       aria-label="Demo controls"
-      className="rounded-2xl border-2 border-dashed border-warn bg-warn-soft/40 px-3.5 py-3"
+      className="rounded-md border-2 border-dashed border-warn bg-warn-soft/40 px-3.5 py-3"
     >
       <p className="text-[11px] font-bold tracking-[0.05em] text-warn uppercase">
         Demo controls · day {state.saved.game.day}

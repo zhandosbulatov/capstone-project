@@ -18,7 +18,7 @@ function ToastItem({ toast, delay }: { toast: Toast; delay: number }) {
   }, [toast.id, delay, dismissToast]);
 
   return (
-    <li className="pointer-events-auto rounded-xl bg-ink px-3.5 py-2.5 text-sm text-bg shadow-lg">
+    <li className="pointer-events-auto rounded-md bg-ink px-3.5 py-2.5 text-sm text-bg shadow-lg">
       <p className="font-semibold">{toast.text}</p>
       {toast.hugin ? (
         <p className="mt-1 flex items-center gap-2 text-[13px] opacity-80">
