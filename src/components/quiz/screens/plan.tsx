@@ -7,7 +7,7 @@ import { blockerFix, planHeadline } from "@/lib/plan";
 import { PAID_BEFORE, SKILLS } from "@/lib/quiz-data";
 import { Icon } from "@/components/icons";
 import { Rail, RouteStrip, Stop } from "@/components/route";
-import { Button, Card, Label } from "@/components/ui";
+import { Button, Card, fieldClass, Label } from "@/components/ui";
 import { EMAIL_PATTERN, useQuiz } from "../quiz-context";
 import { Cta, Note, ScreenBody, ScreenSub, ScreenTitle } from "../quiz-ui";
 
@@ -183,7 +183,7 @@ export function EmailScreen() {
         onKeyDown={(e) => {
           if (e.key === "Enter" && valid) actions.next();
         }}
-        className="w-full rounded-md border-[1.5px] border-line bg-surface px-3.5 py-[13px] text-[15px] focus:border-ink focus:outline-none"
+        className={`${fieldClass}`}
       />
       <Note>Demo: your email stays in this browser and is never sent anywhere.</Note>
       <Cta>

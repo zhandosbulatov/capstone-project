@@ -22,7 +22,7 @@ export function AppPreview() {
     <div
       aria-label="A preview of the app: day 8 of 30 on the route, your title, level, stats and today's quest"
       role="img"
-      className="mx-auto w-full max-w-[380px] rounded-[20px] border border-line-strong bg-canvas p-3"
+      className="mx-auto w-full max-w-[380px] rounded-md border border-line-strong bg-canvas p-3"
     >
       <div className="flex items-center justify-between px-1 pt-1 pb-2 text-sm">
         <p className="font-display text-base">

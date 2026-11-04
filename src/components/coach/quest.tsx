@@ -5,7 +5,7 @@ import { BOSSES, STATS, XP } from "@/lib/game";
 import { offerDraft } from "@/lib/plan";
 import { Icon } from "@/components/icons";
 import { Rail, Stop } from "@/components/route";
-import { Button, Card, Pill, Rewards } from "@/components/ui";
+import { Button, Card, fieldClass, Pill, Rewards } from "@/components/ui";
 import { useCoach } from "./app-context";
 import { BossCard } from "./boss";
 import { HuginLine } from "./hugin";
@@ -103,7 +103,7 @@ function Day1Quest() {
         value={offer}
         onChange={(e) => setOffer(e.target.value)}
         rows={4}
-        className="mt-1.5 w-full resize-y rounded-md border-[1.5px] border-line bg-surface px-3.5 py-3 text-[15px] focus:border-ink focus:outline-none"
+        className={`mt-1.5 resize-y ${fieldClass}`}
       />
 
       <fieldset className="mt-3">
@@ -122,7 +122,7 @@ function Day1Quest() {
               onChange={(e) =>
                 setNames((prev) => prev.map((n, j) => (j === i ? e.target.value : n)))
               }
-              className="w-full rounded-md border-[1.5px] border-line bg-surface px-3 py-2.5 text-[15px] focus:border-ink focus:outline-none"
+              className={`${fieldClass}`}
             />
           ))}
         </div>
@@ -185,7 +185,7 @@ function QuestCard() {
     <Card className="my-0">
       {meta.isRecovery ? (
         <div className="mb-2">
-          <Pill tone="warn">Recovery quest</Pill>
+          <Pill tone="warning">Recovery quest</Pill>
         </div>
       ) : null}
       <h2 className="font-display text-xl leading-snug">{quest.title}</h2>
@@ -226,7 +226,7 @@ function QuestDone() {
   const { state, meta } = useCoach();
   return (
     <Card className="my-0">
-      <Pill tone="good">Done today</Pill>
+      <Pill tone="success">Done today</Pill>
       <h2 className="mt-2 font-display text-xl leading-snug">{meta.quest.title}</h2>
       <p className="mt-1.5 text-ink-muted">
         Day {state.saved.game.day} is done. Your next quest opens tomorrow.

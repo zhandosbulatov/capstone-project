@@ -60,7 +60,7 @@ function QuizFrame() {
     target?.focus({ preventScroll: true });
   }, [state.screen]);
   return (
-    <div className="mx-auto flex w-full max-w-[440px] flex-1 flex-col sm:my-6 sm:rounded-lg sm:border sm:border-line sm:bg-surface">
+    <div className="mx-auto flex w-full max-w-[440px] flex-1 flex-col sm:my-6 sm:rounded-md sm:border sm:border-line sm:bg-surface">
       <QuizBar />
       <main id="main" ref={mainRef} tabIndex={-1} className="flex flex-1 flex-col focus:outline-none">
         <ViewTransition

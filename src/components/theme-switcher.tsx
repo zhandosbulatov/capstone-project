@@ -24,7 +24,7 @@ export function ThemeSwitcher({ className = "" }: { className?: string }) {
         {THEMES.map((value) => (
           <label
             key={value}
-            className="flex cursor-pointer items-center gap-1.5 rounded px-3 py-1.5 text-sm font-semibold text-ink-muted transition-colors duration-150 hover:text-ink has-checked:bg-surface has-checked:text-ink has-checked:ring-1 has-checked:ring-line-strong has-focus-visible:outline-2 has-focus-visible:outline-offset-1 has-focus-visible:outline-ink"
+            className="flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold text-ink-muted transition-colors duration-150 hover:text-ink has-checked:bg-surface has-checked:text-ink has-checked:ring-1 has-checked:ring-line-strong has-focus-visible:outline-2 has-focus-visible:outline-offset-1 has-focus-visible:outline-ink"
           >
             <input
               type="radio"

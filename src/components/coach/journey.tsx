@@ -66,7 +66,7 @@ export function Journey() {
               <span className="font-semibold">{TITLES[key].label}</span>
               {key === meta.title ? (
                 <span className="ml-2">
-                  <Pill tone="good">Now</Pill>
+                  <Pill tone="success">Now</Pill>
                 </span>
               ) : null}
               <span className="block text-sm text-ink-muted">{TITLES[key].earnedBy}</span>

@@ -5,7 +5,7 @@
 import { useEffect, useRef, useState } from "react";
 import { fetchDrafts } from "@/lib/hugin-client";
 import type { DraftKind } from "@/lib/quests";
-import { Button } from "@/components/ui";
+import { Button, buttonClass } from "@/components/ui";
 import { useCoach } from "./app-context";
 import { HuginAvatar, HuginLine } from "./hugin";
 
@@ -36,7 +36,7 @@ function CopyButton({ text }: { text: string }) {
         }
       }}
       aria-live="polite"
-      className="min-h-10 min-w-16 cursor-pointer rounded-lg border border-line px-3 text-sm font-semibold hover:border-ink focus-visible:outline-2 focus-visible:outline-ink"
+      className={`${buttonClass({ variant: "outline", size: "sm", width: "auto" })} min-w-16`}
     >
       {copied ? "Copied" : "Copy"}
     </button>
@@ -139,14 +139,14 @@ export function ChatSheet() {
             m.role === "user" ? (
               <p
                 key={i}
-                className="max-w-[85%] self-end rounded-md rounded-br-md bg-brand px-3.5 py-2.5 text-[15px] whitespace-pre-line text-on-bright"
+                className="max-w-[85%] self-end rounded-md bg-brand px-3.5 py-2.5 text-[15px] whitespace-pre-line text-on-bright"
               >
                 {m.text}
               </p>
             ) : (
               <div key={i} className="flex max-w-[92%] items-start gap-2">
                 <HuginAvatar size={24} />
-                <p className="rounded-md rounded-bl-md bg-canvas px-3.5 py-2.5 text-[15px] whitespace-pre-line">
+                <p className="rounded-md bg-canvas px-3.5 py-2.5 text-[15px] whitespace-pre-line">
                   {m.text || "…"}
                 </p>
               </div>
@@ -173,12 +173,12 @@ export function ChatSheet() {
           placeholder="Type a question"
           autoComplete="off"
           maxLength={2000}
-          className="min-w-0 flex-1 rounded-md border-[1.5px] border-line bg-surface px-3.5 py-3 text-[15px] focus:border-ink focus:outline-none"
+          className="min-w-0 flex-1 rounded-md border-[1.5px] border-line-strong bg-surface px-3.5 py-3 text-[15px] focus:border-ink focus:outline-2 focus:outline-offset-1 focus:outline-ink"
         />
         <button
           type="submit"
           disabled={!text.trim() || state.chatBusy}
-          className="cursor-pointer rounded-md bg-brand px-4 font-bold text-on-bright focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink disabled:cursor-not-allowed disabled:opacity-40"
+          className={buttonClass({ size: "md", width: "auto" })}
         >
           Send
         </button>

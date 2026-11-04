@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { HuginAvatar } from "@/components/coach/hugin";
 import { Rail, RouteStrip, Stop } from "@/components/route";
 import { ThemeSwitcher } from "@/components/theme-switcher";
-import { lowerFirst } from "@/components/ui";
+import { buttonClass, lowerFirst } from "@/components/ui";
 import { AppPreview } from "@/components/landing/app-preview";
 import { BOSS_KEYS, BOSSES, STAT_KEYS, STATS, TITLE_ORDER, TITLES } from "@/lib/game";
 import { formatUsd } from "@/lib/pricing";
@@ -22,7 +22,7 @@ function Cta({ children = "Take the 1-minute quiz" }: { children?: ReactNode }) 
   return (
     <Link
       href={QUIZ}
-      className="inline-flex h-13 items-center justify-center rounded-md bg-brand px-7 text-base font-semibold text-on-bright transition-[opacity,transform] duration-150 hover:opacity-92 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink active:translate-y-px"
+      className={buttonClass({ width: "auto" })}
     >
       {children}
     </Link>
@@ -113,14 +113,14 @@ export default function Home() {
       <header className="flex items-center justify-between py-5">
         <Link
           href="/"
-          className="flex items-center gap-2 rounded-lg font-bold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
+          className="flex items-center gap-2 rounded-md font-bold focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
         >
           <HuginAvatar size={30} />
           AI Business Coach
         </Link>
         <Link
           href={QUIZ}
-          className="rounded-md border-[1.5px] border-line-strong px-4 py-2 text-sm font-semibold hover:border-ink focus-visible:outline-2 focus-visible:outline-ink"
+          className={buttonClass({ variant: "secondary", size: "sm", width: "auto" })}
         >
           Take the quiz
         </Link>
@@ -219,7 +219,7 @@ export default function Home() {
             {HUGIN_LINES.map((line) => (
               <li key={line} className="flex items-start gap-3">
                 <HuginAvatar size={34} />
-                <p className="rounded-md rounded-tl-none border border-line bg-surface px-4 py-2.5 text-[17px]">
+                <p className="rounded-md border border-line bg-surface px-4 py-2.5 text-[17px]">
                   {line}
                 </p>
               </li>
@@ -282,7 +282,7 @@ export default function Home() {
                   <p className="flex items-center justify-between gap-2 font-bold">
                     {plan.name}
                     {plan.tag ? (
-                      <span className="rounded bg-brand px-2 py-0.5 text-xs font-semibold text-on-bright">
+                      <span className="rounded-full bg-brand px-2 py-0.5 text-xs font-semibold text-on-bright">
                         {plan.tag}
                       </span>
                     ) : null}
@@ -317,7 +317,7 @@ export default function Home() {
                       <th scope="row" className="px-5 py-4 font-bold">
                         {plan.name}
                         {plan.tag ? (
-                          <span className="ml-2 rounded bg-brand px-2 py-0.5 text-xs font-semibold text-on-bright">
+                          <span className="ml-2 rounded-full bg-brand px-2 py-0.5 text-xs font-semibold text-on-bright">
                             {plan.tag}
                           </span>
                         ) : null}

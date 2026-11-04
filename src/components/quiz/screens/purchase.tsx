@@ -111,7 +111,7 @@ export function PaywallScreen() {
                 className="sr-only"
               />
               {plan.tag ? (
-                <span className="absolute -top-2.5 right-3 rounded bg-brand px-2 py-0.5 text-xs font-semibold text-on-bright">
+                <span className="absolute -top-2.5 right-3 rounded-full bg-brand px-2 py-0.5 text-xs font-semibold text-on-bright">
                   {plan.tag}
                 </span>
               ) : null}
@@ -247,7 +247,7 @@ export function UpsellScreen() {
   const service = SKILLS[meta.answers.skill].service.toLowerCase();
   return (
     <ScreenBody>
-      <Pill tone="good">Payment successful</Pill>
+      <Pill tone="success">Payment successful</Pill>
       <ScreenTitle>One-time offer: {FIRST_CLIENT_KIT.name}</ScreenTitle>
       <ScreenSub>
         Get to your first client faster with the materials your coach uses in weeks 2 and 3, ready
@@ -265,7 +265,7 @@ export function UpsellScreen() {
           <b>{formatUsd(FIRST_CLIENT_KIT.priceUsd)}</b>{" "}
           <span className="text-sm text-ink-muted">one-off, not a subscription</span>
         </span>
-        <Pill tone="warn">Only now</Pill>
+        <Pill tone="warning">Only now</Pill>
       </Card>
       <Cta>
         <Button onClick={() => actions.finish(true)}>

@@ -41,7 +41,7 @@ export function AdScreen() {
           <button
             type="button"
             onClick={actions.next}
-            className="cursor-pointer rounded-lg bg-line px-3 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-ink"
+            className="cursor-pointer rounded-md bg-line px-3 py-2 font-semibold focus-visible:outline-2 focus-visible:outline-ink"
           >
             Learn more
           </button>

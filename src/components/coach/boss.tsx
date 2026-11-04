@@ -14,7 +14,7 @@ import {
   type ResultType,
 } from "@/lib/game";
 import { verifyScreenshot, type Verdict } from "@/lib/verify-client";
-import { Button, Card, lowerFirst, Pill, Rewards } from "@/components/ui";
+import { Button, buttonClass, Card, fieldClass, lowerFirst, Pill, Rewards } from "@/components/ui";
 import { useCoach } from "./app-context";
 import { HuginLine } from "./hugin";
 
@@ -36,7 +36,7 @@ export function BossCard() {
     <Card className="my-0">
       {beaten ? (
         <div className="mb-2">
-          <Pill tone="good">Beaten</Pill>
+          <Pill tone="success">Beaten</Pill>
         </div>
       ) : null}
       <h2 className="font-display text-lg leading-snug">{boss.name}</h2>
@@ -99,7 +99,7 @@ export function LogResultSheet({ initial }: { initial?: ResultType }) {
           setResult(e.target.value as ResultType);
           setStep({ kind: "choose" });
         }}
-        className="mt-1.5 w-full rounded-md border-[1.5px] border-line bg-surface px-3 py-3 text-[15px] focus:border-ink focus:outline-none"
+        className={`mt-1.5 ${fieldClass}`}
       >
         {RESULT_TYPES.map((type) => (
           <option key={type} value={type}>
@@ -119,7 +119,7 @@ export function LogResultSheet({ initial }: { initial?: ResultType }) {
 
       <div className="mt-4 flex flex-col gap-2">
         <label
-          className={`block w-full cursor-pointer rounded-md bg-brand px-[18px] py-[14px] text-center font-semibold text-on-bright focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ink ${step.kind === "checking" ? "pointer-events-none opacity-40" : ""}`}
+          className={`${buttonClass()} focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ink ${step.kind === "checking" ? "pointer-events-none opacity-40" : ""}`}
         >
           {step.kind === "checking"
             ? "Hugin is checking…"

@@ -210,7 +210,7 @@ function Sheet() {
           aria-modal="true"
           aria-label={SHEET_LABELS[sheet.kind]}
           tabIndex={-1}
-          className="relative max-h-[88vh] w-full max-w-[440px] overflow-y-auto overscroll-contain rounded-t-lg bg-surface px-5 pt-5 pb-8 focus:outline-none"
+          className="relative max-h-[88vh] w-full max-w-[440px] overflow-y-auto overscroll-contain rounded-t-md bg-surface px-5 pt-5 pb-8 focus:outline-none"
         >
           {sheet.kind === "log" ? (
             <LogResultSheet initial={sheet.result} />

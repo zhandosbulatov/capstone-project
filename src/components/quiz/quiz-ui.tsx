@@ -78,7 +78,7 @@ export function Option({
       type="button"
       aria-pressed={selected}
       onClick={onSelect}
-      className={`flex w-full cursor-pointer items-center gap-3 rounded-md border-[1.5px] px-4 py-3.5 text-left transition-colors hover:border-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink ${selected ? "border-ink bg-sun-soft" : "border-line bg-surface"}`}
+      className={`flex w-full cursor-pointer items-center gap-3 rounded-md border-[1.5px] px-4 py-3.5 text-left transition-colors hover:border-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink ${selected ? "border-ink bg-sun-soft" : "border-line-strong bg-surface"}`}
     >
 
       <span>{children}</span>
