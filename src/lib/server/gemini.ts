@@ -10,7 +10,9 @@ import {
 // Each job has a main model and a backup, tried in order when a model is overloaded or returns
 // nothing. Override the main one with env vars if Google renames or retires a model.
 export const MODELS = {
-  text: [process.env.GEMINI_TEXT_MODEL || "gemini-3.5-flash-lite", "gemini-2.5-flash-lite"],
+  // gemini-2.5-flash-lite was retired (404 "no longer available to new users"), so the text
+  // backup is the vision main model, which the app already relies on.
+  text: [process.env.GEMINI_TEXT_MODEL || "gemini-3.5-flash-lite", "gemini-3.6-flash"],
   vision: [process.env.GEMINI_VISION_MODEL || "gemini-3.6-flash", "gemini-3.5-flash-lite"],
 } as const;
 
