@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+/* Design tokens. Calm warm neutrals with one blue accent, taken from the onboarding prototype. */
+:root {
+  --bg: #fbfaf7;
+  --surface: #ffffff;
+  --ink: #1b1b1a;
+  --muted: #5f5e5a;
+  --line: #e6e3dc;
+  --bar: #c9c6bd;
+  --accent: #2f6fde;
+  --accent-ink: #ffffff;
+  --accent-soft: #e7effc;
+  --good: #2e7d4f;
+  --good-soft: #e5f3ea;
+  --bad: #b33a3a;
+  --warn: #a8650b;
+  --warn-soft: #fbf0dc;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #141413;
+    --surface: #1c1c1b;
+    --ink: #ecebe7;
+    --muted: #a3a19b;
+    --line: #2e2d2a;
+    --bar: #4a4844;
+    --accent: #7aa7ff;
+    --accent-ink: #0f1a2e;
+    --accent-soft: #1d2a44;
+    --good: #6cc08f;
+    --good-soft: #17291f;
+    --bad: #e57b7b;
+    --warn: #e0a54a;
+    --warn-soft: #2e2414;
+    color-scheme: dark;
+  }
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-bar: var(--bar);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-good: var(--good);
+  --color-good-soft: var(--good-soft);
+  --color-bad: var(--bad);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --font-sans: var(--font-geist-sans);
+  --font-display: var(--font-fraunces);
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+}
