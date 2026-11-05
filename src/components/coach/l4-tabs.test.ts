@@ -54,8 +54,8 @@ describe("course map and one page", () => {
 
   it("shows only decided fields, labelled from the curriculum", () => {
     expect(onePageSections({})).toEqual([]);
-    const sections = onePageSections({ "m1-offer": { decision: { answer: " Logo kit " }, decidedDay: 3 } });
+    const sections = onePageSections({ "m1-offer": { decision: { offer: " Logo kit ", other: "x" }, decidedDay: 3 } });
     expect(sections).toHaveLength(1);
-    expect(sections[0].rows).toEqual([{ label: "Your decision", value: "Logo kit" }]);
+    expect(sections[0].rows).toEqual([{ label: "Your offer in one sentence", value: "Logo kit" }]);
   });
 });

@@ -120,6 +120,7 @@ type AppActions = {
   /** Returns the new contact's id. */
   addContact: (input: ContactInput) => string;
   updateContact: (id: string, patch: Partial<ContactInput>) => void;
+  removeContact: (id: string) => void;
   setStage: (id: string, stage: Stage) => void;
   /**
    * The user did `step`. Moves the contact (stage, follow-ups, last action, what was sent). The
@@ -330,6 +331,10 @@ export function AppProvider({
       updateContact: (id, patch) =>
         commit((s) => ({
           saved: { ...s.saved, contacts: updateContact(s.saved.contacts, id, patch) },
+        })),
+      removeContact: (id) =>
+        commit((s) => ({
+          saved: { ...s.saved, contacts: s.saved.contacts.filter((c) => c.id !== id) },
         })),
       setStage: (id, stage) =>
         applyContacts((contacts, day) => setContactStage(contacts, id, stage, day)),

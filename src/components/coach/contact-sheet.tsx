@@ -83,7 +83,6 @@ export function ContactSheet({ id }: { id: string }) {
         Log a reply
       </Button>
 
-      {/* Removing needs a `removeContact` action from app-context (not in this lane yet). */}
       {confirmRemove ? (
         <div className="flex flex-col gap-2 border-t border-line pt-3">
           <p className="text-sm text-ink-muted">
@@ -92,7 +91,7 @@ export function ContactSheet({ id }: { id: string }) {
           <Button
             variant="dark"
             onClick={() => {
-              removeContact(actions, contact.id);
+              actions.removeContact(contact.id);
               actions.closeSheet();
             }}
           >
@@ -109,10 +108,4 @@ export function ContactSheet({ id }: { id: string }) {
       )}
     </div>
   );
-}
-
-/** Calls `actions.removeContact` once another lane adds it; does nothing until then. */
-function removeContact(actions: object, id: string) {
-  const fn = (actions as { removeContact?: (id: string) => void }).removeContact;
-  fn?.(id);
 }
