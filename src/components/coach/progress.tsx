@@ -6,13 +6,14 @@ import { TITLES } from "@/lib/game";
 import { TOOL_LABELS } from "@/lib/tools";
 import { Card, Label, Pill } from "@/components/ui";
 import { useCoach } from "./app-context";
-import { milestoneDays, nextTitle } from "./l4-helpers";
+import { courseMap, milestoneDays, nextTitle, onePageSections } from "./l4-helpers";
 import { StatusWindow } from "./status-window";
 
 export function Progress() {
   const { state, actions, meta } = useCoach();
   const { game } = state.saved;
   const next = nextTitle(meta.title);
+  const onePage = onePageSections(state.saved.lessons);
 
   return (
     <div className="flex flex-col gap-4">
@@ -73,10 +74,38 @@ export function Progress() {
         </dl>
       </Card>
 
-      {/* P08 fills the next two blocks. */}
-      <section aria-label="Course map" className="rounded-md border border-line bg-surface px-4 py-3">
-        <Label>Course map</Label>
-        <p className="mt-1 text-sm text-ink-muted">Lessons appear here</p>
+      <section aria-label="Your course" className="rounded-md border border-line bg-surface px-4 py-3">
+        <Label>Your course</Label>
+        <p className="mt-1 text-sm text-ink-muted">
+          Each lesson unlocks when your real progress needs it.
+        </p>
+        <ol className="mt-2 divide-y divide-line">
+          {courseMap(state.saved).map((item) => (
+            <li key={item.id}>
+              {item.state === "locked" ? (
+                <div className="py-2.5 text-ink-muted">
+                  <p>{item.title}</p>
+                  <p className="text-sm">{item.unlockText}</p>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => actions.openSheet({ kind: "lesson", id: item.id })}
+                  className="flex w-full cursor-pointer items-center justify-between gap-3 py-2.5 text-left focus-visible:outline-2 focus-visible:outline-ink"
+                >
+                  <span className="font-semibold">{item.title}</span>
+                  {item.state === "done" ? (
+                    <Pill tone="success">
+                      <span aria-hidden>✓ </span>Done{item.day !== undefined ? ` · Day ${item.day}` : ""}
+                    </Pill>
+                  ) : (
+                    <span className="text-sm text-brand-ink">Open · {item.minutes} min</span>
+                  )}
+                </button>
+              )}
+            </li>
+          ))}
+        </ol>
       </section>
 
       <section
@@ -84,7 +113,27 @@ export function Progress() {
         className="rounded-md border border-line bg-surface px-4 py-3"
       >
         <Label>Your business on one page</Label>
-        <p className="mt-1 text-sm text-ink-muted">Your business on one page appears here</p>
+        {onePage.length ? (
+          <div className="mt-2 flex flex-col gap-3">
+            {onePage.map((section) => (
+              <div key={section.id}>
+                <h3 className="text-sm font-bold">{section.heading}</h3>
+                <dl className="mt-1 flex flex-col gap-1.5">
+                  {section.rows.map((row) => (
+                    <div key={row.label}>
+                      <dt className="text-label text-ink-muted">{row.label}</dt>
+                      <dd className="whitespace-pre-line">{row.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-1 text-sm text-ink-muted">
+            This fills in as you make decisions in your lessons.
+          </p>
+        )}
       </section>
 
       {meta.tools.length ? (

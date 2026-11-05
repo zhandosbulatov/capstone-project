@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createContact } from "../../lib/contacts";
 import { createGame, recordResult } from "../../lib/game";
 import type { Contact, Stage } from "../../lib/model";
-import { groupContacts, lastActionText, milestoneDays, nextTitle } from "./l4-helpers";
+import { courseMap, groupContacts, lastActionText, milestoneDays, nextTitle, onePageSections } from "./l4-helpers";
 
 const make = (name: string, stage: Stage): Contact => ({
   ...createContact({ name, relation: "friend" }, 1, name),
@@ -35,5 +35,27 @@ describe("progress helpers", () => {
   it("finds the next title", () => {
     expect(nextTitle("employee")?.label).toBe("Side Starter");
     expect(nextTitle("consultant")).toBeNull();
+  });
+});
+
+describe("course map and one page", () => {
+  const input = { offer: null, contacts: [], lessons: {} };
+
+  it("lists all nine lessons and locks them before day 1 is done", () => {
+    const map = courseMap(input);
+    expect(map).toHaveLength(9);
+    expect(map.every((m) => m.state === "locked")).toBe(true);
+  });
+
+  it("marks finished lessons done with their day", () => {
+    const map = courseMap({ ...input, lessons: { "m0-safe": { readDay: 2 } } });
+    expect(map[0]).toMatchObject({ state: "done", day: 2 });
+  });
+
+  it("shows only decided fields, labelled from the curriculum", () => {
+    expect(onePageSections({})).toEqual([]);
+    const sections = onePageSections({ "m1-offer": { decision: { answer: " Logo kit " }, decidedDay: 3 } });
+    expect(sections).toHaveLength(1);
+    expect(sections[0].rows).toEqual([{ label: "Your decision", value: "Logo kit" }]);
   });
 });
