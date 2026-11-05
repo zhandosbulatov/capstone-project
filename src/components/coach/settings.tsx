@@ -76,7 +76,7 @@ export function Settings() {
       <Card className="my-0">
         <Label>Start over</Label>
         <p className="mt-1 text-sm text-ink-muted">
-          Deletes your answers, offer, list and progress from this browser.
+          Deletes your answers, offer, people, lessons and progress from this browser.
         </p>
         <div className="mt-3">
           {confirmReset ? (
