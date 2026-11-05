@@ -1,9 +1,9 @@
-// Progression rules: XP, levels, six stats, career titles, weekly bosses, streak, Streak Shield
-// and recovery quests. Pure functions: every action returns a new state plus the events to show.
+// Progression rules: XP, levels, six stats, career titles, streak and Streak Shield. Titles come
+// from real pipeline events (first reply, call, proposal, payment), not from quests or bosses.
+// Pure functions: every action returns a new state plus the events to show.
 // XP and stat numbers are starting values, to be tuned after the first users.
 
 import { STAGE_ORDER, type Stage } from "./model";
-import { questStats } from "./quests";
 
 export type StatKey =
   | "clarity"
@@ -33,12 +33,9 @@ export type TitleKey =
 
 export const TITLES: Record<TitleKey, { label: string; earnedBy: string }> = {
   employee: { label: "Employee", earnedBy: "Start" },
-  sideStarter: { label: "Side Starter", earnedBy: "Beat the week 1 boss: first reply" },
-  freelancer: {
-    label: "Freelancer",
-    earnedBy: "Beat the week 2 and week 3 bosses: first call and first proposal",
-  },
-  consultant: { label: "Consultant", earnedBy: "Beat the week 4 boss: first paying client" },
+  sideStarter: { label: "Side Starter", earnedBy: "Your first reply" },
+  freelancer: { label: "Freelancer", earnedBy: "Your first call and your first proposal" },
+  consultant: { label: "Consultant", earnedBy: "Your first paying client" },
   studioOwner: {
     label: "Studio Owner",
     earnedBy: "Monthly side income reaches the goal you chose",
@@ -88,6 +85,10 @@ export const TOOLS: Record<ToolKey, { label: string; forWeek: number }> = {
 
 export type BossKey = "w1" | "w2" | "w3" | "w4";
 
+/**
+ * Milestone data, still imported by the landing page, journey, demo panel and Hugin lines.
+ * Bosses no longer gate titles or tools, and beating one gives no bonus.
+ */
 export type Boss = {
   week: number;
   name: string;
@@ -136,25 +137,29 @@ export const BOSSES: Record<BossKey, Boss> = {
 export const BOSS_KEYS = Object.keys(BOSSES) as BossKey[];
 
 export const XP = {
-  dailyQuest: 10,
-  recoveryQuest: 15,
+  /** The first step of a calendar day. */
+  dailyStep: 10,
+  /** Any later step the same day. */
+  extraStep: 5,
   resultVerified: 50,
   resultSelfReported: 25,
-  boss: 100,
+  /** @deprecated Old name for `dailyStep`, still read by quest.tsx. Remove with L2. */
+  dailyQuest: 10,
+  /** @deprecated Recovery quests are gone. Kept so old imports compile; remove with L2/L4. */
+  recoveryQuest: 15,
 } as const;
 
 export const STAT_POINTS = {
-  dailyQuest: 1,
-  recoveryBonus: 1,
-  streakWeek: 3,
+  dailyStep: 1,
   resultVerified: 3,
   resultSelfReported: 1,
-  boss: 5,
 } as const;
 
 export const STREAK_SHIELD_EVERY = 7;
 export const MAX_SHIELDS = 2;
 export const DAYS_IN_MAP = 30;
+/** Streak lengths that get a notification. */
+export const STREAK_MILESTONES = [7, 14, 30] as const;
 
 export type Proof = "verified" | "self";
 
@@ -168,9 +173,12 @@ export type GameState = {
   bestStreak: number;
   shields: number;
   completedDays: number[];
-  /** A recovery quest replaces the daily quest on `day`; done keeps the streak, missed resets it. */
-  recovery: { missedDay: number; day: number } | null;
+  /** @deprecated Old saves may carry this. It is ignored and dropped on the next action. */
+  recovery?: null;
+  /** ISO date (YYYY-MM-DD) of the last step, so a calendar day counts the streak only once. */
+  lastStepDate?: string;
   results: ResultRecord[];
+  /** Milestones reached, kept for the journey view. Titles read `results`, not this. */
   bossesBeaten: BossKey[];
   goalReached: boolean;
 };
@@ -183,8 +191,10 @@ export type GameEvent =
   | { kind: "streak"; streak: number }
   | { kind: "shieldEarned"; shields: number }
   | { kind: "shieldUsed"; shields: number }
+  /** @deprecated Never emitted any more. */
   | { kind: "recoveryOffered"; day: number }
   | { kind: "streakReset" }
+  /** @deprecated Never emitted any more. */
   | { kind: "boss"; boss: BossKey }
   | { kind: "unlock"; tool: ToolKey };
 
@@ -206,11 +216,22 @@ export function createGame(): GameState {
     bestStreak: 0,
     shields: 0,
     completedDays: [],
-    recovery: null,
     results: [],
     bossesBeaten: [],
     goalReached: false,
   };
+}
+
+/** Load an old saved game: fill missing fields and ignore a leftover `recovery`. */
+export function normalizeGame(saved: Partial<GameState>): GameState {
+  return dropRecovery({ ...createGame(), ...saved });
+}
+
+function dropRecovery(state: GameState): GameState {
+  if (!("recovery" in state)) return state;
+  const next = { ...state };
+  delete next.recovery;
+  return next;
 }
 
 // --- Levels -------------------------------------------------------------------------------
@@ -249,13 +270,24 @@ export function levelProgress(xp: number): {
 
 // --- Titles, weeks, tools -----------------------------------------------------------------
 
-export function titleFor(state: GameState): TitleKey {
-  const beaten = (boss: BossKey) => state.bossesBeaten.includes(boss);
-  if (state.goalReached) return "studioOwner";
-  if (beaten("w4")) return "consultant";
-  if (beaten("w2") && beaten("w3")) return "freelancer";
-  if (beaten("w1")) return "sideStarter";
+/** True once this real event has happened (old saves may only have the matching boss). */
+function hasResult(state: GameState, type: ResultType): boolean {
+  return (
+    state.results.some((r) => r.type === type) ||
+    state.bossesBeaten.some((key) => BOSSES[key].result === type)
+  );
+}
+
+/** The title the user's real events have earned, before the income goal is considered. */
+function earnedTitle(state: GameState): TitleKey {
+  if (hasResult(state, "clientPaid")) return "consultant";
+  if (hasResult(state, "callBooked") && hasResult(state, "proposalSent")) return "freelancer";
+  if (hasResult(state, "firstReply")) return "sideStarter";
   return "employee";
+}
+
+export function titleFor(state: GameState): TitleKey {
+  return state.goalReached ? "studioOwner" : earnedTitle(state);
 }
 
 /** Week of the 30-day map (days 29–30 belong to week 4). */
@@ -263,139 +295,138 @@ export function weekOfDay(day: number): number {
   return Math.min(4, Math.ceil(day / 7));
 }
 
+const TOOLS_BY_TITLE: Record<Exclude<TitleKey, "studioOwner">, ToolKey[]> = {
+  employee: [],
+  sideStarter: ["callScript"],
+  freelancer: ["callScript", "proposalTemplate", "followUpScript"],
+  consultant: ["callScript", "proposalTemplate", "followUpScript", "reviewForm"],
+};
+
+/** Tools unlock with career titles. */
 export function unlockedTools(state: GameState): ToolKey[] {
-  return state.bossesBeaten.map((boss) => BOSSES[boss].unlocks);
+  const title = earnedTitle(state);
+  return TOOLS_BY_TITLE[title as keyof typeof TOOLS_BY_TITLE];
 }
 
 export function isQuestDone(state: GameState, day = state.day): boolean {
   return state.completedDays.includes(day);
 }
 
+/** @deprecated There are no recovery quests. Always false; remove with L2/L4. */
 export function isRecoveryDay(state: GameState): boolean {
-  return state.recovery?.day === state.day;
+  void state;
+  return false;
 }
 
 // --- Actions ------------------------------------------------------------------------------
 
-/** Complete today's quest (or today's recovery quest). */
-export function completeQuest(prev: GameState): Step {
-  if (isQuestDone(prev)) return { state: prev, events: [] };
+/**
+ * The day's step. The first one of a calendar day adds a streak day, 10 XP and Consistency +1;
+ * later ones that day give 5 XP and leave the streak alone. A shield comes every 7 streak days.
+ * Without `todayIso` the game day stands in for the calendar day.
+ */
+export function completeDailyStep(prev: GameState, todayIso?: string): Step {
+  const base = dropRecovery(prev);
+  const done = isQuestDone(base);
+  const newDate = todayIso !== undefined && !!base.lastStepDate && base.lastStepDate !== todayIso;
+  const first = !done || newDate;
+  const lastStepDate = todayIso ?? base.lastStepDate;
+  const completedDays = done ? base.completedDays : [...base.completedDays, base.day];
 
-  const recovery = isRecoveryDay(prev);
-  const xp = recovery ? XP.recoveryQuest : XP.dailyQuest;
-  const stats = { ...prev.stats };
-  const events: GameEvent[] = [{ kind: "xp", amount: xp }];
-
-  for (const stat of questStats(prev.day)) {
-    stats[stat] += STAT_POINTS.dailyQuest;
-    events.push({ kind: "stat", stat, amount: STAT_POINTS.dailyQuest });
+  if (!first) {
+    return finalize(
+      prev,
+      { ...base, xp: base.xp + XP.extraStep, lastStepDate, completedDays },
+      [{ kind: "xp", amount: XP.extraStep }],
+    );
   }
-  if (recovery) {
-    stats.consistency += STAT_POINTS.recoveryBonus;
-    events.push({ kind: "stat", stat: "consistency", amount: STAT_POINTS.recoveryBonus });
-  }
 
-  const streak = prev.streak + 1;
-  let shields = prev.shields;
+  const stats = { ...base.stats, consistency: base.stats.consistency + STAT_POINTS.dailyStep };
+  const events: GameEvent[] = [
+    { kind: "xp", amount: XP.dailyStep },
+    { kind: "stat", stat: "consistency", amount: STAT_POINTS.dailyStep },
+  ];
+  const streak = base.streak + 1;
+  let shields = base.shields;
   events.push({ kind: "streak", streak });
-  if (streak % STREAK_SHIELD_EVERY === 0) {
-    stats.consistency += STAT_POINTS.streakWeek;
-    events.push({ kind: "stat", stat: "consistency", amount: STAT_POINTS.streakWeek });
-    if (shields < MAX_SHIELDS) {
-      shields += 1;
-      events.push({ kind: "shieldEarned", shields });
-    }
+  if (streak % STREAK_SHIELD_EVERY === 0 && shields < MAX_SHIELDS) {
+    shields += 1;
+    events.push({ kind: "shieldEarned", shields });
   }
 
-  return finalize(prev, {
-    ...prev,
-    xp: prev.xp + xp,
-    stats,
-    streak,
-    bestStreak: Math.max(prev.bestStreak, streak),
-    shields,
-    completedDays: [...prev.completedDays, prev.day],
-    recovery: recovery ? null : prev.recovery,
-  }, events);
+  return finalize(
+    prev,
+    {
+      ...base,
+      xp: base.xp + XP.dailyStep,
+      stats,
+      streak,
+      bestStreak: Math.max(base.bestStreak, streak),
+      shields,
+      lastStepDate,
+      completedDays,
+    },
+    events,
+  );
 }
 
 /**
- * Move to the next day. If today's quest was missed:
- * 1. a Streak Shield is used if the user has one;
- * 2. otherwise tomorrow becomes a recovery quest;
- * 3. a missed recovery quest resets the streak to 0.
+ * Move to the next day. If no step was taken today: a Streak Shield is used if the user has
+ * one and the streak stays; otherwise the streak goes to 0.
  */
 export function advanceDay(prev: GameState): Step {
+  const base = dropRecovery(prev);
   const events: GameEvent[] = [];
-  let { streak, shields, recovery } = prev;
+  let { streak, shields } = base;
 
-  if (!isQuestDone(prev)) {
-    if (isRecoveryDay(prev)) {
+  if (!isQuestDone(base) && streak > 0) {
+    if (shields > 0) {
+      shields -= 1;
+      events.push({ kind: "shieldUsed", shields });
+    } else {
       streak = 0;
-      recovery = null;
       events.push({ kind: "streakReset" });
-    } else if (streak > 0) {
-      if (shields > 0) {
-        shields -= 1;
-        events.push({ kind: "shieldUsed", shields });
-      } else {
-        recovery = { missedDay: prev.day, day: prev.day + 1 };
-        events.push({ kind: "recoveryOffered", day: prev.day + 1 });
-      }
     }
   }
 
-  return {
-    state: { ...prev, day: prev.day + 1, streak, shields, recovery },
-    events,
-  };
+  return { state: { ...base, day: base.day + 1, streak, shields }, events };
 }
 
-/** Log a real result. Beats the matching boss the first time it happens. */
+/**
+ * Log a real result. The first time each kind happens it earns XP and grows its stat (and may
+ * earn a title). A repeat earns XP only.
+ */
 export function recordResult(prev: GameState, type: ResultType, proof: Proof): Step {
+  const base = dropRecovery(prev);
   const verified = proof === "verified";
   const resultXp = verified ? XP.resultVerified : XP.resultSelfReported;
   const resultPoints = verified ? STAT_POINTS.resultVerified : STAT_POINTS.resultSelfReported;
   const resultStat = RESULTS[type].stat;
+  const first = !hasResult(base, type);
 
-  const stats = { ...prev.stats, [resultStat]: prev.stats[resultStat] + resultPoints };
-  let xp = prev.xp + resultXp;
-  let bossesBeaten = prev.bossesBeaten;
-  const events: GameEvent[] = [
-    { kind: "xp", amount: resultXp },
-    { kind: "stat", stat: resultStat, amount: resultPoints },
-  ];
-
-  const bossKey = BOSS_KEYS.find(
-    (key) => BOSSES[key].result === type && !prev.bossesBeaten.includes(key),
-  );
-  if (bossKey) {
-    const boss = BOSSES[bossKey];
-    xp += XP.boss;
-    stats[boss.stat] += STAT_POINTS.boss;
-    bossesBeaten = [...bossesBeaten, bossKey];
-    events.push(
-      { kind: "boss", boss: bossKey },
-      { kind: "xp", amount: XP.boss },
-      { kind: "stat", stat: boss.stat, amount: STAT_POINTS.boss },
-      { kind: "unlock", tool: boss.unlocks },
-    );
+  const events: GameEvent[] = [{ kind: "xp", amount: resultXp }];
+  let stats = base.stats;
+  let bossesBeaten = base.bossesBeaten;
+  if (first) {
+    stats = { ...stats, [resultStat]: stats[resultStat] + resultPoints };
+    events.push({ kind: "stat", stat: resultStat, amount: resultPoints });
+    bossesBeaten = [
+      ...bossesBeaten,
+      ...BOSS_KEYS.filter((key) => BOSSES[key].result === type && !bossesBeaten.includes(key)),
+    ];
   }
 
-  return finalize(prev, {
-    ...prev,
-    xp,
-    stats,
-    bossesBeaten,
-    results: [...prev.results, { type, proof, day: prev.day }],
-  }, events);
-}
-
-// --- Rework stubs (base). Lane L3 replaces these; keep the signatures. ---------------------
-
-/** The day's minimum step. Counts the streak at most once per game day. */
-export function completeDailyStep(prev: GameState): Step {
-  return completeQuest(prev);
+  return finalize(
+    prev,
+    {
+      ...base,
+      xp: base.xp + resultXp,
+      stats,
+      bossesBeaten,
+      results: [...base.results, { type, proof, day: base.day }],
+    },
+    events,
+  );
 }
 
 /** The real result each pipeline stage stands for. */
@@ -407,8 +438,9 @@ const STAGE_RESULTS: Partial<Record<Stage, ResultType>> = {
 };
 
 /**
- * Turn a contact's stage change into results (and so bosses and titles). Moving forward over
- * several stages records each one in between. Moving back or to "not now" records nothing.
+ * Turn a contact's stage change into results (and so titles), with "self" proof. Moving forward
+ * over several stages records each one in between. Only the first time of each event grows a
+ * stat; repeats add XP only. Moving back or to "not now" records nothing.
  */
 export function recordStage(prev: GameState, from: Stage, to: Stage): Step {
   if (to === "not-now") return { state: prev, events: [] };
@@ -429,12 +461,14 @@ export function recordStage(prev: GameState, from: Stage, to: Stage): Step {
 /** Level 2: the user's monthly side income reached the goal they chose in the quiz. */
 export function reachGoal(prev: GameState): Step {
   if (prev.goalReached) return { state: prev, events: [] };
-  return finalize(prev, { ...prev, goalReached: true }, []);
+  return finalize(prev, { ...dropRecovery(prev), goalReached: true }, []);
 }
 
 /** Demo mode only: add XP without a quest or result. */
 export function grantXp(prev: GameState, amount: number): Step {
-  return finalize(prev, { ...prev, xp: prev.xp + amount }, [{ kind: "xp", amount }]);
+  return finalize(prev, { ...dropRecovery(prev), xp: prev.xp + amount }, [
+    { kind: "xp", amount },
+  ]);
 }
 
 /** Days from the plan start to `today`, counting the start day as day 1. */
@@ -456,7 +490,7 @@ export function catchUp(prev: GameState, day: number): Step {
   return { state, events };
 }
 
-/** Adds level-up and new-title events by comparing before and after. */
+/** Adds level-up, new-title and tool-unlock events by comparing before and after. */
 function finalize(prev: GameState, next: GameState, events: GameEvent[]): Step {
   const before = levelFromXp(prev.xp);
   const after = levelFromXp(next.xp);
@@ -465,12 +499,20 @@ function finalize(prev: GameState, next: GameState, events: GameEvent[]): Step {
   }
   const title = titleFor(next);
   if (title !== titleFor(prev)) events.push({ kind: "title", title });
+  const toolsBefore = unlockedTools(prev);
+  for (const tool of unlockedTools(next)) {
+    if (!toolsBefore.includes(tool)) events.push({ kind: "unlock", tool });
+  }
   return { state: next, events };
 }
 
 // --- Display ------------------------------------------------------------------------------
 
-/** Short growth notification text: "+10 XP", "Clarity +1", "Level 2", "New title: Side Starter". */
+function isMilestone(streak: number): boolean {
+  return (STREAK_MILESTONES as readonly number[]).includes(streak);
+}
+
+/** Short text for an event: "+10 XP", "Clarity +1", "Level 2", "New title: Side Starter". */
 export function formatEvent(event: GameEvent): string {
   switch (event.kind) {
     case "xp":
@@ -482,18 +524,54 @@ export function formatEvent(event: GameEvent): string {
     case "title":
       return `New title: ${TITLES[event.title].label}`;
     case "streak":
-      return `Streak ${event.streak}`;
+      return isMilestone(event.streak) ? `${event.streak}-day streak` : `Streak ${event.streak}`;
     case "shieldEarned":
       return "Streak Shield earned";
     case "shieldUsed":
       return "Streak Shield used";
     case "recoveryOffered":
-      return "Recovery quest";
+      return "";
     case "streakReset":
       return "Streak reset";
     case "boss":
-      return `Boss beaten: ${BOSSES[event.boss].name}`;
+      return `Milestone: ${BOSSES[event.boss].name}`;
     case "unlock":
       return `Unlocked: ${TOOLS[event.tool].label}`;
   }
+}
+
+/** Only these events get a notification. XP, stat and level events are recorded, not shown. */
+export function isToastEvent(event: GameEvent): boolean {
+  switch (event.kind) {
+    case "title":
+    case "shieldEarned":
+      return true;
+    case "streak":
+      return isMilestone(event.streak);
+    default:
+      return false;
+  }
+}
+
+const QUIET_TOAST_PARTS = [
+  /^\+\d+ XP$/,
+  /^[A-Za-z][A-Za-z ]* \+\d+$/,
+  /^Level \d+$/,
+  /^Unlocked: /,
+  /^Milestone: /,
+  /^Streak \d+$/,
+  /^Streak Shield used$/,
+  /^Streak reset$/,
+  /^Recovery quest$/,
+];
+
+/**
+ * Drop the quiet parts (XP, stat, level, unlock, shield used, reset) from a notification's text.
+ * Returns null when nothing worth showing is left.
+ */
+export function visibleToastText(text: string): string | null {
+  const kept = text
+    .split(" · ")
+    .filter((part) => part && !QUIET_TOAST_PARTS.some((pattern) => pattern.test(part)));
+  return kept.length ? kept.join(" · ") : null;
 }
