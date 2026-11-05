@@ -193,9 +193,9 @@ describe("tidyContacts", () => {
 describe("decisionsSummary", () => {
   it("summarizes saved decisions in lesson order", () => {
     const summary = decisionsSummary({
-      "m2-package": { decision: { answer: "Three tiers" }, decidedDay: 4 },
-      "m1-offer": { decision: { answer: "Logo refresh for cafés" }, decidedDay: 3 },
-      "m4-sales": { decision: { answer: "  " } },
+      "m2-package": { decision: { scope: "Three tiers" }, decidedDay: 4 },
+      "m1-offer": { decision: { offer: "Logo refresh for cafés" }, decidedDay: 3 },
+      "m4-sales": { decision: { q1: "  " } },
     });
     expect(summary.split("\n")).toHaveLength(2);
     expect(summary.indexOf("Logo refresh")).toBeLessThan(summary.indexOf("Three tiers"));
