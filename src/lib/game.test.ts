@@ -3,23 +3,23 @@ import {
   advanceDay,
   calendarDay,
   catchUp,
-  completeQuest,
+  completeDailyStep,
   createGame,
   formatEvent,
   levelFromXp,
-  recordResult,
   reachGoal,
+  recordResult,
   titleFor,
   totalXpForLevel,
   unlockedTools,
   type GameState,
 } from "./game";
 
-/** Complete the quest on each of the next `days` days. */
+/** Take the daily step on each of the next `days` days. */
 function playDays(state: GameState, days: number): GameState {
   let s = state;
   for (let i = 0; i < days; i++) {
-    s = completeQuest(s).state;
+    s = completeDailyStep(s, `d${s.day}`).state;
     s = advanceDay(s).state;
   }
   return s;
@@ -38,91 +38,50 @@ describe("level curve", () => {
     expect(levelFromXp(1349)).toBe(9);
     expect(levelFromXp(1350)).toBe(10);
   });
-
-  it("puts an engaged first month at about level 8", () => {
-    // 30 quests + 7 verified results + 4 bosses = 300 + 350 + 400 XP
-    expect(levelFromXp(1050)).toBe(8);
-  });
 });
 
-describe("day 1 quest", () => {
-  it("gives +10 XP, Clarity +1, Reach +1 and a 1-day streak", () => {
-    const { state, events } = completeQuest(createGame());
-    expect(events.map(formatEvent)).toEqual([
-      "+10 XP",
-      "Clarity +1",
-      "Reach +1",
-      "Streak 1",
-    ]);
+describe("daily step", () => {
+  it("gives +10 XP, Consistency +1 and a 1-day streak", () => {
+    const { state, events } = completeDailyStep(createGame(), "2026-11-05");
+    expect(events.map(formatEvent)).toEqual(["+10 XP", "Consistency +1", "Streak 1"]);
     expect(state.xp).toBe(10);
-    expect(state.stats.clarity).toBe(2);
-    expect(state.stats.reach).toBe(2);
+    expect(state.stats.consistency).toBe(2);
     expect(state.streak).toBe(1);
     expect(titleFor(state)).toBe("employee");
   });
 
-  it("can't be completed twice", () => {
-    const once = completeQuest(createGame()).state;
-    const twice = completeQuest(once);
-    expect(twice.events).toEqual([]);
-    expect(twice.state.xp).toBe(10);
-  });
-});
-
-describe("streak, Streak Shield and recovery", () => {
-  it("every 7-day streak gives a shield and +3 Consistency, holding at most 2", () => {
+  it("every 7-day streak gives a shield, holding at most 2", () => {
     const week = playDays(createGame(), 7);
     expect(week.streak).toBe(7);
     expect(week.shields).toBe(1);
-    expect(week.stats.consistency).toBeGreaterThanOrEqual(1 + 3);
-
     const threeWeeks = playDays(week, 14);
     expect(threeWeeks.streak).toBe(21);
     expect(threeWeeks.shields).toBe(2);
+    expect(playDays(threeWeeks, 7).shields).toBe(2);
   });
+});
 
-  it("a missed day uses a shield first and keeps the streak", () => {
+describe("missed days", () => {
+  it("use a shield first and keep the streak", () => {
     const week = playDays(createGame(), 7);
     const { state, events } = advanceDay(week);
     expect(events.map((e) => e.kind)).toEqual(["shieldUsed"]);
     expect(state.shields).toBe(0);
     expect(state.streak).toBe(7);
-    expect(state.recovery).toBeNull();
   });
 
-  it("without a shield, a missed day becomes a recovery quest the next day", () => {
+  it("without a shield, reset the streak to 0", () => {
     const three = playDays(createGame(), 3);
-    const missed = advanceDay(three);
-    expect(missed.events).toEqual([{ kind: "recoveryOffered", day: 5 }]);
-    expect(missed.state.recovery).toEqual({ missedDay: 4, day: 5 });
-    expect(missed.state.streak).toBe(3);
-  });
-
-  it("a done recovery quest keeps the streak and gives 15 XP and +1 Consistency", () => {
-    const three = playDays(createGame(), 3);
-    const recoveryDay = advanceDay(three).state;
-    const { state, events } = completeQuest(recoveryDay);
-    expect(events[0]).toEqual({ kind: "xp", amount: 15 });
-    expect(events).toContainEqual({ kind: "stat", stat: "consistency", amount: 1 });
-    expect(state.xp).toBe(three.xp + 15);
-    expect(state.streak).toBe(4);
-    expect(state.recovery).toBeNull();
-  });
-
-  it("a missed recovery quest resets the streak to 0", () => {
-    const three = playDays(createGame(), 3);
-    const recoveryDay = advanceDay(three).state;
-    const { state, events } = advanceDay(recoveryDay);
+    const { state, events } = advanceDay(three);
     expect(events).toEqual([{ kind: "streakReset" }]);
     expect(state.streak).toBe(0);
-    expect(state.recovery).toBeNull();
+    expect(state.bestStreak).toBe(3);
   });
 
-  it("missing a day with no streak offers nothing", () => {
+  it("with no streak, change nothing but the day", () => {
     const { state, events } = advanceDay(createGame());
     expect(events).toEqual([]);
     expect(state.day).toBe(2);
-    expect(state.recovery).toBeNull();
   });
 });
 
@@ -134,13 +93,12 @@ describe("calendar", () => {
     expect(calendarDay(start, new Date(2026, 11, 4))).toBe(31);
   });
 
-  it("catching up after two days away uses the shield, then offers a recovery quest", () => {
+  it("catching up after two days away uses the shield, then resets the streak", () => {
     const week = playDays(createGame(), 7); // day 8, streak 7, one shield
     const { state, events } = catchUp(week, 10);
     expect(state.day).toBe(10);
-    expect(events.map((e) => e.kind)).toEqual(["shieldUsed", "recoveryOffered"]);
-    expect(state.streak).toBe(7);
-    expect(state.recovery).toEqual({ missedDay: 9, day: 10 });
+    expect(events.map((e) => e.kind)).toEqual(["shieldUsed", "streakReset"]);
+    expect(state.streak).toBe(0);
   });
 
   it("does nothing when the game is already ahead of the calendar (demo mode)", () => {
@@ -149,54 +107,37 @@ describe("calendar", () => {
   });
 });
 
-describe("real results and bosses", () => {
-  it("a verified first reply beats the week 1 boss", () => {
+describe("real results", () => {
+  it("a verified first reply gives 50 XP, Reach +3 and the Side Starter title", () => {
     const { state, events } = recordResult(createGame(), "firstReply", "verified");
-    // 50 for the result + 100 for the boss
-    expect(state.xp).toBe(150);
-    // 1 + 3 (verified result) + 5 (boss)
-    expect(state.stats.reach).toBe(9);
-    expect(state.bossesBeaten).toEqual(["w1"]);
-    expect(unlockedTools(state)).toEqual(["callScript"]);
+    expect(state.xp).toBe(50);
+    expect(state.stats.reach).toBe(4);
     expect(titleFor(state)).toBe("sideStarter");
+    expect(unlockedTools(state)).toEqual(["callScript"]);
     expect(events.map(formatEvent)).toEqual([
       "+50 XP",
       "Reach +3",
-      "Boss beaten: First reply",
-      "+100 XP",
-      "Reach +5",
-      "Unlocked: Call script",
       "Level 2",
-      "Level 3",
       "New title: Side Starter",
+      "Unlocked: Call script",
     ]);
   });
 
-  it("a self-reported result gives 25 XP and +1, and the boss bonus still applies", () => {
+  it("a self-reported result gives 25 XP and +1", () => {
     const { state } = recordResult(createGame(), "firstReply", "self");
-    expect(state.xp).toBe(125);
-    expect(state.stats.reach).toBe(1 + 1 + 5);
-    expect(state.bossesBeaten).toEqual(["w1"]);
+    expect(state.xp).toBe(25);
+    expect(state.stats.reach).toBe(2);
   });
 
-  it("a second reply earns XP but doesn't beat the boss again", () => {
-    const first = recordResult(createGame(), "firstReply", "verified").state;
-    const { state, events } = recordResult(first, "firstReply", "verified");
-    expect(state.xp).toBe(200);
-    expect(state.bossesBeaten).toEqual(["w1"]);
-    expect(events.some((e) => e.kind === "boss")).toBe(false);
-  });
-
-  it("titles follow the bosses: Freelancer needs weeks 2 and 3, Consultant needs week 4", () => {
-    let s = recordResult(createGame(), "firstReply", "verified").state;
-    s = recordResult(s, "callBooked", "verified").state;
+  it("Freelancer needs a call and a proposal, Consultant needs a payment", () => {
+    let s = recordResult(createGame(), "firstReply", "self").state;
+    s = recordResult(s, "callBooked", "self").state;
     expect(titleFor(s)).toBe("sideStarter");
-    s = recordResult(s, "proposalSent", "verified").state;
+    s = recordResult(s, "proposalSent", "self").state;
     expect(titleFor(s)).toBe("freelancer");
-    expect(s.stats.pricingPower).toBe(1 + 3 + 5);
-    s = recordResult(s, "clientPaid", "verified").state;
+    expect(unlockedTools(s)).toEqual(["callScript", "proposalTemplate", "followUpScript"]);
+    s = recordResult(s, "clientPaid", "self").state;
     expect(titleFor(s)).toBe("consultant");
-    expect(s.stats.reputation).toBe(1 + 5);
     expect(unlockedTools(s)).toEqual([
       "callScript",
       "proposalTemplate",

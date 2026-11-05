@@ -1,20 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import {
-  BOSSES,
-  RESULT_TYPES,
-  RESULTS,
-  STATS,
-  TITLES,
-  TOOLS,
-  XP,
-  STAT_POINTS,
-  type BossKey,
-  type ResultType,
-} from "@/lib/game";
+import { BOSSES, STATS, TITLES, TOOLS, XP, type BossKey, type ResultType } from "@/lib/game";
 import { verifyScreenshot, type Verdict } from "@/lib/verify-client";
-import { Button, buttonClass, Card, fieldClass, lowerFirst, Pill, Rewards } from "@/components/ui";
+import { Button, buttonClass, Card, lowerFirst, Pill } from "@/components/ui";
 import { useCoach } from "./app-context";
 import { HuginLine } from "./hugin";
 
@@ -24,7 +13,7 @@ const BOSS_TITLES: Partial<Record<BossKey, keyof typeof TITLES>> = {
   w4: "consultant",
 };
 
-/** This week's boss: a real result, not a task. */
+/** This week's milestone: a real result, not a task. It earns the title by itself. */
 export function BossCard() {
   const { state, actions, meta } = useCoach();
   const key = meta.boss;
@@ -41,17 +30,17 @@ export function BossCard() {
       ) : null}
       <h2 className="font-display text-lg leading-snug">{boss.name}</h2>
       <p className="mt-1 text-sm text-ink-muted">Proof: {lowerFirst(boss.proof)}.</p>
-      <Rewards
-        parts={[`+${XP.boss} XP`, `${STATS[boss.stat].label} +${STAT_POINTS.boss}`]}
-        note={`${title ? `Title ${TITLES[title].label}. ` : ""}Unlocks ${TOOLS[boss.unlocks].label.toLowerCase()}.`}
-      />
+      <p className="mt-1 text-sm text-ink-muted">
+        {title ? `Title ${TITLES[title].label}. ` : ""}Unlocks {TOOLS[boss.unlocks].label.toLowerCase()}.
+        Grows {STATS[boss.stat].label}.
+      </p>
       {beaten ? null : (
         <div className="mt-3">
           <Button
             variant="outline"
             onClick={() => actions.openSheet({ kind: "log", result: boss.result })}
           >
-            Log a result
+            Add proof
           </Button>
         </div>
       )}
@@ -64,10 +53,13 @@ type Step =
   | { kind: "checking" }
   | { kind: "verdict"; verdict: Verdict };
 
-/** Log a real result: screenshot proof (full XP) or self-report (half XP). */
+/**
+ * Optional "Add proof" for the first payment. The payment already counts from the pipeline; a
+ * verified screenshot only adds the verified XP and never changes titles.
+ */
 export function LogResultSheet({ initial }: { initial?: ResultType }) {
   const { actions } = useCoach();
-  const [result, setResult] = useState<ResultType>(initial ?? "firstReply");
+  const result: ResultType = initial ?? "clientPaid";
   const [step, setStep] = useState<Step>({ kind: "choose" });
 
   async function onFile(file: File | undefined) {
@@ -83,30 +75,11 @@ export function LogResultSheet({ initial }: { initial?: ResultType }) {
 
   return (
     <div>
-      <h2 className="text-xl font-bold">Log a result</h2>
+      <h2 className="text-xl font-bold">Add proof</h2>
       <p className="mt-1 text-sm text-ink-muted">
-        Real results earn the most: {XP.resultVerified} XP with a screenshot, {XP.resultSelfReported}{" "}
-        XP without.
+        Optional. A screenshot of the payment earns {XP.resultVerified} XP. Your title doesn&apos;t
+        depend on it.
       </p>
-
-      <label htmlFor="result" className="mt-4 block text-sm font-semibold">
-        What happened?
-      </label>
-      <select
-        id="result"
-        value={result}
-        onChange={(e) => {
-          setResult(e.target.value as ResultType);
-          setStep({ kind: "choose" });
-        }}
-        className={`mt-1.5 ${fieldClass}`}
-      >
-        {RESULT_TYPES.map((type) => (
-          <option key={type} value={type}>
-            {RESULTS[type].label}
-          </option>
-        ))}
-      </select>
 
       <div className="mt-4 rounded-md bg-warning-soft px-3.5 py-3 text-label text-warning-ink">
         Crop or blur other people&apos;s names before you upload. We check the screenshot and keep
@@ -137,15 +110,8 @@ export function LogResultSheet({ initial }: { initial?: ResultType }) {
             }}
           />
         </label>
-        <Button
-          variant="outline"
-          disabled={step.kind === "checking"}
-          onClick={() => actions.recordResult(result, "self")}
-        >
-          No screenshot possible · log it anyway
-        </Button>
         <Button variant="ghost" onClick={actions.closeSheet}>
-          Cancel
+          Not now
         </Button>
       </div>
     </div>

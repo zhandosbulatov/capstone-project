@@ -1,8 +1,10 @@
 "use client";
 
-// Short growth notifications: "+10 XP · Clarity +1", "Level 4", "New title: Side Starter".
+// Short notifications: a new title, a shield earned, streak milestones. XP, stat and level
+// events are recorded but not shown.
 
 import { useEffect, ViewTransition } from "react";
+import { visibleToastText } from "@/lib/game";
 import { useCoach, type Toast } from "./app-context";
 import { HuginAvatar } from "./hugin";
 
@@ -32,13 +34,17 @@ function ToastItem({ toast, delay }: { toast: Toast; delay: number }) {
 
 export function Toasts() {
   const { state } = useCoach();
+  const shown = state.toasts.flatMap((toast) => {
+    const text = visibleToastText(toast.text);
+    return text ? [{ ...toast, text }] : [];
+  });
   return (
     <div
       aria-live="polite"
       className="pointer-events-none fixed inset-x-0 bottom-20 z-30 mx-auto w-full max-w-[440px] px-4"
     >
       <ul className="flex flex-col gap-2">
-        {state.toasts.slice(-MAX_VISIBLE).map((toast, i) => (
+        {shown.slice(-MAX_VISIBLE).map((toast, i) => (
           <ViewTransition key={toast.id} enter="toast-in" exit="toast-out" default="none">
             <ToastItem toast={toast} delay={i * 500} />
           </ViewTransition>
