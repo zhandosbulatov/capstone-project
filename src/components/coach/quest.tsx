@@ -2,16 +2,13 @@
 
 import { useState, ViewTransition } from "react";
 import { BOSSES, STATS, XP } from "@/lib/game";
-import type { Relation } from "@/lib/model";
 import { offerDraft } from "@/lib/plan";
 import { Icon } from "@/components/icons";
 import { Button, Card, fieldClass, Pill, Rewards } from "@/components/ui";
 import { useCoach } from "./app-context";
-import { RelationSelect } from "./contact-form";
+import { ContactForm, type ContactDraft } from "./contact-form";
 import { HuginLine } from "./hugin";
-
-const NAME_COUNT = 5;
-const MIN_OFFER_LENGTH = 10;
+import { completeRows, DAY1_PEOPLE, day1Ready, firstName } from "./today-day1";
 
 /** ["+10 XP", "Clarity +1", "Reach +1"] */
 function rewardParts(xp: number, stats: readonly (keyof typeof STATS)[], recovery: boolean) {
@@ -87,23 +84,32 @@ function NextStepLine() {
   );
 }
 
-/** Day 1: write the offer and the first 5 names. Real progress in session one. */
+/** Day 1: write the offer and the first 5 people, each with how you know them. */
 function Day1Quest() {
   const { state, actions, meta } = useCoach();
   const [offer, setOffer] = useState(() => state.saved.offer ?? offerDraft(meta.answers));
-  const [names, setNames] = useState<string[]>(() =>
-    Array.from({ length: NAME_COUNT }, (_, i) => state.saved.contacts[i]?.name ?? ""),
+  const [rows, setRows] = useState<ContactDraft[]>(() =>
+    Array.from({ length: DAY1_PEOPLE }, (_, i) => {
+      const c = state.saved.contacts[i];
+      return c ? { name: c.name, relation: c.relation, note: c.note } : { name: "" };
+    }),
   );
-  const [relations, setRelations] = useState<Relation[]>(() =>
-    Array.from({ length: NAME_COUNT }, (_, i) => state.saved.contacts[i]?.relation ?? "other"),
-  );
-  const filled = names.filter((n) => n.trim()).length;
-  const ready = filled >= NAME_COUNT && offer.trim().length > MIN_OFFER_LENGTH;
+  const done = completeRows(rows);
+  const ready = day1Ready(offer, rows);
+
+  const finish = () =>
+    actions.completeDay1(
+      offer,
+      rows.flatMap((r) =>
+        r.relation
+          ? [{ name: r.name.trim(), relation: r.relation, note: r.note?.trim() || undefined }]
+          : [],
+      ),
+    );
 
   return (
     <Card className="my-0">
       <h2 className="font-display text-xl leading-snug">{meta.quest.title}</h2>
-      <Rewards parts={rewardParts(XP.dailyQuest, meta.quest.stats, false)} />
 
       <label htmlFor="offer" className="mt-3 block text-sm text-ink-muted">
         Step 1. Your coach drafted your offer. Edit it until you would say it out loud.
@@ -118,47 +124,32 @@ function Day1Quest() {
 
       <fieldset className="mt-3">
         <legend className="text-sm text-ink-muted">
-          Step 2. Five people who have seen your work: colleagues, ex-clients, friends who run
-          something.
+          Step 2. Five people who have seen your work. Type a name, then tap how you know them.
         </legend>
-        <div className="mt-1.5 flex flex-col gap-1.5">
-          {names.map((name, i) => (
-            <div key={i} className="grid grid-cols-[1fr_auto] gap-1.5">
-              <input
-                aria-label={`Name ${i + 1}`}
-                placeholder={`Name ${i + 1}`}
-                autoComplete="off"
-                value={name}
-                onChange={(e) =>
-                  setNames((prev) => prev.map((n, j) => (j === i ? e.target.value : n)))
-                }
-                className={`${fieldClass}`}
-              />
-              <RelationSelect
-                label={`How you know name ${i + 1}`}
-                value={relations[i]}
-                onChange={(relation) =>
-                  setRelations((prev) => prev.map((r, j) => (j === i ? relation : r)))
-                }
-              />
-            </div>
+        <div className="mt-1.5 flex flex-col gap-2">
+          {rows.map((row, i) => (
+            <ContactForm
+              key={i}
+              mode="row"
+              index={i}
+              value={row}
+              onChange={(next) => setRows((prev) => prev.map((r, j) => (j === i ? next : r)))}
+            />
           ))}
         </div>
+        <p className="mt-2 text-xs text-ink-muted">
+          Only people who&apos;ve seen your work. Nobody at your current job needs to know.
+        </p>
       </fieldset>
 
       <div className="mt-4">
-        <Button disabled={!ready} onClick={() =>
-            actions.completeDay1(
-              offer,
-              names.map((name, i) => ({ name, relation: relations[i] })),
-            )
-          }>
-          {filled >= NAME_COUNT ? "Complete quest" : `Complete quest · ${filled}/5 names`}
+        <Button disabled={!ready} onClick={finish}>
+          {`Complete quest · ${done}/${DAY1_PEOPLE}`}
         </Button>
         {!ready ? (
           <p className="mt-1.5 text-center text-xs text-ink-muted">
-            {filled < NAME_COUNT
-              ? "Add five names to finish."
+            {done < DAY1_PEOPLE
+              ? "Five people, each with how you know them."
               : "Write your offer in a full sentence to finish."}
           </p>
         ) : null}
@@ -170,32 +161,30 @@ function Day1Quest() {
 
 function Day1Done() {
   const { state, meta } = useCoach();
-  const kit = state.saved.purchase.firstClientKit;
+  const first = firstName(state.saved.contacts[0]?.name ?? "");
   return (
     <Card className="my-0">
       <div className="py-2 text-center">
         <span
           aria-hidden
-          className="mx-auto grid size-10 place-items-center rounded-full bg-brand text-surface"
+          className="mx-auto grid size-10 place-items-center rounded-full bg-brand text-on-bright"
         >
           <Icon name="check" size={22} strokeWidth={2.5} />
         </span>
         <h2 className="mt-2 font-display text-xl">Quest 1 done</h2>
         <p className="mt-1 text-ink-muted">
-          Your offer is written and 5 people are on your list. That is the step most side
-          projects never take.
+          Your offer is written and 5 people are on your list.
         </p>
       </div>
       <div className="mt-2 rounded-md bg-canvas px-3.5 py-3">
-        <p className="text-sm font-bold">Tomorrow · {meta.quest.minutes} min</p>
+        <p className="text-sm font-bold">Tomorrow</p>
         <p className="mt-1 text-sm text-ink-muted">
-          Send your first 3 messages. Your coach has already drafted them for the people on your
-          list{kit ? ", using your First Client Kit" : ""}.
+          {first
+            ? `Your first message, to ${first}. Hugin will have it ready.`
+            : "Your first message. Hugin will have it ready."}
         </p>
       </div>
-      <p className="mt-3 text-xs text-ink-muted">
-        Saved: your offer and your list. They are yours, and they grow every day.
-      </p>
+      <HuginLine>{meta.quest.hugin}</HuginLine>
     </Card>
   );
 }
