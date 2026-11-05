@@ -21,6 +21,8 @@ export type StepInput = {
   offer: string | null;
   contacts: Contact[];
   lessons: LessonsState;
+  /** Demo mode only: every unlock condition counts as met. */
+  demoUnlockAll?: boolean;
 };
 
 /** Day 1 is done once there's an offer and at least one person, whatever the game day. */
@@ -55,6 +57,7 @@ export function isLessonUnlocked(id: LessonId, state: StepInput): boolean {
   const messaged = contacts.filter(wasMessaged).length;
   const any = (stage: Exclude<Stage, "not-now">) => contacts.some((c) => reached(c, stage));
   const done = (lesson: LessonId) => isLessonFinished(lesson, lessons);
+  if (state.demoUnlockAll) return true;
   switch (id) {
     case "m0-safe":
       return isDay1Done(state);

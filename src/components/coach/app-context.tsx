@@ -21,7 +21,6 @@ import {
   catchUp,
   completeDailyStep,
   formatEvent,
-  grantXp,
   isQuestDone,
   isToastEvent,
   levelProgress,
@@ -63,6 +62,7 @@ import type {
   Stage,
 } from "@/lib/model";
 import { decisionsSummary, isDay1Done, nextStep, stepTitle, tidyContacts } from "@/lib/next-step";
+import { demoContacts, DEMO_REPLY, oldestMessaged } from "@/lib/demo";
 import { addDays, buildPlan, offerDraft, type PersonalPlan } from "@/lib/plan";
 import { questForDay, type Quest } from "@/lib/quests";
 import { PLANS, SKILLS, type Plan, type QuizAnswers } from "@/lib/quiz-data";
@@ -141,8 +141,11 @@ type AppActions = {
   demo: {
     nextDay: () => void;
     missDay: () => void;
-    jumpToBoss: (boss: BossKey) => void;
-    addXp: () => void;
+    /** 5 people at mixed stages; Day 1 counts as done. */
+    seedPeople: () => void;
+    /** The oldest messaged person replies. */
+    simulateReply: () => void;
+    unlockAllLessons: () => void;
   };
 };
 
@@ -177,8 +180,6 @@ export function useCoach(): AppContextValue {
   if (!value) throw new Error("useCoach must be used inside <AppProvider>");
   return value;
 }
-
-const BOSS_DAYS: Record<BossKey, number> = { w1: 7, w2: 14, w3: 21, w4: 28 };
 
 /** Today's local date as YYYY-MM-DD, so a calendar day counts the streak once. */
 function todayIso(): string {
@@ -394,12 +395,36 @@ export function AppProvider({
             const missed = advanceDay(start.state);
             return { state: missed.state, events: [...start.events, ...missed.events] };
           }),
-        jumpToBoss: (boss) =>
-          play((game) => ({
-            state: { ...game, day: Math.max(game.day, BOSS_DAYS[boss]) },
-            events: [],
-          })),
-        addXp: () => play((game) => grantXp(game, 100)),
+        seedPeople: () =>
+          commit((s) => {
+            let game = s.saved.game;
+            const contacts = demoContacts(game.day);
+            const events: GameEvent[] = [];
+            // Record the real events behind each stage (first reply, call), so titles match.
+            for (const c of contacts) {
+              const step = recordStage(game, "listed", c.stage);
+              game = step.state;
+              events.push(...step.events);
+            }
+            if (!game.completedDays.includes(1)) {
+              const step =
+                game.day === 1
+                  ? completeDailyStep(game, todayIso())
+                  : { state: { ...game, completedDays: [1, ...game.completedDays] }, events: [] };
+              game = step.state;
+              events.push(...step.events);
+            }
+            return {
+              saved: { ...s.saved, offer: s.saved.offer ?? offerDraft(s.saved.answers), contacts, game },
+              events,
+            };
+          }),
+        simulateReply: () => {
+          const contact = oldestMessaged(stateRef.current.saved.contacts);
+          if (!contact) return;
+          applyContacts((contacts, day) => applyReply(contacts, contact.id, DEMO_REPLY, "replied", day));
+        },
+        unlockAllLessons: () => commit((s) => ({ saved: { ...s.saved, demoUnlockAll: true } })),
       },
     }),
     [applyContacts, commit, play, router, saveLesson],

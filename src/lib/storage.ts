@@ -30,6 +30,8 @@ export type SavedState = {
   contacts: Contact[];
   /** Read and decided lessons. */
   lessons: LessonsState;
+  /** Set by the demo control "Unlock all lessons" (?demo=1 only). */
+  demoUnlockAll?: boolean;
 };
 
 export function emptyState(): SavedState {

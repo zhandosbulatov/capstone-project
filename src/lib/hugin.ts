@@ -106,7 +106,8 @@ The message is for one real person:
 ${lines.join("\n")}
 
 How to write to them:
-- Use their name (${contact.name}) naturally. Do not use any other name.
+- Use their first name (${contact.name.trim().split(/\s+/)[0]}) naturally, never the full name in a greeting. Do not use any other name.
+- Use the note only as the user wrote it. Don't add feelings, memories or details to it.
 - Write from the relation. ${RELATION_VOICE[contact.relation]}
 - Mention a shared memory, project or conversation only if the note gives one, and use only what the note says. Otherwise mention none.
 - Do not guess what they do, what business they run or what they like. The user's list of warmest buyers is about the user, not about this person. Know only what the note says.
