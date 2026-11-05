@@ -179,15 +179,31 @@ export function stepTitle(step: NextStep, contacts: Contact[]): string {
   }
 }
 
-/** One short summary of saved lesson decisions, for Hugin's context. */
+/**
+ * Fields Hugin needs most, sent first so they survive the context length limit: the offer, buyer
+ * and proof (m1); scope, not included, price and terms (m2); the closing line (m4); and the
+ * agreement terms (m5). Ids are the real ones in curriculum.ts.
+ */
+export const KEY_DECISION_FIELDS: Partial<Record<LessonId, string[]>> = {
+  "m1-offer": ["offer", "buyer", "proof"],
+  "m2-package": ["scope", "notIncluded", "price", "terms"],
+  "m4-sales": ["close"],
+  "m5-proposal": ["changes", "ownership", "cancellation"],
+};
+
+/** Saved decisions as labelled lines ("Lesson. Label: value; ..."): key fields first, then the rest. */
 export function decisionsSummary(lessons: LessonsState): string {
-  return LESSON_ORDER.flatMap((id) => {
+  const line = (id: LessonId, keep: (fieldId: string) => boolean) => {
     const decision = lessons[id]?.decision;
-    const fields = LESSONS[id].decision?.fields ?? [];
     if (!decision) return [];
-    const parts = fields
-      .filter((f) => decision[f.id]?.trim())
+    const parts = (LESSONS[id].decision?.fields ?? [])
+      .filter((f) => keep(f.id) && decision[f.id]?.trim())
       .map((f) => `${f.label}: ${decision[f.id].trim()}`);
     return parts.length ? [`${LESSONS[id].title}. ${parts.join("; ")}`] : [];
-  }).join("\n");
+  };
+  const isKey = (id: LessonId) => (fieldId: string) => KEY_DECISION_FIELDS[id]?.includes(fieldId) ?? false;
+  return [
+    ...LESSON_ORDER.flatMap((id) => line(id, isKey(id))),
+    ...LESSON_ORDER.flatMap((id) => line(id, (f) => !isKey(id)(f))),
+  ].join("\n");
 }

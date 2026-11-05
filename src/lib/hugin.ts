@@ -1,7 +1,7 @@
 // Hugin's personality and the user context every Gemini call gets. Shared by the API routes;
 // holds no secrets.
 
-import { LESSONS } from "./curriculum";
+import { HUGIN_NOTES, LESSONS } from "./curriculum";
 import type { ResultType } from "./game";
 import {
   RELATION_LABELS,
@@ -322,6 +322,9 @@ Goal of the decision: ${decision?.intro ?? def.title} ${decision?.usedFor ?? ""}
 
 Their answers:
 ${fieldLines}
+
+Guidance for this lesson. Follow it, never quote it or mention it:
+${HUGIN_NOTES[lesson.id]}
 
 Give at most 3 pieces of feedback, each one sentence, specific to what they wrote. Then give an improved version of each field, in the user's own voice, the same length or shorter. Keep every fact they gave and add none. No square brackets. Return JSON with "feedback" and "improved" (one key per field id above).`;
 }

@@ -134,16 +134,17 @@ describe("parseDraftRequest", () => {
     const res = parseDraftRequest({
       kind: "review",
       context: CONTEXT,
-      lesson: { id: "m1-offer", fields: { answer: "I do design." } },
+      lesson: { id: "m1-offer", fields: { offer: "I do design." } },
     });
-    expect(res.ok && res.lesson?.fields.answer).toBe("I do design.");
+    expect(res.ok && res.lesson?.fields.offer).toBe("I do design.");
   });
 });
 
 describe("review", () => {
   it("builds an instruction from the lesson", () => {
-    const text = reviewInstruction({ id: "m1-offer", fields: { answer: "I do design." } });
-    expect(text).toContain("Sharpen your offer");
+    const text = reviewInstruction({ id: "m1-offer", fields: { offer: "I do design." } });
+    expect(text).toContain("Your offer and your proof");
+    expect(text).toContain("one specific type");
     expect(text).toContain("I do design.");
   });
 
@@ -151,15 +152,15 @@ describe("review", () => {
     const review = cleanReview(
       {
         feedback: ["One.", "Two.", "Three.", "Four."],
-        improved: { answer: "Brand kits for cafés, $450.", other: "ignored" },
+        improved: { offer: "Brand kits for cafés, $450.", other: "ignored" },
       },
       "m1-offer",
     );
     expect(review?.feedback).toHaveLength(3);
-    expect(review?.improved).toEqual({ answer: "Brand kits for cafés, $450." });
+    expect(review?.improved).toEqual({ offer: "Brand kits for cafés, $450." });
   });
 
   it("returns null when nothing usable is left", () => {
-    expect(cleanReview({ feedback: ["See [this]."], improved: { answer: "[x]" } }, "m1-offer")).toBeNull();
+    expect(cleanReview({ feedback: ["See [this]."], improved: { offer: "[x]" } }, "m1-offer")).toBeNull();
   });
 });

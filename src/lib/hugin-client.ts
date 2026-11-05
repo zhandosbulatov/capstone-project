@@ -56,7 +56,7 @@ export function fetchDrafts(
   return postJson<{ drafts: string[] }>("/api/draft", request, signal);
 }
 
-/** POST /api/review body: Hugin reviews a lesson decision. */
+/** A lesson decision for Hugin to review. Sent to /api/draft as kind "review". */
 export type ReviewRequest = {
   lessonId: LessonId;
   fields: Record<string, string>;
@@ -64,10 +64,14 @@ export type ReviewRequest = {
 };
 
 export function fetchReview(
-  request: ReviewRequest,
+  { lessonId, fields, context }: ReviewRequest,
   signal?: AbortSignal,
 ): Promise<{ review: DecisionReview } | { error: string }> {
-  return postJson<{ review: DecisionReview }>("/api/review", request, signal);
+  return postJson<{ review: DecisionReview }>(
+    "/api/draft",
+    { kind: "review", context, lesson: { id: lessonId, fields } },
+    signal,
+  );
 }
 
 export type ChatMessage = { role: "user" | "hugin"; text: string };
