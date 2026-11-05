@@ -1,10 +1,9 @@
 "use client";
 
-// The status window: your business card (service, price, title and level), then XP and the six
-// stats. Game-style information, calm presentation.
+// The status window: title and level, then XP and the six stats. It sits inside a collapsible
+// section in Progress, so it has no hero styling.
 
 import { ViewTransition } from "react";
-import { BusinessCard } from "@/components/business-card";
 import { XpBar } from "@/components/xp-bar";
 import { STAT_KEYS, STATS, TITLES } from "@/lib/game";
 import { useCoach } from "./app-context";
@@ -21,27 +20,22 @@ function Ticker({ value }: { value: number }) {
 export function StatusWindow() {
   const { state, meta } = useCoach();
   const { game } = state.saved;
+  // (service and price now live in Settings, "About you")
   const { level, into, needed } = meta.progress;
 
   return (
     <section aria-label="Your status" className="flex flex-col gap-3">
-      <BusinessCard
-        service={meta.plan.service}
-        price={meta.plan.priceLabel}
-        title={
-          <>
-            <ViewTransition key={meta.title} enter="bump" exit="none" default="none">
-              <span className="inline-block">{TITLES[meta.title].label}</span>
-            </ViewTransition>
-            {" · "}
-            <span className="whitespace-nowrap">
-              Level <Ticker value={level} />
-            </span>
-          </>
-        }
-      />
+      <p className="text-sm">
+        <ViewTransition key={meta.title} enter="bump" exit="none" default="none">
+          <span className="inline-block font-semibold">{TITLES[meta.title].label}</span>
+        </ViewTransition>
+        {" · "}
+        <span className="whitespace-nowrap">
+          Level <Ticker value={level} />
+        </span>
+      </p>
 
-      <div className="rounded-md border border-line bg-surface px-4 pt-3 pb-1">
+      <div>
       <div className="flex items-baseline justify-between gap-3">
         <h2 className="type-label">Progress to level {level + 1}</h2>
         <p className="text-label whitespace-nowrap text-ink-muted tabular-nums">
