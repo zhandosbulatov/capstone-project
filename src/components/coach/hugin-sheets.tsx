@@ -3,7 +3,7 @@
 // Hugin on Gemini: drafted messages for the day's quest, and a short chat.
 
 import { useEffect, useRef, useState } from "react";
-import { fetchDrafts } from "@/lib/hugin-client";
+import { fetchDrafts, toDraftContact } from "@/lib/hugin-client";
 import type { DraftKind } from "@/lib/quests";
 import { Button, buttonClass } from "@/components/ui";
 import { useCoach } from "./app-context";
@@ -14,6 +14,10 @@ const DRAFT_TITLES: Record<DraftKind, string> = {
   outreach: "Three messages to send",
   "follow-up": "Three follow-ups",
   proposal: "Three proposal drafts",
+  reply: "Three ways to answer",
+  kickoff: "Three kickoff messages",
+  "review-request": "Three review requests",
+  referral: "Three referral asks",
 };
 
 type DraftState =
@@ -43,15 +47,19 @@ function CopyButton({ text }: { text: string }) {
   );
 }
 
-export function DraftSheet({ kind }: { kind: DraftKind }) {
-  const { actions, meta } = useCoach();
+export function DraftSheet({ kind, contactId }: { kind: DraftKind; contactId?: string }) {
+  const { state: app, actions, meta } = useCoach();
+  const contact = contactId ? app.saved.contacts.find((c) => c.id === contactId) : undefined;
   const [attempt, setAttempt] = useState(0);
   const [state, setState] = useState<DraftState>({ status: "loading" });
   const context = meta.huginContext;
 
   useEffect(() => {
     const controller = new AbortController();
-    fetchDrafts(kind, context, controller.signal)
+    fetchDrafts(
+      { kind, context, contact: contact ? toDraftContact(contact) : undefined },
+      controller.signal,
+    )
       .then((result) =>
         setState("drafts" in result ? { status: "ready", drafts: result.drafts } : { status: "error", message: result.error }),
       )
@@ -61,7 +69,7 @@ export function DraftSheet({ kind }: { kind: DraftKind }) {
     return () => controller.abort();
     // Draft once per open or retry, not on every context change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [kind, attempt]);
+  }, [kind, contactId, attempt]);
 
   return (
     <div>

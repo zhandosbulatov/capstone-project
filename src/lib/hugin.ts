@@ -2,9 +2,12 @@
 // holds no secrets.
 
 import type { ResultType } from "./game";
-import type { DraftKind } from "./quests";
+import type { DraftKind } from "./model";
 
-/** What Hugin knows about the user. Built in the browser from saved state. Never includes the warm list. */
+/**
+ * What Hugin knows about the user. Built in the browser from saved state. Never includes contacts:
+ * a draft request sends the one contact it is about separately.
+ */
 export type HuginContext = {
   skill: string;
   service: string;
@@ -18,11 +21,14 @@ export type HuginContext = {
   week: number;
   questTitle: string;
   title: string;
+  /** Short text summary of the saved lesson decisions. `parseContext` always sets it (maybe ""). */
+  decisions?: string;
 };
 
 const LIMITS = {
   short: 80,
   long: 400,
+  decisions: 1200,
 };
 
 function clip(value: unknown, max: number): string {
@@ -45,6 +51,7 @@ export function parseContext(raw: unknown): HuginContext | null {
     week: Math.max(1, Math.min(4, Number(r.week) || 1)),
     questTitle: clip(r.questTitle, LIMITS.short),
     title: clip(r.title, LIMITS.short),
+    decisions: clip(r.decisions, LIMITS.decisions),
   };
   return ctx.service && ctx.price ? ctx : null;
 }
@@ -76,7 +83,9 @@ About the user:
 - What the client gets: ${ctx.deliverable}
 - Warmest first buyers: ${ctx.firstBuyers}
 - Their offer, in their words: ${ctx.offer}
-- Day ${ctx.day} of 30, week ${ctx.week}. Current title: ${ctx.title}. Today's quest: ${ctx.questTitle}.`;
+- Day ${ctx.day} of 30, week ${ctx.week}. Current title: ${ctx.title}. Today's quest: ${ctx.questTitle}.${ctx.decisions ? `
+- Decisions from their lessons:
+${ctx.decisions}` : ""}`;
 }
 
 /**
@@ -94,7 +103,16 @@ export function parseJsonReply(text: string | undefined): unknown {
   }
 }
 
-export const DRAFT_KINDS: DraftKind[] = ["offer", "outreach", "follow-up", "proposal"];
+export const DRAFT_KINDS: DraftKind[] = [
+  "offer",
+  "outreach",
+  "follow-up",
+  "proposal",
+  "reply",
+  "kickoff",
+  "review-request",
+  "referral",
+];
 
 export const DRAFT_TASKS: Record<DraftKind, string> = {
   offer:
@@ -105,6 +123,15 @@ export const DRAFT_TASKS: Record<DraftKind, string> = {
     "Write 3 short, friendly follow-up messages (1–3 sentences each) for someone who hasn't replied, or who showed interest but went quiet. No guilt, no pressure, one easy next step.",
   proposal:
     "Write 3 short proposal emails (4–6 sentences each) for a client after a call: their problem in one line, what they get, a simple timeline, the price stated once and plainly, and how to say yes.",
+  // Base stubs. Lane L1 writes the real tasks.
+  reply:
+    "Write 3 short answers (1–3 sentences each) to the reply the person sent. Answer what they asked, then suggest one easy next step.",
+  kickoff:
+    "Write 3 short kickoff messages (2–4 sentences each) to a client who just said yes: thank them, confirm what happens first and when.",
+  "review-request":
+    "Write 3 short messages (2–3 sentences each) asking a happy client for a one-line review of the work.",
+  referral:
+    "Write 3 short messages (2–3 sentences each) asking a happy client whether they know one person who might need the same help.",
 };
 
 export const PROOF_RULES: Record<ResultType, string> = {
