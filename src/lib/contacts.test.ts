@@ -42,7 +42,10 @@ describe("game stubs", () => {
   it("completeDailyStep counts the streak once per day", () => {
     const once = completeDailyStep(createGame()).state;
     expect(once.streak).toBe(1);
-    expect(completeDailyStep(once).state).toBe(once);
+    // A second step the same day gives 5 XP and leaves the streak alone.
+    const twice = completeDailyStep(once).state;
+    expect(twice.streak).toBe(1);
+    expect(twice.xp).toBe(once.xp + 5);
   });
 
   it("recordStage turns real events into results and titles", () => {

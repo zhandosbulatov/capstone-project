@@ -56,32 +56,25 @@ describe("personal plan", () => {
 describe("quests", () => {
   const ctx = { minutes: 20, price: 450, firstStep: "List 20 people who have seen your work" };
 
-  it("has a quest for each of the 30 days, with bosses on days 7, 14, 21 and 28", () => {
-    expect(QUEST_DAYS).toBe(30);
-    const bossDays = Array.from({ length: 30 }, (_, i) => questForDay(i + 1, ctx))
-      .filter((q) => q.boss)
-      .map((q) => [q.day, q.boss]);
-    expect(bossDays).toEqual([
-      [7, "w1"],
-      [14, "w2"],
-      [21, "w3"],
-      [28, "w4"],
-    ]);
-  });
-
-  it("day 2 is the first 3 messages, and its recovery asks for 5", () => {
-    expect(questForDay(2, ctx).title).toBe("Send your first 3 messages");
-    const recovery = questForDay(2, ctx, { recovery: true });
-    expect(recovery.title).toBe("Recovery: Send your first 5 messages");
-    expect(recovery.hugin).toBe(
-      "Yesterday didn't happen. Today can make up for it: 5 messages, by tomorrow morning.",
-    );
-  });
-
-  it("fills price and minutes, and keeps going after day 30", () => {
-    expect(questForDay(16, ctx).title).toBe("Write your proposal at $450");
-    expect(questForDay(2, ctx).hugin).toContain("20 minutes");
+  it("only day 1 uses a quest template; later days get a generic step", () => {
+    expect(QUEST_DAYS).toBe(1);
+    const day1 = questForDay(1, ctx);
+    expect(day1.draft).toBe("offer");
+    expect(day1.boss).toBeUndefined();
+    expect(questForDay(2, ctx).title).toBe(ctx.firstStep);
     expect(questForDay(31, ctx).title).toBeTruthy();
+  });
+
+  it("has no recovery quests and no bosses", () => {
+    for (let day = 1; day <= 30; day++) {
+      const quest = questForDay(day, ctx, { recovery: true });
+      expect(quest.recovery).toBe(false);
+      expect(quest.boss).toBeUndefined();
+    }
+  });
+
+  it("fills minutes into Hugin's line", () => {
+    expect(questForDay(2, ctx).hugin).toContain("20 minutes");
   });
 
   it("never gives Hugin an exclamation mark", () => {

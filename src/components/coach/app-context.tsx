@@ -23,12 +23,12 @@ import {
   formatEvent,
   grantXp,
   isQuestDone,
-  isRecoveryDay,
+  isToastEvent,
   levelProgress,
+  normalizeGame,
   reachGoal,
   recordResult,
   recordStage,
-  STATS,
   TITLES,
   titleFor,
   unlockedTools,
@@ -39,17 +39,9 @@ import {
   type Proof,
   type ResultType,
   type Step,
-  type StatKey,
   type TitleKey,
 } from "@/lib/game";
-import {
-  BOSS_LINES,
-  levelLine,
-  QUEST_DONE_LINE,
-  SHIELD_USED_LINE,
-  STREAK_RESET_LINE,
-  STUDIO_OWNER_LINE,
-} from "@/lib/hugin-lines";
+import { QUEST_DONE_LINE, STUDIO_OWNER_LINE } from "@/lib/hugin-lines";
 import type { HuginContext } from "@/lib/hugin";
 import { streamChat, type ChatMessage } from "@/lib/hugin-client";
 import {
@@ -190,62 +182,22 @@ export function useCoach(): AppContextValue {
 
 const BOSS_DAYS: Record<BossKey, number> = { w1: 7, w2: 14, w3: 21, w4: 28 };
 
-/** Sum XP and stat points into one growth line; milestones get their own toast. */
-function toToasts(events: GameEvent[], nextId: () => number, growthHugin?: string): Toast[] {
-  const toasts: Toast[] = [];
-  let xp = 0;
-  const stats = new Map<StatKey, number>();
-  for (const e of events) {
-    if (e.kind === "xp") xp += e.amount;
-    if (e.kind === "stat") stats.set(e.stat, (stats.get(e.stat) ?? 0) + e.amount);
-  }
-  const growth = [
-    ...(xp ? [`+${xp} XP`] : []),
-    ...[...stats].map(([stat, n]) => `${STATS[stat].label} +${n}`),
-  ];
-  if (growth.length) toasts.push({ id: nextId(), text: growth.join(" · "), hugin: growthHugin });
+/** Today's local date as YYYY-MM-DD, so a calendar day counts the streak once. */
+function todayIso(): string {
+  return new Date().toLocaleDateString("en-CA");
+}
 
-  // A boss and what it unlocks share one notification; so do level-ups and a new title.
-  const boss = events.find((e) => e.kind === "boss");
-  if (boss) {
-    const unlock = events.find((e) => e.kind === "unlock");
-    toasts.push({
-      id: nextId(),
-      text: [boss, ...(unlock ? [unlock] : [])].map(formatEvent).join(" · "),
-      hugin: BOSS_LINES[boss.boss],
-    });
-  }
-  const levels = events.filter((e) => e.kind === "level");
-  const title = events.find((e) => e.kind === "title");
-  const topLevel = levels.at(-1);
-  if (topLevel || title) {
-    toasts.push({
-      id: nextId(),
-      text: [...(topLevel ? [topLevel] : []), ...(title ? [title] : [])].map(formatEvent).join(" · "),
-      hugin:
-        title?.title === "studioOwner"
-          ? STUDIO_OWNER_LINE
-          : topLevel
-            ? levelLine(topLevel.level)
-            : undefined,
-    });
-  }
-
-  for (const e of events) {
-    switch (e.kind) {
-      case "shieldEarned":
-      case "recoveryOffered":
-        toasts.push({ id: nextId(), text: formatEvent(e) });
-        break;
-      case "shieldUsed":
-        toasts.push({ id: nextId(), text: formatEvent(e), hugin: SHIELD_USED_LINE });
-        break;
-      case "streakReset":
-        toasts.push({ id: nextId(), text: formatEvent(e), hugin: STREAK_RESET_LINE });
-        break;
-    }
-  }
-  return toasts;
+/**
+ * Only titles, shields earned and streak milestones get a notification (`isToastEvent`).
+ * `hugin` is his comment, shown on the first one.
+ */
+function toToasts(events: GameEvent[], nextId: () => number, hugin?: string): Toast[] {
+  return events.filter(isToastEvent).map((e, i) => ({
+    id: nextId(),
+    text: formatEvent(e),
+    hugin:
+      e.kind === "title" && e.title === "studioOwner" ? STUDIO_OWNER_LINE : i === 0 ? hugin : undefined,
+  }));
 }
 
 export function AppProvider({
@@ -264,7 +216,7 @@ export function AppProvider({
   // Days the app wasn't opened count as missed, so bring the game up to today's date first.
   const [state, setState] = useState<AppState>(() => {
     const today = calendarDay(new Date(initial.planStartedAt), new Date());
-    const { state: game, events } = catchUp(initial.game, today);
+    const { state: game, events } = catchUp(normalizeGame(initial.game), today);
     let id = 0;
     const toasts = toToasts(events, () => --id);
     return {
@@ -326,7 +278,7 @@ export function AppProvider({
           events.push(...step.events);
         }
         if (countStep && !isQuestDone(game)) {
-          const step = completeDailyStep(game);
+          const step = completeDailyStep(game, todayIso());
           game = step.state;
           events.push(...step.events);
         }
@@ -365,7 +317,7 @@ export function AppProvider({
           const contacts = inputs.filter((c) => c.name.trim()).map((c) => createContact(c, day));
           const { state: game, events } = isQuestDone(s.saved.game)
             ? { state: s.saved.game, events: [] }
-            : completeDailyStep(s.saved.game);
+            : completeDailyStep(s.saved.game, todayIso());
           return { saved: { ...s.saved, offer: offer.trim(), contacts, game }, events };
         }),
       addContact: (input) => {
@@ -394,7 +346,7 @@ export function AppProvider({
       markLessonRead: (id) => saveLesson(id, (day) => ({ readDay: day })),
       saveDecision: (id, fields) =>
         saveLesson(id, (day) => ({ decision: fields, decidedDay: day, readDay: day })),
-      completeQuest: () => play(completeDailyStep, {}, QUEST_DONE_LINE),
+      completeQuest: () => play((game) => completeDailyStep(game, todayIso()), {}, QUEST_DONE_LINE),
       recordResult: (result, proof) => {
         play((game) => recordResult(game, result, proof));
         startTransition(() => setState((s) => ({ ...s, sheet: null })));
@@ -442,7 +394,7 @@ export function AppProvider({
           }),
         jumpToBoss: (boss) =>
           play((game) => ({
-            state: { ...game, day: Math.max(game.day, BOSS_DAYS[boss]), recovery: null },
+            state: { ...game, day: Math.max(game.day, BOSS_DAYS[boss]) },
             events: [],
           })),
         addXp: () => play((game) => grantXp(game, 100)),
@@ -455,7 +407,6 @@ export function AppProvider({
     const { saved } = state;
     const { game, answers, purchase } = saved;
     const plan = buildPlan(answers, new Date(saved.planStartedAt));
-    const recovery = isRecoveryDay(game);
     const week = weekOfDay(game.day);
     const purchasePlan = PLANS[purchase.plan];
     const fromBosses = unlockedTools(game);
@@ -464,7 +415,6 @@ export function AppProvider({
     const quest = questForDay(
       game.day,
       { minutes: answers.time, price: plan.price, firstStep: plan.firstStep },
-      { recovery },
     );
     const title = titleFor(game);
     const step = nextStep(saved, game.day);
@@ -492,7 +442,7 @@ export function AppProvider({
       day1Done: isDay1Done(saved),
       step,
       stepTitle: currentStepTitle,
-      isRecovery: recovery,
+      isRecovery: false,
       week,
       boss: (["w1", "w2", "w3", "w4"] as const)[week - 1],
       title,
