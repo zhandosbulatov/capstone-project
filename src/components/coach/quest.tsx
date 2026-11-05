@@ -2,12 +2,12 @@
 
 import { useState, ViewTransition } from "react";
 import { BOSSES, STATS, XP } from "@/lib/game";
+import type { Relation } from "@/lib/model";
 import { offerDraft } from "@/lib/plan";
 import { Icon } from "@/components/icons";
-import { Rail, Stop } from "@/components/route";
 import { Button, Card, fieldClass, Pill, Rewards } from "@/components/ui";
 import { useCoach } from "./app-context";
-import { BossCard } from "./boss";
+import { RelationSelect } from "./contact-form";
 import { HuginLine } from "./hugin";
 
 const NAME_COUNT = 5;
@@ -24,13 +24,14 @@ function rewardParts(xp: number, stats: readonly (keyof typeof STATS)[], recover
 /** Switches between today's quest and its done state, with a soft cross-fade. */
 export function TodayQuest() {
   const { state, meta } = useCoach();
-  const day1 = state.saved.game.day === 1;
-  const key = `${state.saved.game.day}-${meta.questDone ? "done" : "open"}`;
+  const key = `${state.saved.game.day}-${meta.day1Done ? "d1" : "new"}-${meta.questDone ? "done" : "open"}`;
   return (
     <ViewTransition key={key} enter="fade-in" exit="fade-out" default="none">
       <div>
-        {day1 ? (
-          meta.questDone ? <Day1Done /> : <Day1Quest />
+        {!meta.day1Done ? (
+          <Day1Quest />
+        ) : state.saved.game.day === 1 ? (
+          <Day1Done />
         ) : meta.questDone ? (
           <QuestDone />
         ) : (
@@ -41,42 +42,48 @@ export function TodayQuest() {
   );
 }
 
-/** Today on the route: the quest hangs off today's stop, the week's boss is the next interchange. */
+/**
+ * Today, base placeholder: a plain "next step" line from `nextStep()` above the current quest card.
+ * Lane L2 replaces this with the real step card. The status window and boss card are in Progress.
+ */
 export function TodayRoute() {
-  const { state, meta } = useCoach();
-  const { game } = state.saved;
-  const day = game.day;
-  const boss = BOSSES[meta.boss];
-  const bossDay = boss.week * 7;
-  const beaten = game.bossesBeaten.includes(meta.boss);
-  const first = day + 1;
-  const last = bossDay - 1;
-
+  const { meta } = useCoach();
   return (
-    <Rail className="mt-1">
-      <Stop
-        kind="now"
-        label={`Day ${day} · ${meta.questDone ? "done" : `today · ${meta.quest.minutes} min`}`}
-      >
-        <div className="mt-2">
-          <TodayQuest />
-        </div>
-      </Stop>
-      {last >= first ? (
-        <Stop kind="minor" label={first === last ? `Day ${first}` : `Days ${first}–${last}`}>
-          <p className="mt-0.5 text-base">One quest each morning</p>
-        </Stop>
-      ) : null}
-      <Stop
-        kind={beaten ? "bossDone" : "boss"}
-        segment="none"
-        label={day < bossDay ? `Day ${bossDay} · week ${boss.week} boss` : `Week ${boss.week} boss`}
-      >
-        <div className="mt-2">
-          <BossCard />
-        </div>
-      </Stop>
-    </Rail>
+    <div className="mt-1 flex flex-col gap-3">
+      {meta.day1Done ? <NextStepLine /> : null}
+      <TodayQuest />
+    </div>
+  );
+}
+
+function NextStepLine() {
+  const { actions, meta } = useCoach();
+  const { step } = meta;
+  return (
+    <Card className="my-0">
+      <p className="text-sm text-ink-muted">
+        {meta.questDone ? "Today's step is done. One more?" : "Today's step"}
+      </p>
+      <p className="mt-0.5 font-semibold">{meta.stepTitle}</p>
+      <div className="mt-3 flex flex-col gap-2">
+        {step.kind === "lesson" ? (
+          <Button
+            variant="outline"
+            onClick={() => actions.openSheet({ kind: "lesson", id: step.lessonId })}
+          >
+            Open the lesson
+          </Button>
+        ) : step.kind === "add-people" ? (
+          <Button variant="outline" onClick={() => actions.openSheet({ kind: "add-contact" })}>
+            Add a person
+          </Button>
+        ) : null}
+        <Button onClick={() => actions.markStepDone(step)}>Mark step done</Button>
+        <Button variant="ghost" onClick={() => actions.openSheet({ kind: "reply" })}>
+          Someone replied?
+        </Button>
+      </div>
+    </Card>
   );
 }
 
@@ -85,7 +92,10 @@ function Day1Quest() {
   const { state, actions, meta } = useCoach();
   const [offer, setOffer] = useState(() => state.saved.offer ?? offerDraft(meta.answers));
   const [names, setNames] = useState<string[]>(() =>
-    Array.from({ length: NAME_COUNT }, (_, i) => state.saved.warmList[i] ?? ""),
+    Array.from({ length: NAME_COUNT }, (_, i) => state.saved.contacts[i]?.name ?? ""),
+  );
+  const [relations, setRelations] = useState<Relation[]>(() =>
+    Array.from({ length: NAME_COUNT }, (_, i) => state.saved.contacts[i]?.relation ?? "other"),
   );
   const filled = names.filter((n) => n.trim()).length;
   const ready = filled >= NAME_COUNT && offer.trim().length > MIN_OFFER_LENGTH;
@@ -113,23 +123,36 @@ function Day1Quest() {
         </legend>
         <div className="mt-1.5 flex flex-col gap-1.5">
           {names.map((name, i) => (
-            <input
-              key={i}
-              aria-label={`Name ${i + 1}`}
-              placeholder={`Name ${i + 1}`}
-              autoComplete="off"
-              value={name}
-              onChange={(e) =>
-                setNames((prev) => prev.map((n, j) => (j === i ? e.target.value : n)))
-              }
-              className={`${fieldClass}`}
-            />
+            <div key={i} className="grid grid-cols-[1fr_auto] gap-1.5">
+              <input
+                aria-label={`Name ${i + 1}`}
+                placeholder={`Name ${i + 1}`}
+                autoComplete="off"
+                value={name}
+                onChange={(e) =>
+                  setNames((prev) => prev.map((n, j) => (j === i ? e.target.value : n)))
+                }
+                className={`${fieldClass}`}
+              />
+              <RelationSelect
+                label={`How you know name ${i + 1}`}
+                value={relations[i]}
+                onChange={(relation) =>
+                  setRelations((prev) => prev.map((r, j) => (j === i ? relation : r)))
+                }
+              />
+            </div>
           ))}
         </div>
       </fieldset>
 
       <div className="mt-4">
-        <Button disabled={!ready} onClick={() => actions.completeDay1(offer, names)}>
+        <Button disabled={!ready} onClick={() =>
+            actions.completeDay1(
+              offer,
+              names.map((name, i) => ({ name, relation: relations[i] })),
+            )
+          }>
           {filled >= NAME_COUNT ? "Complete quest" : `Complete quest · ${filled}/5 names`}
         </Button>
         {!ready ? (

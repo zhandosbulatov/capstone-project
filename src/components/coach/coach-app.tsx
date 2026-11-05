@@ -6,13 +6,18 @@ import { loadRaw, parseState, type SavedState } from "@/lib/storage";
 import { AppProvider, isActive, useCoach, type Sheet as SheetState, type Tab } from "./app-context";
 import { Icon } from "@/components/icons";
 import { LogResultSheet } from "./boss";
+import { ContactSheet } from "./contact-sheet";
+import { AddContactSheet } from "./contact-form";
 import { DemoPanel } from "./demo-panel";
 import { HuginAvatar } from "./hugin";
 import { ChatSheet, DraftSheet } from "./hugin-sheets";
-import { Journey, ToolSheet } from "./journey";
+import { ToolSheet } from "./journey";
+import { LessonSheet } from "./lesson";
+import { People } from "./people";
+import { Progress } from "./progress";
 import { TodayRoute } from "./quest";
+import { ReplySheet } from "./reply-sheet";
 import { Settings } from "./settings";
-import { StatusWindow } from "./status-window";
 import { Toasts } from "./toasts";
 
 const noSubscribe = () => () => {};
@@ -69,8 +74,8 @@ export function CoachApp() {
 
 const TABS: { key: Tab; label: string }[] = [
   { key: "today", label: "Today" },
-  { key: "journey", label: "Journey" },
-  { key: "settings", label: "Settings" },
+  { key: "people", label: "People" },
+  { key: "progress", label: "Progress" },
 ];
 
 function Shell() {
@@ -102,6 +107,15 @@ function Shell() {
           >
             <HuginAvatar size={34} />
           </button>
+          <button
+            type="button"
+            onClick={() => actions.setTab("settings")}
+            aria-label="Settings"
+            aria-current={state.tab === "settings" ? "page" : undefined}
+            className="-m-1 cursor-pointer rounded-full p-1 text-ink-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink"
+          >
+            <Icon name="gear" size={22} />
+          </button>
         </div>
       </header>
 
@@ -110,12 +124,13 @@ function Shell() {
           <div className="flex flex-col gap-4">
             {state.tab === "today" ? (
               <>
-                <StatusWindow />
                 <TodayRoute />
                 {meta.demo ? <DemoPanel /> : null}
               </>
-            ) : state.tab === "journey" ? (
-              <Journey />
+            ) : state.tab === "people" ? (
+              <People />
+            ) : state.tab === "progress" ? (
+              <Progress />
             ) : (
               <Settings />
             )}
@@ -160,9 +175,13 @@ const SHEET_LABELS: Record<Exclude<SheetState, null>["kind"], string> = {
   tool: "Tool",
   draft: "Drafts from Hugin",
   chat: "Ask Hugin",
+  reply: "Someone replied",
+  lesson: "Lesson",
+  contact: "Person",
+  "add-contact": "Add a person",
 };
 
-/** Bottom sheet for logging a result, reading a tool, drafts and chat. */
+/** Bottom sheet for results, tools, drafts, chat, replies, lessons and people. */
 function Sheet() {
   const { state, actions } = useCoach();
   const { sheet } = state;
@@ -217,7 +236,15 @@ function Sheet() {
           ) : sheet.kind === "tool" ? (
             <ToolSheet tool={sheet.tool} />
           ) : sheet.kind === "draft" ? (
-            <DraftSheet kind={sheet.draft} />
+            <DraftSheet kind={sheet.draft} contactId={sheet.contactId} />
+          ) : sheet.kind === "reply" ? (
+            <ReplySheet contactId={sheet.contactId} />
+          ) : sheet.kind === "lesson" ? (
+            <LessonSheet id={sheet.id} />
+          ) : sheet.kind === "contact" ? (
+            <ContactSheet id={sheet.id} />
+          ) : sheet.kind === "add-contact" ? (
+            <AddContactSheet />
           ) : (
             <ChatSheet />
           )}

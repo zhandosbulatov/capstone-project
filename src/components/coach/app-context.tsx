@@ -19,7 +19,7 @@ import {
   advanceDay,
   calendarDay,
   catchUp,
-  completeQuest,
+  completeDailyStep,
   formatEvent,
   grantXp,
   isQuestDone,
@@ -27,6 +27,7 @@ import {
   levelProgress,
   reachGoal,
   recordResult,
+  recordStage,
   STATS,
   TITLES,
   titleFor,
@@ -51,8 +52,28 @@ import {
 } from "@/lib/hugin-lines";
 import type { HuginContext } from "@/lib/hugin";
 import { streamChat, type ChatMessage } from "@/lib/hugin-client";
+import {
+  applyReply,
+  applyStepDone,
+  createContact,
+  markAnswered,
+  setContactStage,
+  updateContact,
+  type ContactUpdate,
+} from "@/lib/contacts";
+import type {
+  Contact,
+  ContactInput,
+  DraftKind,
+  LessonId,
+  LessonProgress,
+  NextStep,
+  ReplyOutcome,
+  Stage,
+} from "@/lib/model";
+import { decisionsSummary, isDay1Done, nextStep, stepTitle, tidyContacts } from "@/lib/next-step";
 import { addDays, buildPlan, offerDraft, type PersonalPlan } from "@/lib/plan";
-import { questForDay, type DraftKind, type Quest } from "@/lib/quests";
+import { questForDay, type Quest } from "@/lib/quests";
 import { PLANS, SKILLS, type Plan, type QuizAnswers } from "@/lib/quiz-data";
 import { clearState, saveState, type Purchase, type SavedState } from "@/lib/storage";
 import { KIT_UNLOCKS, type AnyToolKey } from "@/lib/tools";
@@ -68,20 +89,28 @@ export function isActive(saved: SavedState | null): saved is ActiveState {
   return Boolean(saved?.answers && saved.purchase && saved.planStartedAt);
 }
 
-export type Tab = "today" | "journey" | "settings";
+/** The three tabs in the tab bar. */
+export type Tab = "today" | "people" | "progress";
+/** Every screen: the tabs, plus Settings, which opens from the gear in the header. */
+export type Screen = Tab | "settings";
 
 export type Sheet =
   | { kind: "log"; result?: ResultType }
   | { kind: "tool"; tool: AnyToolKey }
-  | { kind: "draft"; draft: DraftKind }
+  | { kind: "draft"; draft: DraftKind; contactId?: string }
   | { kind: "chat" }
+  /** Log a reply; `contactId` preselects the person. */
+  | { kind: "reply"; contactId?: string }
+  | { kind: "lesson"; id: LessonId }
+  | { kind: "contact"; id: string }
+  | { kind: "add-contact" }
   | null;
 
 export type Toast = { id: number; text: string; hugin?: string };
 
 type AppState = {
   saved: ActiveState;
-  tab: Tab;
+  tab: Screen;
   sheet: Sheet;
   toasts: Toast[];
   /** Hugin chat for this visit. Not saved. */
@@ -90,11 +119,27 @@ type AppState = {
 };
 
 type AppActions = {
-  setTab: (tab: Tab) => void;
+  setTab: (tab: Screen) => void;
   openSheet: (sheet: Exclude<Sheet, null>) => void;
   closeSheet: () => void;
   dismissToast: (id: number) => void;
-  completeDay1: (offer: string, names: string[]) => void;
+  /** Saves the offer and replaces the list with these people; counts as the day's step. */
+  completeDay1: (offer: string, contacts: ContactInput[]) => void;
+  /** Returns the new contact's id. */
+  addContact: (input: ContactInput) => string;
+  updateContact: (id: string, patch: Partial<ContactInput>) => void;
+  setStage: (id: string, stage: Stage) => void;
+  /**
+   * The user did `step`. Moves the contact (stage, follow-ups, last action, what was sent). The
+   * first step of the game day counts for the streak; later ones only move contacts.
+   */
+  markStepDone: (step: NextStep, options?: { sentText?: string }) => void;
+  logReply: (contactId: string, text: string, outcome: ReplyOutcome) => void;
+  markReplyAnswered: (contactId: string) => void;
+  /** Lesson actions save progress only; they don't count as the day's step on their own. */
+  markLessonRead: (id: LessonId) => void;
+  saveDecision: (id: LessonId, fields: Record<string, string>) => void;
+  /** Old quest card: completes the day's step with no contact. */
   completeQuest: () => void;
   recordResult: (result: ResultType, proof: Proof) => void;
   reachGoal: () => void;
@@ -115,7 +160,12 @@ type AppMeta = {
   plan: PersonalPlan;
   purchasePlan: Plan;
   quest: Quest;
+  /** Today's step is done (the streak counted for this game day). */
   questDone: boolean;
+  day1Done: boolean;
+  /** The step the app picks for today. */
+  step: NextStep;
+  stepTitle: string;
   isRecovery: boolean;
   week: number;
   boss: BossKey;
@@ -218,7 +268,7 @@ export function AppProvider({
     let id = 0;
     const toasts = toToasts(events, () => --id);
     return {
-      saved: { ...initial, game },
+      saved: { ...initial, game, contacts: tidyContacts(initial.contacts, game.day) },
       tab: "today",
       sheet: null,
       toasts,
@@ -259,6 +309,46 @@ export function AppProvider({
     [commit],
   );
 
+  /** Apply a contact update; a stage change becomes results via `recordStage`. */
+  const applyContacts = useCallback(
+    (
+      update: (contacts: Contact[], day: number) => ContactUpdate,
+      countStep = false,
+      hugin?: string,
+    ) =>
+      commit((s) => {
+        const { contacts, change } = update(s.saved.contacts, s.saved.game.day);
+        let game = s.saved.game;
+        const events: GameEvent[] = [];
+        if (change) {
+          const step = recordStage(game, change.from, change.to);
+          game = step.state;
+          events.push(...step.events);
+        }
+        if (countStep && !isQuestDone(game)) {
+          const step = completeDailyStep(game);
+          game = step.state;
+          events.push(...step.events);
+        }
+        return { saved: { ...s.saved, contacts, game }, events, hugin };
+      }),
+    [commit],
+  );
+
+  const saveLesson = useCallback(
+    (id: LessonId, patch: (day: number) => LessonProgress) =>
+      commit((s) => ({
+        saved: {
+          ...s.saved,
+          lessons: {
+            ...s.saved.lessons,
+            [id]: { ...s.saved.lessons[id], ...patch(s.saved.game.day) },
+          },
+        },
+      })),
+    [commit],
+  );
+
   const actions = useMemo<AppActions>(
     () => ({
       setTab: (tab) =>
@@ -269,9 +359,42 @@ export function AppProvider({
         startTransition(() =>
           setState((s) => ({ ...s, toasts: s.toasts.filter((t) => t.id !== id) })),
         ),
-      completeDay1: (offer, names) =>
-        play(completeQuest, { offer: offer.trim(), warmList: names.map((n) => n.trim()) }),
-      completeQuest: () => play(completeQuest, {}, QUEST_DONE_LINE),
+      completeDay1: (offer, inputs) =>
+        commit((s) => {
+          const day = s.saved.game.day;
+          const contacts = inputs.filter((c) => c.name.trim()).map((c) => createContact(c, day));
+          const { state: game, events } = isQuestDone(s.saved.game)
+            ? { state: s.saved.game, events: [] }
+            : completeDailyStep(s.saved.game);
+          return { saved: { ...s.saved, offer: offer.trim(), contacts, game }, events };
+        }),
+      addContact: (input) => {
+        const contact = createContact(input, stateRef.current.saved.game.day);
+        commit((s) => ({
+          saved: { ...s.saved, contacts: [...s.saved.contacts, contact] },
+        }));
+        return contact.id;
+      },
+      updateContact: (id, patch) =>
+        commit((s) => ({
+          saved: { ...s.saved, contacts: updateContact(s.saved.contacts, id, patch) },
+        })),
+      setStage: (id, stage) =>
+        applyContacts((contacts, day) => setContactStage(contacts, id, stage, day)),
+      markStepDone: (step, options = {}) =>
+        applyContacts(
+          (contacts, day) => applyStepDone(contacts, step, day, options.sentText),
+          true,
+          QUEST_DONE_LINE,
+        ),
+      logReply: (contactId, text, outcome) =>
+        applyContacts((contacts, day) => applyReply(contacts, contactId, text, outcome, day)),
+      markReplyAnswered: (contactId) =>
+        applyContacts((contacts, day) => ({ contacts: markAnswered(contacts, contactId, day) })),
+      markLessonRead: (id) => saveLesson(id, (day) => ({ readDay: day })),
+      saveDecision: (id, fields) =>
+        saveLesson(id, (day) => ({ decision: fields, decidedDay: day, readDay: day })),
+      completeQuest: () => play(completeDailyStep, {}, QUEST_DONE_LINE),
       recordResult: (result, proof) => {
         play((game) => recordResult(game, result, proof));
         startTransition(() => setState((s) => ({ ...s, sheet: null })));
@@ -302,7 +425,14 @@ export function AppProvider({
         );
       },
       demo: {
-        nextDay: () => play(advanceDay),
+        nextDay: () =>
+          commit((s) => {
+            const { state: game, events } = advanceDay(s.saved.game);
+            return {
+              saved: { ...s.saved, game, contacts: tidyContacts(s.saved.contacts, game.day) },
+              events,
+            };
+          }),
         missDay: () =>
           play((game) => {
             // If today's quest is done, move to tomorrow first, then miss that day.
@@ -318,7 +448,7 @@ export function AppProvider({
         addXp: () => play((game) => grantXp(game, 100)),
       },
     }),
-    [commit, play, router],
+    [applyContacts, commit, play, router, saveLesson],
   );
 
   const meta = useMemo<AppMeta>(() => {
@@ -337,6 +467,8 @@ export function AppProvider({
       { recovery },
     );
     const title = titleFor(game);
+    const step = nextStep(saved, game.day);
+    const currentStepTitle = stepTitle(step, saved.contacts);
     return {
       answers,
       plan,
@@ -352,10 +484,14 @@ export function AppProvider({
         offer: saved.offer || offerDraft(answers),
         day: game.day,
         week,
-        questTitle: quest.title,
+        questTitle: currentStepTitle,
         title: TITLES[title].label,
+        decisions: decisionsSummary(saved.lessons),
       },
       questDone: isQuestDone(game),
+      day1Done: isDay1Done(saved),
+      step,
+      stepTitle: currentStepTitle,
       isRecovery: recovery,
       week,
       boss: (["w1", "w2", "w3", "w4"] as const)[week - 1],
