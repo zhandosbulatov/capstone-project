@@ -1,86 +1,86 @@
 "use client";
 
 import { useState, ViewTransition } from "react";
-import { BOSSES, STATS, XP } from "@/lib/game";
+import { stepLine } from "@/lib/hugin-lines";
+import { nextStep } from "@/lib/next-step";
 import { offerDraft } from "@/lib/plan";
 import { Icon } from "@/components/icons";
-import { Button, Card, fieldClass, Pill, Rewards } from "@/components/ui";
+import { Button, Card, fieldClass } from "@/components/ui";
 import { useCoach } from "./app-context";
 import { ContactForm, type ContactDraft } from "./contact-form";
 import { HuginLine } from "./hugin";
 import { completeRows, DAY1_PEOPLE, day1Ready, firstName } from "./today-day1";
-
-/** ["+10 XP", "Clarity +1", "Reach +1"] */
-function rewardParts(xp: number, stats: readonly (keyof typeof STATS)[], recovery: boolean) {
-  const parts = [`+${xp} XP`, ...stats.map((s) => `${STATS[s].label} +1`)];
-  if (recovery && !stats.includes("consistency")) parts.push("Consistency +1");
-  return parts;
-}
-
-
-/** Switches between today's quest and its done state, with a soft cross-fade. */
-export function TodayQuest() {
-  const { state, meta } = useCoach();
-  const key = `${state.saved.game.day}-${meta.day1Done ? "d1" : "new"}-${meta.questDone ? "done" : "open"}`;
-  return (
-    <ViewTransition key={key} enter="fade-in" exit="fade-out" default="none">
-      <div>
-        {!meta.day1Done ? (
-          <Day1Quest />
-        ) : state.saved.game.day === 1 ? (
-          <Day1Done />
-        ) : meta.questDone ? (
-          <QuestDone />
-        ) : (
-          <QuestCard />
-        )}
-      </div>
-    </ViewTransition>
-  );
-}
+import { PipelineCard, StepCard } from "./today-step";
 
 /**
- * Today, base placeholder: a plain "next step" line from `nextStep()` above the current quest card.
- * Lane L2 replaces this with the real step card. The status window and boss card are in Progress.
+ * Today: the Client #1 pipeline card, one step, and "Someone replied?". After the day's step it
+ * shows "Done for today" and an optional extra step. The status window and boss card are in Progress.
  */
 export function TodayRoute() {
-  const { meta } = useCoach();
+  const { state, actions, meta } = useCoach();
+  const day = state.saved.game.day;
+  const [notice, setNotice] = useState<{ day: number; text: string } | null>(null);
+  const [extra, setExtra] = useState(false);
+  const extraStep = nextStep(state.saved, day, { skipLessons: true });
+  const showNotice = notice && notice.day === day ? notice.text : null;
+  const phase = !meta.day1Done ? "day1" : day === 1 ? "day1-done" : meta.questDone ? "done" : "step";
+
   return (
     <div className="mt-1 flex flex-col gap-3">
-      {meta.day1Done ? <NextStepLine /> : null}
-      <TodayQuest />
-    </div>
-  );
-}
-
-function NextStepLine() {
-  const { actions, meta } = useCoach();
-  const { step } = meta;
-  return (
-    <Card className="my-0">
-      <p className="text-sm text-ink-muted">
-        {meta.questDone ? "Today's step is done. One more?" : "Today's step"}
-      </p>
-      <p className="mt-0.5 font-semibold">{meta.stepTitle}</p>
-      <div className="mt-3 flex flex-col gap-2">
-        {step.kind === "lesson" ? (
-          <Button
-            variant="outline"
-            onClick={() => actions.openSheet({ kind: "lesson", id: step.lessonId })}
-          >
-            Open the lesson
-          </Button>
-        ) : step.kind === "add-people" ? (
-          <Button variant="outline" onClick={() => actions.openSheet({ kind: "add-contact" })}>
-            Add a person
-          </Button>
-        ) : null}
-        <Button onClick={() => actions.markStepDone(step)}>Mark step done</Button>
+      {meta.day1Done ? <PipelineCard /> : null}
+      <ViewTransition key={phase} enter="fade-in" exit="fade-out" default="none">
+        <div className="flex flex-col gap-3">
+          {phase === "day1" ? (
+            <Day1Quest />
+          ) : phase === "day1-done" ? (
+            <Day1Done />
+          ) : phase === "step" ? (
+            <>
+              <p className="type-label">Today · about 2 min · keeps your streak</p>
+              <StepCard
+                key={`${meta.step.kind}-${"contactId" in meta.step ? meta.step.contactId : ""}`}
+                step={meta.step}
+                onDone={(text) => setNotice({ day, text })}
+              />
+            </>
+          ) : (
+            <>
+              <Card className="my-0">
+                {showNotice ? (
+                  <p role="status" className="mb-1.5 text-sm font-semibold text-success-ink">
+                    {showNotice}
+                  </p>
+                ) : null}
+                <h2 className="font-display text-xl leading-snug">Done for today.</h2>
+                <HuginLine>{stepLine("done", day)}</HuginLine>
+              </Card>
+              {extra ? (
+                <>
+                  <p className="type-label">One more · extra steps don&apos;t add streak days</p>
+                  <StepCard
+                    key={`extra-${extraStep.kind}-${"contactId" in extraStep ? extraStep.contactId : ""}`}
+                    step={extraStep}
+                    onDone={(text) => {
+                      setNotice({ day, text });
+                      setExtra(false);
+                    }}
+                  />
+                </>
+              ) : (
+                <Button variant="outline" onClick={() => setExtra(true)}>
+                  Want to do one more?
+                </Button>
+              )}
+            </>
+          )}
+        </div>
+      </ViewTransition>
+      {meta.day1Done && day > 1 ? (
         <Button variant="ghost" onClick={() => actions.openSheet({ kind: "reply" })}>
           Someone replied?
         </Button>
-      </div>
-    </Card>
+      ) : null}
+    </div>
   );
 }
 
@@ -185,67 +185,6 @@ function Day1Done() {
         </p>
       </div>
       <HuginLine>{meta.quest.hugin}</HuginLine>
-    </Card>
-  );
-}
-
-/** Any day after day 1. */
-function QuestCard() {
-  const { actions, meta } = useCoach();
-  const { quest } = meta;
-  return (
-    <Card className="my-0">
-      {meta.isRecovery ? (
-        <div className="mb-2">
-          <Pill tone="warning">Recovery quest</Pill>
-        </div>
-      ) : null}
-      <h2 className="font-display text-xl leading-snug">{quest.title}</h2>
-      <p className="mt-1.5">{quest.text}</p>
-      <Rewards
-        parts={rewardParts(
-          meta.isRecovery ? XP.recoveryQuest : XP.dailyQuest,
-          quest.stats,
-          meta.isRecovery,
-        )}
-        note={meta.isRecovery ? "Keeps your streak" : undefined}
-      />
-      <div className="mt-4 flex flex-col gap-2">
-        {quest.draft ? (
-          <Button
-            variant="outline"
-            onClick={() => actions.openSheet({ kind: "draft", draft: quest.draft! })}
-          >
-            Draft with Hugin
-          </Button>
-        ) : null}
-        <Button onClick={actions.completeQuest}>Mark as done</Button>
-        {quest.boss ? (
-          <Button
-            variant="outline"
-            onClick={() => actions.openSheet({ kind: "log", result: BOSSES[quest.boss!].result })}
-          >
-            Log a result
-          </Button>
-        ) : null}
-      </div>
-      <HuginLine>{quest.hugin}</HuginLine>
-    </Card>
-  );
-}
-
-function QuestDone() {
-  const { state, meta } = useCoach();
-  return (
-    <Card className="my-0">
-      <Pill tone="success">Done today</Pill>
-      <h2 className="mt-2 font-display text-xl leading-snug">{meta.quest.title}</h2>
-      <p className="mt-1.5 text-ink-muted">
-        Day {state.saved.game.day} is done. Your next quest opens tomorrow.
-      </p>
-      <p className="mt-3 text-sm text-ink-muted">
-        Log any reply, call or payment on the boss card below.
-      </p>
     </Card>
   );
 }
