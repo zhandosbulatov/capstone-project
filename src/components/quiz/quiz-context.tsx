@@ -53,8 +53,6 @@ const QUIZ_SCREENS: ScreenId[] = SCREEN_IDS.slice(
 );
 
 const AUTO_ADVANCE_MS = 180;
-const PAYWALL_OFFER_MS = 10 * 60 * 1000;
-const TIMER_KEY = "aibc:paywall-ends-at";
 const DEMO_EMAIL = "you@example.com";
 
 export const EMAIL_PATTERN = /.+@.+\..+/;
@@ -65,7 +63,6 @@ type QuizState = {
   email: string;
   plan: PlanKey;
   consent: boolean;
-  paywallEndsAt: number | null;
 };
 
 type QuizActions = {
@@ -79,7 +76,6 @@ type QuizActions = {
   /** Changing the plan clears the consent box: the user agrees to one specific price. */
   choosePlan: (plan: PlanKey) => void;
   setConsent: (consent: boolean) => void;
-  startPaywallTimer: () => void;
   /** Payment done and the upsell answered: save everything and open the app. */
   finish: (firstClientKit: boolean) => void;
 };
@@ -104,23 +100,6 @@ export function useQuiz(): QuizContextValue {
   return value;
 }
 
-function readTimer(): number | null {
-  try {
-    const raw = window.sessionStorage.getItem(TIMER_KEY);
-    return raw ? Number(raw) : null;
-  } catch {
-    return null;
-  }
-}
-
-function writeTimer(endsAt: number) {
-  try {
-    window.sessionStorage.setItem(TIMER_KEY, String(endsAt));
-  } catch {
-    // Storage blocked: the timer still works for this page view.
-  }
-}
-
 const noSubscribe = () => () => {};
 
 /**
@@ -140,7 +119,6 @@ export function QuizProvider({ children }: { children: ReactNode }) {
     email: "",
     plan: DEFAULT_PLAN,
     consent: false,
-    paywallEndsAt: null,
   });
   const today = useToday();
   const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -191,13 +169,6 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       choosePlan: (plan) =>
         setState((s) => (s.plan === plan ? s : { ...s, plan, consent: false })),
       setConsent: (consent) => setState((s) => ({ ...s, consent })),
-      startPaywallTimer: () =>
-        setState((s) => {
-          if (s.paywallEndsAt) return s;
-          const endsAt = readTimer() ?? Date.now() + PAYWALL_OFFER_MS;
-          writeTimer(endsAt);
-          return { ...s, paywallEndsAt: endsAt };
-        }),
       finish: (firstClientKit) => {
         updateState(() => ({
           version: 1,

@@ -3,6 +3,8 @@
 // Paywall, simulated checkout and the one-time upsell.
 // Compliance details are part of the spec: consent is never pre-ticked and resets when the plan
 // changes, and the full price after the intro period is shown before Pay.
+// No countdown timer: the intro discount doesn't expire, and fake urgency would contradict the
+// honest billing timeline on the same screen.
 
 import { useEffect, useState } from "react";
 import { formatUsd } from "@/lib/pricing";
@@ -20,37 +22,11 @@ import { Button, Card, Label, Pill } from "@/components/ui";
 import { useQuiz } from "../quiz-context";
 import { Cta, Note, ScreenBody, ScreenSub, ScreenTitle } from "../quiz-ui";
 
-const OFFER_MS = 10 * 60 * 1000;
-
-function formatCountdown(ms: number): string {
-  const total = Math.max(0, Math.ceil(ms / 1000));
-  const m = Math.floor(total / 60);
-  const s = total % 60;
-  return `${m}:${String(s).padStart(2, "0")}`;
-}
-
-function OfferTimer({ endsAt }: { endsAt: number | null }) {
-  const [now, setNow] = useState<number | null>(null);
-
-  useEffect(() => {
-    const tick = () => setNow(Date.now());
-    const first = setTimeout(tick, 0);
-    const id = setInterval(tick, 1000);
-    return () => {
-      clearTimeout(first);
-      clearInterval(id);
-    };
-  }, []);
-
-  // Clamp: the first tick can land a few ms before the end time is set.
-  const left = endsAt && now ? Math.min(OFFER_MS, endsAt - now) : OFFER_MS;
+function OfferBanner() {
   return (
-    <div className="flex items-center justify-between gap-2.5 rounded-md bg-warning-soft px-3.5 py-2.5 text-label font-semibold text-warning-ink">
-      <span>{left > 0 ? "50% off your first period is reserved for" : "Your 50% off is still applied"}</span>
-      <b className="text-base tabular-nums" aria-live="off">
-        {formatCountdown(left)}
-      </b>
-    </div>
+    <p className="rounded-md bg-success-soft px-3.5 py-2.5 text-label font-semibold text-success-ink">
+      50% off your first period. Your plan is saved, so there&apos;s no rush.
+    </p>
   );
 }
 
@@ -62,15 +38,10 @@ export function PaywallScreen() {
   const { state, actions, meta } = useQuiz();
   const skill = SKILLS[meta.answers.skill];
   const selected = PLANS[state.plan];
-  const { startPaywallTimer } = actions;
-
-  useEffect(() => {
-    startPaywallTimer();
-  }, [startPaywallTimer]);
 
   return (
     <ScreenBody>
-      <OfferTimer endsAt={state.paywallEndsAt} />
+      <OfferBanner />
 
       <div className="my-2.5 grid grid-cols-2 gap-2">
         <div className="rounded-md border border-line bg-surface px-3 py-2.5">
