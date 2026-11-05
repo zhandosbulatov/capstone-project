@@ -1,10 +1,12 @@
 // Everything the user does is saved in this browser only. No account, no server.
 
 import { createGame, type GameState } from "./game";
+import type { Contact, LessonsState } from "./model";
 import type { PlanKey, QuizAnswers } from "./quiz-data";
 
+/** The key name stays "v1"; the `version` field inside says which shape is stored. */
 const KEY = "aibc:v1";
-const VERSION = 1;
+const VERSION = 2;
 
 export type Purchase = {
   plan: PlanKey;
@@ -24,8 +26,10 @@ export type SavedState = {
   cancelled: boolean;
   /** The offer the user wrote on day 1. */
   offer: string | null;
-  /** The warm list from day 1. */
-  warmList: string[];
+  /** The people the user may message, from day 1 on. Replaces the v1 `warmList`. */
+  contacts: Contact[];
+  /** Read and decided lessons. */
+  lessons: LessonsState;
 };
 
 export function emptyState(): SavedState {
@@ -38,7 +42,8 @@ export function emptyState(): SavedState {
     game: createGame(),
     cancelled: false,
     offer: null,
-    warmList: [],
+    contacts: [],
+    lessons: {},
   };
 }
 
@@ -51,13 +56,36 @@ export function loadRaw(): string | null {
   }
 }
 
-/** Returns null for missing, broken or old-version data. */
+/** v1 kept a plain list of names. Each one becomes a listed contact. */
+export function migrateV1(v1: Record<string, unknown>): SavedState {
+  const { warmList, ...rest } = v1;
+  const names = Array.isArray(warmList)
+    ? warmList.filter((n): n is string => typeof n === "string" && n.trim() !== "")
+    : [];
+  const contacts: Contact[] = names.map((name, i) => ({
+    id: `c${i + 1}`,
+    name: name.trim(),
+    relation: "other",
+    stage: "listed",
+    addedDay: 1,
+    followUps: 0,
+    awaitingAnswer: false,
+  }));
+  return { ...emptyState(), ...(rest as Partial<SavedState>), version: VERSION, contacts, lessons: {} };
+}
+
+/** Returns null for missing, broken or unknown-version data. v1 is migrated. */
 export function parseState(raw: string | null): SavedState | null {
   if (!raw) return null;
   try {
-    const parsed = JSON.parse(raw) as Partial<SavedState>;
-    if (parsed.version !== VERSION || !parsed.game) return null;
-    return { ...emptyState(), ...parsed } as SavedState;
+    const parsed = JSON.parse(raw) as Record<string, unknown> | null;
+    if (!parsed || typeof parsed !== "object" || !parsed.game) return null;
+    if (parsed.version === 1) return migrateV1(parsed);
+    if (parsed.version !== VERSION) return null;
+    const state = { ...emptyState(), ...(parsed as Partial<SavedState>) };
+    if (!Array.isArray(state.contacts)) state.contacts = [];
+    if (!state.lessons || typeof state.lessons !== "object") state.lessons = {};
+    return state;
   } catch {
     return null;
   }

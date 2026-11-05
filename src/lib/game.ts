@@ -2,6 +2,7 @@
 // and recovery quests. Pure functions: every action returns a new state plus the events to show.
 // XP and stat numbers are starting values, to be tuned after the first users.
 
+import { STAGE_ORDER, type Stage } from "./model";
 import { questStats } from "./quests";
 
 export type StatKey =
@@ -388,6 +389,41 @@ export function recordResult(prev: GameState, type: ResultType, proof: Proof): S
     bossesBeaten,
     results: [...prev.results, { type, proof, day: prev.day }],
   }, events);
+}
+
+// --- Rework stubs (base). Lane L3 replaces these; keep the signatures. ---------------------
+
+/** The day's minimum step. Counts the streak at most once per game day. */
+export function completeDailyStep(prev: GameState): Step {
+  return completeQuest(prev);
+}
+
+/** The real result each pipeline stage stands for. */
+const STAGE_RESULTS: Partial<Record<Stage, ResultType>> = {
+  replied: "firstReply",
+  call: "callBooked",
+  proposal: "proposalSent",
+  paid: "clientPaid",
+};
+
+/**
+ * Turn a contact's stage change into results (and so bosses and titles). Moving forward over
+ * several stages records each one in between. Moving back or to "not now" records nothing.
+ */
+export function recordStage(prev: GameState, from: Stage, to: Stage): Step {
+  if (to === "not-now") return { state: prev, events: [] };
+  const start = from === "not-now" ? 0 : STAGE_ORDER.indexOf(from);
+  const end = STAGE_ORDER.indexOf(to);
+  let state = prev;
+  const events: GameEvent[] = [];
+  for (const stage of STAGE_ORDER.slice(start + 1, end + 1)) {
+    const result = STAGE_RESULTS[stage];
+    if (!result) continue;
+    const step = recordResult(state, result, "self");
+    state = step.state;
+    events.push(...step.events);
+  }
+  return { state, events };
 }
 
 /** Level 2: the user's monthly side income reached the goal they chose in the quiz. */

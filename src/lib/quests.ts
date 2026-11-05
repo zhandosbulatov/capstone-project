@@ -2,9 +2,11 @@
 // week 4 first client. One quest a day, sized to the minutes the user chose in the quiz.
 
 import type { BossKey, StatKey } from "./game";
+import type { DraftKind } from "./model";
 import { formatUsd } from "./pricing";
 
-export type DraftKind = "offer" | "outreach" | "follow-up" | "proposal";
+/** Moved to model.ts; re-exported so old imports keep working. */
+export type { DraftKind } from "./model";
 
 type QuestTemplate = {
   /** May use {n}, {price} and {firstStep}. */
