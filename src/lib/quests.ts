@@ -20,7 +20,7 @@ type QuestTemplate = {
 };
 
 const DAY_ONE: QuestTemplate = {
-  title: "Write your offer and your first 5 names",
+  title: "Write your offer and add 5 people",
   text: "Edit the offer your coach drafted until you would say it out loud. Then write down five people who have seen your work.",
   stats: ["clarity", "reach"],
   draft: "offer",

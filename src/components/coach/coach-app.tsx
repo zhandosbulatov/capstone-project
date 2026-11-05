@@ -10,7 +10,7 @@ import { ContactSheet } from "./contact-sheet";
 import { AddContactSheet } from "./contact-form";
 import { DemoPanel } from "./demo-panel";
 import { HuginAvatar } from "./hugin";
-import { ChatSheet, DraftSheet } from "./hugin-sheets";
+import { ChatSheet } from "./hugin-sheets";
 import { ToolSheet } from "./journey";
 import { LessonSheet } from "./lesson";
 import { People } from "./people";
@@ -173,7 +173,6 @@ function TabBar() {
 const SHEET_LABELS: Record<Exclude<SheetState, null>["kind"], string> = {
   log: "Log a result",
   tool: "Tool",
-  draft: "Drafts from Hugin",
   chat: "Ask Hugin",
   reply: "Someone replied",
   lesson: "Lesson",
@@ -181,7 +180,7 @@ const SHEET_LABELS: Record<Exclude<SheetState, null>["kind"], string> = {
   "add-contact": "Add a person",
 };
 
-/** Bottom sheet for results, tools, drafts, chat, replies, lessons and people. */
+/** Bottom sheet for results, tools, chat, replies, lessons and people. */
 function Sheet() {
   const { state, actions } = useCoach();
   const { sheet } = state;
@@ -235,8 +234,6 @@ function Sheet() {
             <LogResultSheet initial={sheet.result} />
           ) : sheet.kind === "tool" ? (
             <ToolSheet tool={sheet.tool} />
-          ) : sheet.kind === "draft" ? (
-            <DraftSheet kind={sheet.draft} contactId={sheet.contactId} />
           ) : sheet.kind === "reply" ? (
             <ReplySheet contactId={sheet.contactId} />
           ) : sheet.kind === "lesson" ? (

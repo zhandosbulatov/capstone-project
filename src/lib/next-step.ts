@@ -163,7 +163,7 @@ export function stepTitle(step: NextStep, contacts: Contact[]): string {
   const name = (id: string) => contacts.find((c) => c.id === id)?.name ?? "them";
   switch (step.kind) {
     case "day1":
-      return "Write your offer and your first 5 names";
+      return "Write your offer and add 5 people";
     case "answer":
       return `Answer ${name(step.contactId)}`;
     case "lesson":

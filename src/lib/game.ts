@@ -143,10 +143,6 @@ export const XP = {
   extraStep: 5,
   resultVerified: 50,
   resultSelfReported: 25,
-  /** @deprecated Old name for `dailyStep`, still read by quest.tsx. Remove with L2. */
-  dailyQuest: 10,
-  /** @deprecated Recovery quests are gone. Kept so old imports compile; remove with L2/L4. */
-  recoveryQuest: 15,
 } as const;
 
 export const STAT_POINTS = {
@@ -310,12 +306,6 @@ export function unlockedTools(state: GameState): ToolKey[] {
 
 export function isQuestDone(state: GameState, day = state.day): boolean {
   return state.completedDays.includes(day);
-}
-
-/** @deprecated There are no recovery quests. Always false; remove with L2/L4. */
-export function isRecoveryDay(state: GameState): boolean {
-  void state;
-  return false;
 }
 
 // --- Actions ------------------------------------------------------------------------------

@@ -12,7 +12,7 @@ export type Relation =
 
 export const RELATION_LABELS: Record<Relation, string> = {
   "ex-colleague": "Ex-colleague",
-  "colleague-friend": "Colleague and friend",
+  "colleague-friend": "Colleague, now a friend",
   friend: "Friend",
   "past-client": "Past client",
   "local-business": "Local business",

@@ -56,7 +56,6 @@ import {
 import type {
   Contact,
   ContactInput,
-  DraftKind,
   LessonId,
   LessonProgress,
   NextStep,
@@ -89,7 +88,6 @@ export type Screen = Tab | "settings";
 export type Sheet =
   | { kind: "log"; result?: ResultType }
   | { kind: "tool"; tool: AnyToolKey }
-  | { kind: "draft"; draft: DraftKind; contactId?: string }
   | { kind: "chat" }
   /** Log a reply; `contactId` preselects the person. */
   | { kind: "reply"; contactId?: string }
@@ -159,7 +157,6 @@ type AppMeta = {
   /** The step the app picks for today. */
   step: NextStep;
   stepTitle: string;
-  isRecovery: boolean;
   week: number;
   boss: BossKey;
   title: TitleKey;
@@ -447,7 +444,6 @@ export function AppProvider({
       day1Done: isDay1Done(saved),
       step,
       stepTitle: currentStepTitle,
-      isRecovery: false,
       week,
       boss: (["w1", "w2", "w3", "w4"] as const)[week - 1],
       title,

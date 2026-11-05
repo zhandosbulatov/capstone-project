@@ -186,7 +186,7 @@ describe("quiet notifications", () => {
 describe("quests", () => {
   it("day 1 is still the offer quest", () => {
     const quest = questForDay(1, ctx);
-    expect(quest.title).toBe("Write your offer and your first 5 names");
+    expect(quest.title).toBe("Write your offer and add 5 people");
     expect(quest.hugin).not.toContain("!");
     expect(quest.recovery).toBe(false);
   });

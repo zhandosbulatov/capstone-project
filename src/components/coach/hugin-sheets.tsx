@@ -1,118 +1,11 @@
 "use client";
 
-// Hugin on Gemini: drafted messages for the day's quest, and a short chat.
+// Hugin on Gemini: a short chat. Drafts live in the Today step card (today-draft.tsx).
 
 import { useEffect, useRef, useState } from "react";
-import { fetchDrafts, toDraftContact } from "@/lib/hugin-client";
-import type { DraftKind } from "@/lib/quests";
 import { Button, buttonClass } from "@/components/ui";
 import { useCoach } from "./app-context";
 import { HuginAvatar, HuginLine } from "./hugin";
-
-const DRAFT_TITLES: Record<DraftKind, string> = {
-  offer: "Your offer, three ways",
-  outreach: "Three messages to send",
-  "follow-up": "Three follow-ups",
-  proposal: "Three proposal drafts",
-  reply: "Three ways to answer",
-  kickoff: "Three kickoff messages",
-  "review-request": "Three review requests",
-  referral: "Three referral asks",
-};
-
-type DraftState =
-  | { status: "loading" }
-  | { status: "ready"; drafts: string[] }
-  | { status: "error"; message: string };
-
-function CopyButton({ text }: { text: string }) {
-  const [copied, setCopied] = useState(false);
-  return (
-    <button
-      type="button"
-      onClick={async () => {
-        try {
-          await navigator.clipboard.writeText(text);
-          setCopied(true);
-          setTimeout(() => setCopied(false), 1500);
-        } catch {
-          // Clipboard blocked: the text is still there to select by hand.
-        }
-      }}
-      aria-live="polite"
-      className={`${buttonClass({ variant: "outline", size: "sm", width: "auto" })} min-w-16`}
-    >
-      {copied ? "Copied" : "Copy"}
-    </button>
-  );
-}
-
-export function DraftSheet({ kind, contactId }: { kind: DraftKind; contactId?: string }) {
-  const { state: app, actions, meta } = useCoach();
-  const contact = contactId ? app.saved.contacts.find((c) => c.id === contactId) : undefined;
-  const [attempt, setAttempt] = useState(0);
-  const [state, setState] = useState<DraftState>({ status: "loading" });
-  const context = meta.huginContext;
-
-  useEffect(() => {
-    const controller = new AbortController();
-    fetchDrafts(
-      { kind, context, contact: contact ? toDraftContact(contact) : undefined },
-      controller.signal,
-    )
-      .then((result) =>
-        setState("drafts" in result ? { status: "ready", drafts: result.drafts } : { status: "error", message: result.error }),
-      )
-      .catch(() => {
-        // Aborted because the sheet closed.
-      });
-    return () => controller.abort();
-    // Draft once per open or retry, not on every context change.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [kind, contactId, attempt]);
-
-  return (
-    <div>
-      <h2 className="text-xl font-bold">{DRAFT_TITLES[kind]}</h2>
-      <p className="mt-1 text-sm text-ink-muted">
-        Edit the bits in brackets. Then send them from your own phone or email.
-      </p>
-
-      <div aria-live="polite" className="mt-4 flex flex-col gap-2.5">
-        {state.status === "loading" ? (
-          <HuginLine>Drafting. A few seconds.</HuginLine>
-        ) : state.status === "error" ? (
-          <HuginLine>{state.message}</HuginLine>
-        ) : (
-          state.drafts.map((draft, i) => (
-            <div key={i} className="rounded-md border border-line bg-canvas px-3.5 py-3">
-              <p className="text-base whitespace-pre-line">{draft}</p>
-              <div className="mt-2 flex justify-end">
-                <CopyButton text={draft} />
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-
-      <div className="mt-4 flex flex-col gap-2">
-        <Button
-          variant="outline"
-          disabled={state.status === "loading"}
-          onClick={() => {
-            setState({ status: "loading" });
-            setAttempt((n) => n + 1);
-          }}
-        >
-          {state.status === "error" ? "Try again" : "Draft three more"}
-        </Button>
-        <Button variant="ghost" onClick={actions.closeSheet}>
-          Close
-        </Button>
-      </div>
-    </div>
-  );
-}
 
 export function ChatSheet() {
   const { state, actions } = useCoach();
