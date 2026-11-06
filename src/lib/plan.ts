@@ -6,7 +6,7 @@ import {
   type QuizAnswers,
 } from "./quiz-data";
 
-const DAYS_TO_FIRST_CLIENT = 30;
+const DAYS_TO_FIRST_CLIENT = 84 // 12 weeks;
 
 export type PlanWeek = { week: number; title: string; text: string };
 

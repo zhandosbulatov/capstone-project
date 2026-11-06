@@ -28,7 +28,7 @@ describe("personal plan", () => {
     const plan = buildPlan(DEFAULT_ANSWERS, NOV_4);
     expect(plan.service).toBe("Brand starter kit for local businesses");
     expect(plan.priceLabel).toBe("$450 per project");
-    expect(planHeadline(plan)).toBe("First paying client by December 4");
+    expect(planHeadline(plan)).toBe("First paying client by January 27");
     expect(plan.weeks[0].text).toBe(
       "Write your offer in one sentence. List 20 people who have seen your work.",
     );

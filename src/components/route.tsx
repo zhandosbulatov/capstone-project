@@ -1,4 +1,4 @@
-// The route: the 30-day plan drawn as one transit line. Days are stops (ticks), weekly bosses are
+// The route: the early plan (first 30 days) drawn as one transit line. Days are stops (ticks), weekly bosses are
 // interchange stations (rings), "You" marks today. Used at three scales (see DESIGN.md):
 // RouteStrip (all 30 days), and Rail + Stop (a vertical line that content hangs off).
 

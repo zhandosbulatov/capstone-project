@@ -27,7 +27,7 @@ export function BusinessCard({
   name?: string;
   service: string;
   price: string;
-  /** Printed on the chip at the bottom, e.g. "Side Starter" or "Side Starter · Level 4". */
+  /** Printed on the chip at the bottom, e.g. "Side Starter". */
   title: ReactNode;
   className?: string;
   children?: ReactNode;

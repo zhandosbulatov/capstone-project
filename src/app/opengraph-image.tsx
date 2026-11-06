@@ -51,12 +51,12 @@ export default function OpengraphImage() {
             Someone will pay you for it.
           </div>
           <div style={{ fontSize: 32, color: MUTED, marginTop: 20, maxWidth: 900 }}>
-            Your first paying client in 30 days. 20 minutes a day, without quitting your job.
+            A plan to your first paying client in 12 weeks. 20 minutes a day, without quitting your job.
           </div>
         </div>
 
         <div style={{ display: "flex", alignItems: "flex-start", gap: 14, fontSize: 24, color: MUTED }}>
-          {["Week 1 · First reply", "Week 2 · First call", "Week 3 · First proposal", "Week 4 · First client"].map(
+          {["First reply", "First call", "First proposal", "First client"].map(
             (step) => (
               <div
                 key={step}

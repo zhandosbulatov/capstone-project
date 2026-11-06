@@ -7,7 +7,7 @@ import { blockerFix, planHeadline } from "@/lib/plan";
 import { PAID_BEFORE, SKILLS } from "@/lib/quiz-data";
 import { BusinessCard } from "@/components/business-card";
 import { Icon } from "@/components/icons";
-import { Rail, RouteStrip, Stop } from "@/components/route";
+import { Rail, Stop } from "@/components/route";
 import { Button, fieldClass, Label } from "@/components/ui";
 import { EMAIL_PATTERN, useQuiz } from "../quiz-context";
 import { Cta, Note, ScreenBody, ScreenSub, ScreenTitle } from "../quiz-ui";
@@ -39,7 +39,7 @@ export function LoaderScreen() {
     "Matching your skill to a service people buy",
     "Setting a starting price for your experience",
     "Finding your warmest first buyers",
-    `Mapping 30 days of ${meta.answers.time}-minute quests`,
+    `Mapping 12 weeks of ${meta.answers.time}-minute steps`,
   ];
 
   useEffect(() => {
@@ -102,6 +102,13 @@ export function LoaderScreen() {
   );
 }
 
+const MILESTONES: { title: string; label?: string }[] = [
+  { title: "First reply", label: "Goal for week 1" },
+  { title: "First call", label: "Next" },
+  { title: "First proposal", label: "Then" },
+  { title: "First client" },
+];
+
 export function PlanScreen() {
   const { actions, meta } = useQuiz();
   const { plan } = meta;
@@ -113,7 +120,7 @@ export function PlanScreen() {
       <BusinessCard
         service={plan.service}
         price={plan.priceLabel}
-        title="Side Starter after week 1"
+        title="Side Starter at your first reply"
         className="mt-3 rotate-[-1.5deg]"
       />
       <dl className="mt-4">
@@ -124,19 +131,17 @@ export function PlanScreen() {
       </dl>
       <section aria-labelledby="route" className="mt-6">
         <h2 id="route" className="type-label">
-          Your route · 30 days · {plan.minutes} min a day
+          Your milestones · {plan.minutes} min a day
         </h2>
-        <RouteStrip day={1} you="Today" end="First client" className="mt-2" />
         <Rail className="mt-4">
-          {plan.weeks.map((week, i) => (
+          {MILESTONES.map((m, i) => (
             <Stop
-              key={week.week}
+              key={m.title}
               kind="boss"
-              segment={i === plan.weeks.length - 1 ? "none" : "ahead"}
-              label={`Week ${week.week} · day ${week.week * 7}`}
+              segment={i === MILESTONES.length - 1 ? "none" : "ahead"}
+              label={m.label ?? `By ${plan.clientByLabel}`}
             >
-              <p className="font-display text-lg leading-snug">{week.title}</p>
-              <p className="text-sm text-ink-muted">{week.text}</p>
+              <p className="font-display text-lg leading-snug">{m.title}</p>
             </Stop>
           ))}
         </Rail>
@@ -155,7 +160,7 @@ export function EmailScreen() {
     <ScreenBody>
       <ScreenTitle>Where should we send your plan?</ScreenTitle>
       <ScreenSub>
-        We save your answers and your 30-day map, so you can come back to them anytime.
+        We save your answers and your plan, so you can come back to them anytime.
       </ScreenSub>
       <label htmlFor="email" className="sr-only">
         Email

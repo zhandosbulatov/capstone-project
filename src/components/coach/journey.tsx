@@ -27,7 +27,7 @@ export function Journey() {
 
       <section aria-labelledby="map" className="rounded-md border border-line bg-surface px-4 pt-3 pb-4">
         <h2 id="map" className="sr-only">
-          30-day map
+          Milestone map
         </h2>
         <RouteStrip day={game.day} />
         <Rail className="mt-4">
