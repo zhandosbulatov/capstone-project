@@ -2,15 +2,24 @@
 
 // ?demo=1 only: controls for showing a week of progress in a one-minute live demo.
 
-import { BOSS_KEYS, BOSSES } from "@/lib/game";
+import { oldestMessaged } from "@/lib/demo";
 import { useCoach } from "./app-context";
 
-function DemoButton({ onClick, children }: { onClick: () => void; children: string }) {
+function DemoButton({
+  onClick,
+  disabled = false,
+  children,
+}: {
+  onClick: () => void;
+  disabled?: boolean;
+  children: string;
+}) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="cursor-pointer rounded-full border border-line bg-surface px-3 py-1.5 text-xs font-semibold hover:border-ink focus-visible:outline-2 focus-visible:outline-ink"
+      disabled={disabled}
+      className="cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 rounded-full border border-line bg-surface px-3 py-1.5 text-xs font-semibold hover:border-ink focus-visible:outline-2 focus-visible:outline-ink"
     >
       {children}
     </button>
@@ -31,12 +40,13 @@ export function DemoPanel() {
       <div className="mt-2 flex flex-wrap gap-1.5">
         <DemoButton onClick={demo.nextDay}>Next day</DemoButton>
         <DemoButton onClick={demo.missDay}>Miss a day</DemoButton>
-        <DemoButton onClick={demo.addXp}>+100 XP</DemoButton>
-        {BOSS_KEYS.map((key) => (
-          <DemoButton key={key} onClick={() => demo.jumpToBoss(key)}>
-            {`Week ${BOSSES[key].week} boss`}
-          </DemoButton>
-        ))}
+        <DemoButton onClick={demo.seedPeople}>Seed demo people</DemoButton>
+        <DemoButton onClick={demo.simulateReply} disabled={!oldestMessaged(state.saved.contacts)}>
+          Simulate a reply
+        </DemoButton>
+        <DemoButton onClick={demo.unlockAllLessons} disabled={Boolean(state.saved.demoUnlockAll)}>
+          Unlock all lessons
+        </DemoButton>
       </div>
     </section>
   );

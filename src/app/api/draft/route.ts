@@ -1,5 +1,14 @@
-import { DRAFT_KINDS, DRAFT_TASKS, huginSystemPrompt, parseContext } from "@/lib/hugin";
-import type { DraftKind } from "@/lib/quests";
+import {
+  cleanReview,
+  draftInstruction,
+  hasBrackets,
+  huginSystemPrompt,
+  parseDraftRequest,
+  reviewInstruction,
+  reviewSchema,
+  stripBracketSentences,
+  STRICT_RETRY,
+} from "@/lib/hugin";
 import {
   gemini,
   generate,
@@ -10,52 +19,84 @@ import {
 } from "@/lib/server/gemini";
 import { rateLimit } from "@/lib/server/rate-limit";
 
-const DRAFT_COUNT = 3;
-
-const SCHEMA = {
-  type: "object",
-  properties: {
-    drafts: {
-      type: "array",
-      items: { type: "string" },
-      minItems: DRAFT_COUNT,
-      maxItems: DRAFT_COUNT,
+function schemaFor(count: number) {
+  return {
+    type: "object",
+    properties: {
+      drafts: {
+        type: "array",
+        items: { type: "string" },
+        minItems: count,
+        maxItems: count,
+      },
     },
-  },
-  required: ["drafts"],
-};
+    required: ["drafts"],
+  };
+}
 
-/** POST { kind, context } → { drafts: string[] } */
+/**
+ * POST { kind, context, contact?, lesson?, count? } → { drafts: string[] }
+ * POST { kind: "review", context, lesson } → { review: { feedback, improved } }
+ * With `contact` the default is one draft; without it, three.
+ */
 export async function POST(request: Request) {
   const limited = rateLimit(request, "draft", 30);
   if (limited) return limited;
 
-  const body = (await request.json().catch(() => null)) as { kind?: unknown; context?: unknown } | null;
-  const kind = DRAFT_KINDS.find((k) => k === body?.kind) as DraftKind | undefined;
-  const context = parseContext(body?.context);
-  if (!kind || !context) {
-    return Response.json({ error: "I need to know what to draft." }, { status: 400 });
-  }
+  const parsed = parseDraftRequest(await request.json().catch(() => null));
+  if (!parsed.ok) return Response.json({ error: parsed.error }, { status: 400 });
 
   const ai = gemini();
   if (!ai) return notConfigured();
 
   try {
-    const response = await generate(ai, MODELS.text, {
-      contents: `${DRAFT_TASKS[kind]} Return them as JSON.`,
-      config: {
-        systemInstruction: huginSystemPrompt(context),
-        responseMimeType: "application/json",
-        responseJsonSchema: SCHEMA,
-        maxOutputTokens: 3000,
-      },
-    });
-    const parsed = parseJsonReply(response.text) as { drafts?: unknown };
-    const drafts = Array.isArray(parsed.drafts)
-      ? parsed.drafts.filter((d): d is string => typeof d === "string" && d.trim() !== "")
-      : [];
+    if (parsed.kind === "review") {
+      const lesson = parsed.lesson!;
+      const response = await generate(ai, MODELS.text, {
+        contents: reviewInstruction(lesson),
+        config: {
+          systemInstruction: huginSystemPrompt(parsed.context),
+          responseMimeType: "application/json",
+          responseJsonSchema: reviewSchema(lesson.id),
+          maxOutputTokens: 2000,
+        },
+      });
+      const review = cleanReview(parseJsonReply(response.text), lesson.id);
+      if (!review) throw new Error("Empty review");
+      return Response.json({ review });
+    }
+
+    const { kind, context, contact, count } = parsed;
+    let instruction = draftInstruction(kind, count, !!contact);
+    if (parsed.lesson) {
+      const fields = Object.entries(parsed.lesson.fields)
+        .map(([id, value]) => `${id}: ${value}`)
+        .join("; ");
+      instruction += ` Use this saved decision: ${fields}.`;
+    }
+
+    const ask = async (extra: string): Promise<string[]> => {
+      const response = await generate(ai, MODELS.text, {
+        contents: instruction + extra,
+        config: {
+          systemInstruction: huginSystemPrompt(context, contact),
+          responseMimeType: "application/json",
+          responseJsonSchema: schemaFor(count),
+          maxOutputTokens: 3000,
+        },
+      });
+      const body = parseJsonReply(response.text) as { drafts?: unknown };
+      return Array.isArray(body.drafts)
+        ? body.drafts.filter((d): d is string => typeof d === "string" && d.trim() !== "")
+        : [];
+    };
+
+    let drafts = await ask("");
+    if (drafts.some(hasBrackets)) drafts = await ask(STRICT_RETRY);
+    // Still bracketed after the retry: cut the bracketed sentences and keep what is left.
+    drafts = drafts.map((d) => (hasBrackets(d) ? stripBracketSentences(d) : d)).filter(Boolean);
     if (!drafts.length) throw new Error("Empty drafts");
-    return Response.json({ drafts: drafts.slice(0, DRAFT_COUNT) });
+    return Response.json({ drafts: drafts.slice(0, count) });
   } catch (error) {
     return huginError(error);
   }

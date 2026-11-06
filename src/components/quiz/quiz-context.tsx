@@ -24,8 +24,7 @@ import {
   type PlanKey,
   type QuizAnswers,
 } from "@/lib/quiz-data";
-import { createGame } from "@/lib/game";
-import { updateState } from "@/lib/storage";
+import { emptyState, updateState } from "@/lib/storage";
 
 export const SCREEN_IDS = [
   "ad",
@@ -171,7 +170,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       setConsent: (consent) => setState((s) => ({ ...s, consent })),
       finish: (firstClientKit) => {
         updateState(() => ({
-          version: 1,
+          ...emptyState(),
           answers: { ...DEFAULT_ANSWERS, ...state.answers },
           email: state.email || null,
           purchase: {
@@ -180,10 +179,6 @@ export function QuizProvider({ children }: { children: ReactNode }) {
             firstClientKit,
           },
           planStartedAt: today.toISOString(),
-          game: createGame(),
-          cancelled: false,
-          offer: null,
-          warmList: [],
         }));
         const demo = new URLSearchParams(window.location.search).has("demo");
         router.push(demo ? "/app?demo=1" : "/app");
