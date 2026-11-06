@@ -86,7 +86,7 @@ function Shell() {
     <div className="mx-auto flex w-full max-w-[440px] flex-1 flex-col pb-20">
       <header className="flex items-center justify-between px-4 pt-4 pb-2">
         <p className="font-display text-lg">
-          Day {game.day} <span className="font-semibold text-ink-muted">of 30</span>
+          Day {game.day}
         </p>
         <div className="flex items-center gap-3 text-sm font-semibold tabular-nums">
           <span title="Streak" className="flex items-center gap-1">

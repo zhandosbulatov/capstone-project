@@ -34,7 +34,7 @@ export function AdScreen() {
           <BusinessCard
             service="Brand starter kits for local businesses"
             price="from $450"
-            title="Your first client in 30 days"
+            title="A first client in 12 weeks"
             className="mt-3 rotate-[-2deg]"
           />
         </div>
@@ -64,7 +64,7 @@ export function LandingScreen() {
   return (
     <ScreenBody>
       <p className="mt-2 text-sm font-semibold text-ink-muted">6 questions · 1 minute</p>
-      <ScreenTitle>Build your 30-day plan to a first paying client</ScreenTitle>
+      <ScreenTitle>Build your plan to a first paying client</ScreenTitle>
       <ScreenSub>Start with what you already do well. What do people pay you for at work?</ScreenSub>
       <OptionList label="Your skill">
         {SKILL_KEYS.map((key) => (

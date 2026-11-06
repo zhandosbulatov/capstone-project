@@ -152,7 +152,7 @@ export function PaywallScreen() {
       <p className="my-2.5 border-l-[3px] border-line pl-3 text-label text-ink-muted">
         Reviews from verified users will appear here.
       </p>
-      <Note>14-day money-back guarantee if you finish the week 1 quests.</Note>
+      <Note>14-day money-back guarantee if you complete your first 7 daily steps.</Note>
 
       <Cta>
         <Button onClick={actions.next} disabled={!state.consent} aria-describedby="pay-hint">

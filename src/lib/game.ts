@@ -153,7 +153,6 @@ export const STAT_POINTS = {
 
 export const STREAK_SHIELD_EVERY = 7;
 export const MAX_SHIELDS = 2;
-export const DAYS_IN_MAP = 30;
 /** Streak lengths that get a notification. */
 export const STREAK_MILESTONES = [7, 14, 30] as const;
 
@@ -286,7 +285,7 @@ export function titleFor(state: GameState): TitleKey {
   return state.goalReached ? "studioOwner" : earnedTitle(state);
 }
 
-/** Week of the 30-day map (days 29–30 belong to week 4). */
+/** Week of the early map (days 22 and later belong to week 4). */
 export function weekOfDay(day: number): number {
   return Math.min(4, Math.ceil(day / 7));
 }

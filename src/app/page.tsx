@@ -5,16 +5,17 @@ import { HeroCards } from "@/components/business-card";
 import { HuginAvatar } from "@/components/coach/hugin";
 import { Rail, RouteStrip, Stop } from "@/components/route";
 import { ThemeSwitcher } from "@/components/theme-switcher";
-import { buttonClass, lowerFirst } from "@/components/ui";
+import { buttonClass } from "@/components/ui";
 import { AppPreview } from "@/components/landing/app-preview";
-import { BOSS_KEYS, BOSSES, STAT_KEYS, STATS, TITLE_ORDER, TITLES } from "@/lib/game";
+import { LESSON_ORDER, LESSONS } from "@/lib/curriculum";
+import { TITLE_ORDER, TITLES } from "@/lib/game";
 import { formatUsd } from "@/lib/pricing";
 import { FIRST_CLIENT_KIT, introPerDay, PLAN_KEYS, PLANS } from "@/lib/quiz-data";
 
 export const metadata: Metadata = {
-  title: "AI Business Coach: your first paying client in 30 days",
+  title: "AI Business Coach: a plan to your first paying client in 12 weeks",
   description:
-    "An AI coach that turns the skill you use at work into a paid side service. Your first paying client in 30 days, 20 minutes a day, without quitting your job.",
+    "An AI coach that turns the skill you use at work into a paid side service. A plan to your first paying client in 12 weeks. 20 minutes a day, without quitting your job.",
 };
 
 const QUIZ = "/quiz";
@@ -39,7 +40,7 @@ function Section({
   id: string;
   title: string;
   intro?: string;
-  children: ReactNode;
+  children?: ReactNode;
 }) {
   return (
     <section aria-labelledby={id} className="border-t border-line py-14 sm:py-20">
@@ -47,18 +48,27 @@ function Section({
         {title}
       </h2>
       {intro ? <p className="mt-3 max-w-2xl text-lg text-ink-muted">{intro}</p> : null}
-      <div className="mt-8">{children}</div>
+      {children ? <div className="mt-8">{children}</div> : null}
     </section>
   );
 }
 
-// Week plans from the 30-day map; each week ends with its boss.
-const WEEKS: Record<(typeof BOSS_KEYS)[number], string> = {
-  w1: "Write your offer in one sentence. Message people who have seen your work.",
-  w2: "Send 15 warm messages Hugin drafts for you. Book 2 calls.",
-  w3: "Run the call with a script. Send 2 proposals at your price.",
-  w4: "Close one client. Ask for a review. Unlock Level 2.",
-};
+const MILESTONES = ["First reply", "First call", "First proposal", "First client"];
+
+const STEPS = [
+  {
+    title: "Tell us what you do at work.",
+    body: "Six questions give you an offer, a starting price and your first buyers, before you pay.",
+  },
+  {
+    title: "Add 5 people who know your work.",
+    body: "Ex-colleagues, past clients, friends who run something. Tap how you know each one.",
+  },
+  {
+    title: "Each day, one step.",
+    body: "Hugin picks it and writes the message. You read it, change what you like, and send it.",
+  },
+];
 
 const INSTEAD = [
   {
@@ -76,10 +86,16 @@ const INSTEAD = [
 ];
 
 const HUGIN_LINES = [
-  "Three messages today. Twenty minutes. The people on your list won’t message themselves.",
-  "That’s a lovely screenshot of a lunch menu. I need the reply.",
+  "One message today. To Sarah. It’s already written.",
+  "She asked how much. That’s a good sign. Here’s your answer.",
   "Someone paid you for your work. Outside your job. Note the date.",
 ];
+
+const SARAH_CARD =
+  "Hi Sarah, it’s been a while. I’ve started offering brand starter kits to local businesses on the side. You know how I work, so I wanted you to hear it first. Open to a quick chat?";
+const SARAH_REPLY = "Sounds interesting, how much would that be?";
+const HUGIN_ANSWER =
+  "Hi Sarah, a starter kit is $450 for the whole project. Want to do a 15-minute call this week so I can hear what you need? Thursday or Friday works for me.";
 
 const FAQ = [
   {
@@ -88,11 +104,11 @@ const FAQ = [
   },
   {
     q: "What if I’ve never freelanced?",
-    a: "You start with people who have seen your work: colleagues, ex-clients, friends who run something. Week 1 asks for one reply, not a sale.",
+    a: "You start with people who have seen your work: colleagues, ex-clients, friends who run something. Your first goal is one reply, not a sale.",
   },
   {
     q: "How much time does it take?",
-    a: "You choose 15, 20, 30 or 60 minutes a day in the quiz. Every daily quest fits the time you choose.",
+    a: "Plan for 20 minutes a day. On a busy evening, one step, about 2 minutes, keeps you moving.",
   },
   {
     q: "What does it cost after the first period, and how do I cancel?",
@@ -100,7 +116,15 @@ const FAQ = [
   },
   {
     q: "Do you promise I’ll earn a certain amount?",
-    a: "No. We promise steps and a deadline: a plan to your first paying client in 30 days. What you earn depends on your work, your price and your clients.",
+    a: "No. We promise steps and a deadline: a plan to your first paying client in 12 weeks. What you earn depends on your work, your price and your clients.",
+  },
+  {
+    q: "Will my employer find out?",
+    a: "Not from us. Nothing is posted publicly, and you message people from your own phone or email. Check your employment contract first. The app’s first lesson shows you what to look for.",
+  },
+  {
+    q: "Do I need a website or a company first?",
+    a: "No. Your first client comes from people who already know your work. The money lesson covers what to sort out after your first payment.",
   },
   {
     q: "Is this a real product?",
@@ -135,13 +159,13 @@ export default function Home() {
               Someone will pay you for it.
             </h1>
             <p className="mt-5 max-w-xl text-lg text-ink-muted sm:text-xl">
-              Get your first paying client in 30 days. 20 minutes a day, without quitting your
-              job.
+              A plan to your first paying client in 12 weeks. 20 minutes a day, without quitting
+              your job.
             </p>
             <div className="mt-8 flex flex-col items-start gap-3">
               <Cta />
               <p className="text-sm text-ink-muted">
-                6 questions. You see your service, starting price and 30-day plan before you pay.
+                Most of the work is one message a day. Your first reply can come in week 1.
               </p>
             </div>
           </div>
@@ -166,104 +190,112 @@ export default function Home() {
           </ul>
         </Section>
 
-        <Section
-          id="how"
-          title="Four weeks, four bosses"
-          intro="Each week ends with a boss: a real result, not a task. Beat it to unlock the tool you need for the next week."
-        >
-          <RouteStrip day={1} you="Day 1" className="max-w-md" />
-          <Rail className="mt-8 sm:hidden">
-            {BOSS_KEYS.map((key, i) => {
-              const boss = BOSSES[key];
-              return (
-                <Stop
-                  key={key}
-                  kind="boss"
-                  segment={i === BOSS_KEYS.length - 1 ? "none" : "ahead"}
-                  label={`Week ${boss.week} · day ${boss.week * 7}`}
-                >
-                  <p className="font-display text-lg">{boss.name}</p>
-                  <p className="mt-1 text-ink-muted">{WEEKS[key]}</p>
-                  <p className="mt-1.5 text-sm text-ink-muted">Proof: {lowerFirst(boss.proof)}</p>
-                </Stop>
-              );
-            })}
-          </Rail>
-          <ol className="relative mt-10 hidden grid-cols-4 gap-6 sm:grid">
-            <span aria-hidden className="absolute top-[8.5px] right-0 left-0 h-[5px] bg-brand-soft" />
-            {BOSS_KEYS.map((key) => {
-              const boss = BOSSES[key];
-              return (
-                <li key={key} className="relative pt-10">
-                  <span
-                    aria-hidden
-                    className="absolute top-0 left-0 size-[22px] rounded-full border-4 border-ink bg-surface"
-                  />
-                  <p className="text-label font-semibold text-ink-muted">
-                    Week {boss.week} · day {boss.week * 7}
-                  </p>
-                  <p className="mt-0.5 font-display text-lg">{boss.name}</p>
-                  <p className="mt-1.5 text-ink-muted">{WEEKS[key]}</p>
-                  <p className="mt-2 text-sm text-ink-muted">Proof: {lowerFirst(boss.proof)}</p>
-                </li>
-              );
-            })}
+        <Section id="how" title="One step a day to your first client">
+          <ol className="grid gap-x-8 gap-y-6 sm:grid-cols-3">
+            {STEPS.map((step, i) => (
+              <li key={step.title} className="border-t-[1.5px] border-ink pt-3">
+                <p className="text-label font-semibold text-ink-muted">Step {i + 1}</p>
+                <p className="mt-0.5 font-display text-xl">{step.title}</p>
+                <p className="mt-1.5 text-ink-muted">{step.body}</p>
+              </li>
+            ))}
+          </ol>
+          <ol
+            aria-label="Your milestones"
+            className="mt-8 flex flex-wrap items-center gap-x-2 gap-y-2 font-semibold"
+          >
+            {MILESTONES.map((m, i) => (
+              <li key={m} className="flex items-center gap-2">
+                <span className="rounded-full border border-line-strong bg-surface px-3.5 py-1.5">
+                  {m}
+                </span>
+                {i < MILESTONES.length - 1 ? (
+                  <span aria-hidden className="text-ink-muted">
+                    →
+                  </span>
+                ) : null}
+              </li>
+            ))}
           </ol>
         </Section>
 
         <Section
           id="hugin"
-          title="Meet Hugin, your coach"
-          intro="Hugin is a raven and an AI coach. He drafts your messages, checks your proof screenshots and plans each day around the time you have."
-        >
-          <ul className="flex max-w-2xl flex-col gap-4">
-            {HUGIN_LINES.map((line) => (
-              <li key={line} className="flex items-start gap-3">
-                <HuginAvatar size={34} />
-                <p className="rounded-md border border-line bg-surface px-4 py-2.5 text-lg">
-                  {line}
-                </p>
-              </li>
-            ))}
-          </ul>
-          <p className="mt-4 text-sm text-ink-muted">
-            Calm, dry, short. Hugin never shouts and never promises you money.
-          </p>
-        </Section>
-
-        <Section
-          id="progress"
-          title="Watch your progress add up"
-          intro="Every quest and real result adds XP and grows six stats. Your title changes as you beat each boss."
+          title="Hugin writes it. You send it."
+          intro="Hugin knows your offer, your price and how you know each person. When someone replies, paste it in and he writes your answer."
         >
           <div className="grid gap-8 lg:grid-cols-2">
-            <div>
-              <h3 className="font-display text-xl">Titles</h3>
-              <Rail className="mt-4">
-                {TITLE_ORDER.map((key, i) => (
-                  <Stop
-                    key={key}
-                    kind={i === 0 ? "passed" : "boss"}
-                    segment={i === TITLE_ORDER.length - 1 ? "none" : "ahead"}
-                    label={TITLES[key].earnedBy}
-                  >
-                    <p className="font-display text-lg">{TITLES[key].label}</p>
-                  </Stop>
+            <div className="flex max-w-xl flex-col gap-3">
+              <p className="rounded-md border border-line bg-surface px-4 py-3">
+                <span className="type-label block">Your card to Sarah</span>
+                {SARAH_CARD}
+              </p>
+              <p className="self-end rounded-md bg-sand px-4 py-3">
+                <span className="type-label block">Sarah</span>
+                <i>“{SARAH_REPLY}”</i>
+              </p>
+              <p className="rounded-md border border-line bg-surface px-4 py-3">
+                <span className="type-label block">Hugin’s answer</span>
+                {HUGIN_ANSWER}
+              </p>
+              <ul className="mt-4 flex flex-col gap-4">
+                {HUGIN_LINES.map((line) => (
+                  <li key={line} className="flex items-start gap-3">
+                    <HuginAvatar size={34} />
+                    <p className="rounded-md border border-line bg-surface px-4 py-2.5 text-lg">
+                      {line}
+                    </p>
+                  </li>
                 ))}
-              </Rail>
-              <h3 className="mt-10 font-display text-xl">Six stats</h3>
-              <dl className="mt-4 grid grid-cols-2 gap-x-6 border-t border-line">
-                {STAT_KEYS.map((stat) => (
-                  <div key={stat} className="border-b border-line py-3">
-                    <dt className="font-semibold">{STATS[stat].label}</dt>
-                    <dd className="text-sm text-ink-muted">{STATS[stat].meaning}</dd>
-                  </div>
-                ))}
-              </dl>
+              </ul>
+              <p className="text-sm text-ink-muted">
+                Calm, dry, short. Hugin never shouts and never promises you money.
+              </p>
             </div>
             <AppPreview />
           </div>
         </Section>
+
+        <Section
+          id="lessons"
+          title="Learn the business as you go"
+          intro="Nine short lessons, each at the moment you need it: pricing when someone asks ‘how much?’, a simple agreement before your first proposal, money basics after your first payment. Each one takes 3 minutes and ends with a decision Hugin uses from then on."
+        >
+          <ol className="grid gap-x-8 sm:grid-cols-2 lg:grid-cols-3">
+            {LESSON_ORDER.map((id, i) => (
+              <li key={id} className="flex gap-3 border-t border-line py-3">
+                <span className="w-5 text-ink-muted tabular-nums">{i + 1}</span>
+                <span className="font-semibold">{LESSONS[id].title}</span>
+              </li>
+            ))}
+          </ol>
+        </Section>
+
+        <Section
+          id="progress"
+          title="See real progress, not points"
+          intro="Your Client #1 card shows who’s on your list, who you’ve messaged, who replied and who paid. Your title changes when something real happens: Side Starter at your first reply, Consultant at your first payment."
+        >
+          <h3 className="font-display text-xl">Titles</h3>
+          <Rail className="mt-4 max-w-md">
+            {TITLE_ORDER.slice(0, 4).map((key, i) => (
+              <Stop
+                key={key}
+                kind={i === 0 ? "passed" : "boss"}
+                segment={i === 3 ? "none" : "ahead"}
+                label={TITLES[key].earnedBy}
+              >
+                <p className="font-display text-lg">{TITLES[key].label}</p>
+              </Stop>
+            ))}
+          </Rail>
+        </Section>
+
+        <Section
+          id="private"
+          title="Private by design"
+          intro="No public posts, no ‘open for work’ badge. You message people one at a time, from your own phone or email. The first lesson shows what to check in your employment contract before you start."
+        />
 
         <Section
           id="pricing"
@@ -339,7 +371,7 @@ export default function Home() {
           <ul className="mt-5 flex flex-col gap-1.5 text-ink-muted">
             <li>We email you 3 days before any renewal.</li>
             <li>Cancel in Settings in two taps.</li>
-            <li>14-day money-back guarantee if you finish the week 1 quests.</li>
+            <li>14-day money-back guarantee if you complete your first 7 daily steps.</li>
             <li>
               Optional {FIRST_CLIENT_KIT.name}: {formatUsd(FIRST_CLIENT_KIT.priceUsd)} once, not a
               subscription. It gives you the week 2 and 3 tools from day 1.
@@ -375,7 +407,7 @@ export default function Home() {
               Answer 6 questions. See your service, your starting price and your first buyers.
             </p>
             <div className="mt-7">
-              <Cta>Build my 30-day plan</Cta>
+              <Cta>Build my plan</Cta>
             </div>
           </div>
           <RouteStrip day={1} you="You, today" end="First client" className="mx-auto max-w-md" />

@@ -25,13 +25,13 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: "AI Business Coach",
   description:
-    "Your first paying client in 30 days. 20 minutes a day, without quitting your job.",
+    "A plan to your first paying client in 12 weeks. 20 minutes a day, without quitting your job.",
   openGraph: {
     type: "website",
     siteName: "AI Business Coach",
     title: "Good at your job? Someone will pay you for it.",
     description:
-      "An AI coach that turns the skill you use at work into a paid side service. Your first paying client in 30 days.",
+      "An AI coach that turns the skill you use at work into a paid side service. A plan to your first paying client in 12 weeks.",
   },
   twitter: { card: "summary_large_image" },
 };
